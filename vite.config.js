@@ -235,6 +235,8 @@ logger.error = (msg, options) => {
 }
 
 export default defineConfig({
+	// Base path for GitHub Pages (nombre del repositorio)
+	base: '/Plataforma-MiOriente/',
 	customLogger: logger,
 	plugins: [
 		...(isDev ? [inlineEditPlugin(), editModeDevPlugin(), iframeRouteRestorationPlugin(), selectionModePlugin()] : []),

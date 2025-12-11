@@ -83,7 +83,7 @@ src/
 
 ```bash
 # 1. Clonar el repositorio
-git clone [URL_DEL_REPOSITORIO]
+git clone [https://github.com/Janier1992/Plataforma-MiOriente.git]
 cd MiOriente
 
 # 2. Instalar dependencias

@@ -1,6 +1,6 @@
 
 import React, { Suspense, useEffect, useMemo, useLayoutEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { Toaster } from '@/components/ui/toaster';
 import BottomNavBar from '@/components/BottomNavBar';
 import SiteHeader from '@/components/SiteHeader';
