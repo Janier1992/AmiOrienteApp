@@ -1,0 +1,63 @@
+# =============================================================================
+# ARCHIVO .gitignore - MiOriente
+# =============================================================================
+# Este archivo especifica los patrones de archivos y carpetas que Git debe
+# ignorar. Evita subir archivos generados, dependencias y datos sensibles.
+# =============================================================================
+
+# Dependencias de Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build de producción
+dist/
+build/
+.output/
+
+# Archivos de entorno (contienen claves secretas)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Logs
+logs/
+*.log
+
+# Cache y archivos temporales
+.cache/
+.temp/
+.tmp/
+*.swp
+*.swo
+*~
+
+# IDE y editores
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# PWA generado automáticamente (se regenera en cada build)
+# Comentar si deseas versionarlo
+# public/sw.js
+# public/workbox-*.js
+
+# Tests
+coverage/
+.nyc_output/
+
+# Storybook
+storybook-static/
+
+# Archivos de respaldo
+*.bak
+*.backup
