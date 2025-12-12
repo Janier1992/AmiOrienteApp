@@ -2,9 +2,12 @@
 
 > Del Campo a tu Mesa - Conectando campesinos y clientes directamente
 
+[![Deploy to GitHub Pages](https://github.com/Janier1992/Plataforma-MiOriente/actions/workflows/deploy.yml/badge.svg)](https://github.com/Janier1992/Plataforma-MiOriente/actions/workflows/deploy.yml)
 [![PWA Ready](https://img.shields.io/badge/PWA-Ready-green)](https://web.dev/progressive-web-apps/)
 [![React](https://img.shields.io/badge/React-18.2-blue)](https://reactjs.org/)
 [![Supabase](https://img.shields.io/badge/Supabase-Backend-orange)](https://supabase.com/)
+
+🚀 **[Ver Aplicación en Vivo](https://janier1992.github.io/Plataforma-MiOriente/)**
 
 ---
 
