@@ -1,6 +1,6 @@
 
 import React, { Suspense, useEffect, useMemo, useLayoutEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { Toaster } from '@/components/ui/toaster';
 import BottomNavBar from '@/components/BottomNavBar';
 import SiteHeader from '@/components/SiteHeader';
@@ -56,7 +56,7 @@ const ScrollToTop = () => {
 const AppContent = () => {
   const location = useLocation();
   const { user, loading: authLoading } = useAuth();
-  
+
   // Performance monitoring hook
   useRouteTransitionTimer();
 
@@ -94,14 +94,14 @@ const AppContent = () => {
   ], []);
 
   // Efficient conditional rendering checks
-  const hideHeader = useMemo(() => 
-    dashboardRoutes.some(path => location.pathname.startsWith(path)) || 
+  const hideHeader = useMemo(() =>
+    dashboardRoutes.some(path => location.pathname.startsWith(path)) ||
     authRoutes.some(path => location.pathname.startsWith(path)) ||
-    location.pathname === '/checkout', 
-  [location.pathname, dashboardRoutes, authRoutes]);
-  
+    location.pathname === '/checkout',
+    [location.pathname, dashboardRoutes, authRoutes]);
+
   const isStoreUser = user?.user_metadata?.role === 'tienda';
-  
+
   const showBottomNav = useMemo(() => {
     const navPaths = ['/', '/productos', '/servicios', '/turismo'];
     if (isStoreUser) navPaths.push('/mas');
@@ -112,8 +112,8 @@ const AppContent = () => {
   const bgClass = useMemo(() => {
     const isHomePage = location.pathname === '/';
     const isAuthPage = authRoutes.some(path => location.pathname.startsWith(path));
-    return (isHomePage || isAuthPage) 
-      ? 'bg-black/30' 
+    return (isHomePage || isAuthPage)
+      ? 'bg-black/30'
       : 'bg-white/90 dark:bg-slate-950/90';
   }, [location.pathname, authRoutes]);
 
@@ -124,7 +124,7 @@ const AppContent = () => {
   return (
     <div className={cn("min-h-screen flex flex-col transition-colors duration-300 ease-in-out", bgClass)}>
       {!hideHeader && <SiteHeader />}
-      
+
       <main className={`flex-grow ${showBottomNav ? 'pb-20 md:pb-0' : ''}`}>
         <Suspense fallback={<PageSkeleton />}>
           <Routes>
@@ -132,11 +132,11 @@ const AppContent = () => {
             <Route path="/productos" element={<ProductsPage />} />
             <Route path="/servicios" element={<StoresPage />} />
             <Route path="/turismo" element={<TourismPage />} />
-            
+
             {/* Protected / Conditional Routes */}
             {isStoreUser && <Route path="/mas" element={<MoreServicesPage />} />}
             {isStoreUser && <Route path="/precios" element={<PricingPage />} />}
-            
+
             {/* Auth Routes */}
             <Route path="/tienda/login" element={<StoreLogin />} />
             <Route path="/tienda/registro" element={<StoreRegister />} />
@@ -153,7 +153,7 @@ const AppContent = () => {
             <Route path="/tienda/dashboard/*" element={<StoreDashboard />} />
             <Route path="/cliente/dashboard/*" element={<CustomerDashboard />} />
             <Route path="/domiciliario/dashboard/*" element={<DeliveryDashboard />} />
-            
+
             {/* Utility Pages */}
             <Route path="/centro-de-ayuda" element={<HelpCenter />} />
             <Route path="/contacto" element={<ContactPage />} />
@@ -164,7 +164,7 @@ const AppContent = () => {
           </Routes>
         </Suspense>
       </main>
-      
+
       {showBottomNav && <BottomNavBar />}
       <PWAInstallPrompt />
       <Toaster />
