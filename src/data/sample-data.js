@@ -1,0 +1,213 @@
+
+export const SAMPLE_STORES = [
+  {
+    id: "store_001",
+    name: "Los Montes",
+    description: "Comida típica paisa.",
+    category: "Restaurante",
+    address: "Cra 32 #29-25",
+    phone: "(4) 3883285",
+    rating: 4.6,
+    email: null,
+    website: null,
+    hours: "8:00 AM - 8:00 PM",
+    image_url: "https://images.unsplash.com/photo-1599557458145-2b47f0855320?q=80&w=1000&auto=format&fit=crop",
+    tags: ["Comida Típica", "Tradicional"]
+  },
+  {
+    id: "store_002",
+    name: "La Casa Peruana",
+    description: "Cocina peruana.",
+    category: "Restaurante",
+    address: "Cra. 28 #29-14",
+    phone: "304-406-4428",
+    rating: 4.5,
+    email: null,
+    website: null,
+    hours: "12:00 PM - 10:00 PM",
+    image_url: "https://images.unsplash.com/photo-1568625615783-6c891636c746?q=80&w=1000&auto=format&fit=crop",
+    tags: ["Cocina Peruana", "Internacional"]
+  },
+  {
+    id: "store_003",
+    name: "Café República",
+    description: "Rockola Café Bar - opciones café & bar.",
+    category: "Restaurante",
+    address: "Marinilla",
+    phone: null,
+    rating: 4.4,
+    email: null,
+    website: null,
+    hours: "2:00 PM - 12:00 AM",
+    image_url: "https://images.unsplash.com/photo-1554118811-1e0d58224f24?q=80&w=1000&auto=format&fit=crop",
+    tags: ["Café", "Bar", "Música"]
+  },
+  {
+    id: "store_004",
+    name: "Supermercado Zorba",
+    description: "Supermercado local.",
+    category: "Mercado",
+    address: "Calle 30 #29-14",
+    phone: "548 41 33",
+    rating: 4.3,
+    email: null,
+    website: null,
+    hours: "7:00 AM - 9:00 PM",
+    image_url: "https://images.unsplash.com/photo-1604719312566-b7e2b0084adb?q=80&w=1000&auto=format&fit=crop",
+    tags: ["Mercado", "Víveres"]
+  },
+  {
+    id: "store_005",
+    name: "La Rebaja",
+    description: "Farmacia y droguería.",
+    category: "Farmacia",
+    address: "Calle 29 No. 34-98",
+    phone: null,
+    rating: 4.2,
+    email: null,
+    website: null,
+    hours: "24 Horas",
+    image_url: "https://images.unsplash.com/photo-1587854692152-cbe660dbde88?q=80&w=1000&auto=format&fit=crop",
+    tags: ["Farmacia", "Salud"]
+  },
+  {
+    id: "store_006",
+    name: "Cannúa Lodge",
+    description: "Hotel ecológico de lujo.",
+    category: "Hotel",
+    address: "Km 7 Cuchillas de los Cedros",
+    phone: "311-609-9237 / 312-652-3313",
+    rating: 4.9,
+    email: null,
+    website: "https://cannua.com",
+    hours: "Recepción 24h",
+    image_url: "https://images.unsplash.com/photo-1598991686616-a19e487c6999?q=80&w=1000&auto=format&fit=crop",
+    tags: ["Lujo", "Ecológico", "Vista"]
+  },
+  {
+    id: "store_007",
+    name: "Finca Marinilla",
+    description: "Disponible en Booking.",
+    category: "Hotel",
+    address: "Marinilla",
+    phone: null,
+    rating: 4.5,
+    email: null,
+    website: null,
+    hours: "Check-in 3:00 PM",
+    image_url: "https://images.unsplash.com/photo-1566665797739-1674de7a421a?q=80&w=1000&auto=format&fit=crop",
+    tags: ["Finca", "Alojamiento"]
+  },
+  {
+    id: "store_008",
+    name: "Eco Hotel Terrabella",
+    description: "Hotel ecológico.",
+    category: "Hotel",
+    address: "Santa Elena",
+    phone: "+57 301 643 0309",
+    rating: 4.7,
+    email: null,
+    website: null,
+    hours: "Recepción 24h",
+    image_url: "https://images.unsplash.com/photo-1533630764039-49774ba16cb5?q=80&w=1000&auto=format&fit=crop",
+    tags: ["Eco Hotel", "Naturaleza"]
+  }
+];
+
+export const SAMPLE_TOURISM_SPOTS = [
+  {
+    id: "tour_001",
+    name: "Parque Ecológico Alcaravanes",
+    description: "Parque ecológico con actividades al aire libre.",
+    category_name: "Naturaleza",
+    address: "Vía Alcaravanes",
+    latitude: 6.160,
+    longitude: -75.350,
+    rating: 4.6,
+    contact_phone: "315 816 99 48",
+    website: null,
+    image_urls: ["https://images.unsplash.com/photo-1589139268808-5d152a7b3799?q=80&w=1000&auto=format&fit=crop"]
+  },
+  {
+    id: "tour_002",
+    name: "Capilla de Jesús Nazareno",
+    description: "Capilla histórica.",
+    category_name: "Sitios de Interés",
+    address: "Plazoleta de los Mártires",
+    latitude: 6.172,
+    longitude: -75.336,
+    rating: 4.8,
+    contact_phone: null,
+    website: null,
+    image_urls: ["https://images.unsplash.com/photo-1548625361-bd87d3f72157?q=80&w=1000&auto=format&fit=crop"]
+  },
+  {
+    id: "tour_003",
+    name: "Museo de los Cristos",
+    description: "Museo religioso y cultural.",
+    category_name: "Sitios de Interés",
+    address: "Centro Marinilla",
+    latitude: 6.173,
+    longitude: -75.337,
+    rating: 4.7,
+    contact_phone: null,
+    website: null,
+    image_urls: ["https://images.unsplash.com/photo-1566127444979-b3d2b654e3d7?q=80&w=1000&auto=format&fit=crop"]
+  },
+  {
+    id: "tour_004",
+    name: "Mirador Cristo Rey",
+    description: "Mirador con vista panorámica.",
+    category_name: "Sitios de Interés",
+    address: "Barrio María Auxiliadora",
+    latitude: 6.170,
+    longitude: -75.330,
+    rating: 4.5,
+    contact_phone: null,
+    website: null,
+    image_urls: ["https://images.unsplash.com/photo-1534234828569-1f3554d48995?q=80&w=1000&auto=format&fit=crop"]
+  },
+  {
+    id: "tour_005",
+    name: "Piedra del Peñol",
+    description: "Monolito turístico famoso (30-40km de distancia).",
+    category_name: "Naturaleza",
+    address: "El Peñol/Guatapé 30-40km",
+    latitude: 6.220,
+    longitude: -75.179,
+    rating: 4.9,
+    contact_phone: null,
+    website: null,
+    image_urls: ["https://images.unsplash.com/photo-1591815302525-756a9bcc3425?q=80&w=1000&auto=format&fit=crop"]
+  },
+  {
+    id: "tour_006",
+    name: "Guatapé",
+    description: "Pueblo turístico colorido.",
+    category_name: "Sitios de Interés",
+    address: "Pueblo turístico",
+    latitude: 6.230,
+    longitude: -75.160,
+    rating: 4.8,
+    contact_phone: null,
+    website: null,
+    image_urls: ["https://images.unsplash.com/photo-1599827402633-8c465a3d7072?q=80&w=1000&auto=format&fit=crop"]
+  },
+  {
+    id: "tour_007",
+    name: "Rutas rurales",
+    description: "Rutas por veredas de Marinilla.",
+    category_name: "Naturaleza",
+    address: "Veredas de Marinilla",
+    latitude: 6.160,
+    longitude: -75.340,
+    rating: 4.7,
+    contact_phone: null,
+    website: null,
+    image_urls: ["https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1000&auto=format&fit=crop"]
+  }
+];
+
+export const SERVICE_CATEGORIES_LIST = [
+  "Restaurante", "Farmacia", "Ropa", "Panadería", "Mercado", "Mascotas", "Tecnología", "Hotel", "Servicios"
+];
