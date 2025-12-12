@@ -255,18 +255,18 @@ export default defineConfig({
 				background_color: '#ffffff',
 				display: 'standalone',
 				orientation: 'portrait-primary',
-				scope: '/',
-				start_url: '/',
+				scope: '/AmiOrienteApp/',
+				start_url: '/AmiOrienteApp/',
 				categories: ['shopping', 'food', 'travel', 'lifestyle'],
 				icons: [
 					{
-						src: '/logo.svg',
+						src: '/AmiOrienteApp/logo.svg',
 						sizes: '192x192',
 						type: 'image/svg+xml',
 						purpose: 'any'
 					},
 					{
-						src: '/logo.svg',
+						src: '/AmiOrienteApp/logo.svg',
 						sizes: '512x512',
 						type: 'image/svg+xml',
 						purpose: 'any maskable'

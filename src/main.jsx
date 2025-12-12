@@ -43,7 +43,7 @@ if (DEBUG_PWA) {
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     // We strictly use ./sw.js to match the file in public/
-    navigator.serviceWorker.register('/sw.js', { scope: '/' })
+    navigator.serviceWorker.register('./sw.js', { scope: './' })
       .then(registration => {
         logPWA('ServiceWorker registered ✅', { scope: registration.scope });
 

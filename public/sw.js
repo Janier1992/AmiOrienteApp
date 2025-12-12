@@ -6,9 +6,9 @@ const CACHE_NAME = 'mioriente-prod-v6';
 
 // Use relative paths for compatibility with any deployment URL structure
 const STATIC_ASSETS = [
-  '/',
-  '/index.html',
-  '/manifest.json'
+  './',
+  './index.html',
+  './manifest.json'
 ];
 
 // Install Event
