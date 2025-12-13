@@ -12,30 +12,38 @@ import { supabase } from '@/lib/customSupabaseClient';
 const ServiceSelectionPage = () => {
   const navigate = useNavigate();
 
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const { toast } = useToast();
   const [userStoreCategory, setUserStoreCategory] = React.useState(null);
   const [checkingSession, setCheckingSession] = React.useState(true);
 
   React.useEffect(() => {
     const checkUserStore = async () => {
+      // If auth is still loading, do not finish check yet
+      if (authLoading) return;
+
       if (user) {
         setCheckingSession(true);
-        const { data: store } = await supabase
-          .from('stores')
-          .select('category')
-          .eq('owner_id', user.id)
-          .single();
+        try {
+          const { data: store } = await supabase
+            .from('stores')
+            .select('category')
+            .eq('owner_id', user.id)
+            .single();
 
-        if (store) {
-          setUserStoreCategory(store.category);
+          if (store) {
+            setUserStoreCategory(store.category);
+          }
+        } catch (e) {
+          console.error("Error fetching store category", e);
         }
       }
+      // Finish checking
       setCheckingSession(false);
     };
 
     checkUserStore();
-  }, [user]);
+  }, [user, authLoading]);
 
   const handleSelectService = async (serviceType) => {
     if (user) {
@@ -113,15 +121,25 @@ const ServiceSelectionPage = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {services.map((service, index) => {
               // VISIBILITY LOGIC:
-              // 1. If checking session, show nothing or skeleton (optional, here we show nothing to prevent flicker)
-              // 2. If no user, show ALL.
-              // 3. If user exists but has no category (rare, maybe glitch), show ALL.
-              // 4. If user has category, ONLY show that category.
+              // 1. If global auth is loading, we wait.
+              // 2. If checking store session, we wait (or show nothing).
+              // 3. If no user, show ALL.
+              // 4. If user has category, show ONLY that category (relaxed match).
 
               if (checkingSession) return null;
 
               if (user && userStoreCategory) {
-                if (service.name !== userStoreCategory) return null;
+                // Relaxed comparison to handle singular/plural mismatches (e.g. "Restaurante" vs "Restaurantes")
+                const serviceName = service.name.toLowerCase();
+                const userCategory = userStoreCategory.toLowerCase();
+
+                // If doesn't match, hide it.
+                // We accept exact match or "starts with" to match "Restaurante" with "Restaurantes"
+                const isMatch = serviceName === userCategory ||
+                  userCategory.includes(serviceName) ||
+                  serviceName.includes(userCategory);
+
+                if (!isMatch) return null;
               }
 
               return (
