@@ -1,6 +1,6 @@
 {
-  "name": "MiOriente - Servicios y Domicilios",
-  "short_name": "MiOriente",
+  "name": "AmiOriente - Servicios y Domicilios",
+  "short_name": "AmiOriente",
   "id": "mioriente-app-v1",
   "start_url": "/",
   "scope": "/",

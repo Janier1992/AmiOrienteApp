@@ -247,9 +247,10 @@ export default defineConfig({
 			// Only include assets that actually exist
 			includeAssets: ['manifest.json'],
 			manifest: {
-				name: 'MiOriente - Servicios y Domicilios',
-				short_name: 'MiOriente',
-				id: 'mioriente-pwa-v2',
+				name: 'AmiOriente - Servicios y Domicilios',
+				short_name: 'AmiOriente',
+				id: 'amioriente-pwa-v2',
+
 				description: 'La plataforma integral de servicios, domicilios y turismo en el Oriente Antioqueño.',
 				theme_color: '#16a34a',
 				background_color: '#ffffff',
