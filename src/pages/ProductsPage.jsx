@@ -4,8 +4,9 @@ import { useSearchParams } from 'react-router-dom';
 import { useCartStore, useCartActions } from '@/contexts/CartContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
 import { toast } from '@/components/ui/use-toast';
-import { ShoppingBag, Package, Loader2, Leaf } from 'lucide-react';
+import { ShoppingBag, Package, Loader2, Leaf, Search } from 'lucide-react';
 import { supabase } from '@/lib/customSupabaseClient';
 import CartSidebar from '@/components/CartSidebar';
 
@@ -58,6 +59,7 @@ const ProductsPage = () => {
   const [storeName, setStoreName] = useState("Todos los Productos");
   const [loading, setLoading] = useState(true);
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
   const getCartItemCount = useCartStore(state => state.getCartItemCount);
   const cartItemCount = getCartItemCount();
   const [searchParams] = useSearchParams();
@@ -66,7 +68,7 @@ const ProductsPage = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       setLoading(true);
-      
+
       // Simplified query to avoid complex joins that might be missing foreign keys in Supabase schema
       // We will fetch products first, then fetch store details if needed
       let query = supabase.from('products').select('*');
@@ -93,13 +95,13 @@ const ProductsPage = () => {
       // If we have products, let's try to fetch store names manually to avoid the join error
       if (productsData && productsData.length > 0) {
         const storeIds = [...new Set(productsData.map(p => p.store_id).filter(Boolean))];
-        
+
         if (storeIds.length > 0) {
           const { data: storesData } = await supabase
             .from('stores')
             .select('id, name, service_categories(name)')
             .in('id', storeIds);
-            
+
           // Map store data back to products
           const productsWithStores = productsData.map(product => {
             const store = storesData?.find(s => s.id === product.store_id);
@@ -108,7 +110,7 @@ const ProductsPage = () => {
               stores: store || { name: 'Proveedor' }
             };
           });
-          
+
           setProducts(productsWithStores);
         } else {
           setProducts(productsData);
@@ -116,7 +118,7 @@ const ProductsPage = () => {
       } else {
         setProducts([]);
       }
-      
+
       setLoading(false);
     };
 
@@ -130,7 +132,7 @@ const ProductsPage = () => {
         <title>{storeName} - Domicilios MiOriente</title>
         <meta name="description" content={`Explora y compra los mejores productos de ${storeName}.`} />
       </Helmet>
-      
+
       <div className="bg-background min-h-screen">
         <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="text-center mb-12">
@@ -139,7 +141,20 @@ const ProductsPage = () => {
               Descubre los sabores y la tradición del Oriente Antioqueño en un solo lugar.
             </p>
           </div>
-          
+
+          {/* Search Bar */}
+          <div className="max-w-2xl mx-auto mb-10 -mt-6">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-5 w-5" />
+              <Input
+                placeholder="Buscar productos (ej. Zanahoria, Café, Arepas)..."
+                className="pl-10 py-6 text-lg shadow-lg border-primary/20 focus-visible:ring-primary"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+          </div>
+
           {loading ? (
             <div className="text-center flex justify-center items-center py-12">
               <Loader2 className="animate-spin h-8 w-8 text-primary" />
@@ -152,27 +167,29 @@ const ProductsPage = () => {
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-              {products.map((product) => (
-                <ProductCard key={product.id} product={product} />
-              ))}
+              {products
+                .filter(product => product.name.toLowerCase().includes(searchTerm.toLowerCase()))
+                .map((product) => (
+                  <ProductCard key={product.id} product={product} />
+                ))}
             </div>
           )}
         </main>
       </div>
 
       <div className="fixed bottom-6 right-6 z-50">
-        <Button 
-          onClick={() => setIsCartOpen(true)} 
-          size="icon" 
+        <Button
+          onClick={() => setIsCartOpen(true)}
+          size="icon"
           className="relative h-16 w-16 rounded-full shadow-2xl transition-transform hover:scale-110"
         >
-            <ShoppingBag className="h-8 w-8" />
-            {cartItemCount > 0 && (
-                <span className="absolute top-0 right-0 transform translate-x-1/4 -translate-y-1/4 bg-destructive text-destructive-foreground text-sm font-bold rounded-full h-7 w-7 flex items-center justify-center border-2 border-background">
-                    {cartItemCount}
-                </span>
-            )}
-            <span className="sr-only">Abrir carrito</span>
+          <ShoppingBag className="h-8 w-8" />
+          {cartItemCount > 0 && (
+            <span className="absolute top-0 right-0 transform translate-x-1/4 -translate-y-1/4 bg-destructive text-destructive-foreground text-sm font-bold rounded-full h-7 w-7 flex items-center justify-center border-2 border-background">
+              {cartItemCount}
+            </span>
+          )}
+          <span className="sr-only">Abrir carrito</span>
         </Button>
       </div>
 
