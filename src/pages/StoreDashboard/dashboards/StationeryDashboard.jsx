@@ -39,47 +39,52 @@ const BulkUploadTab = React.lazy(() => import('../BulkUploadTab'));
 const FinancialsTab = React.lazy(() => import('../FinancialsTab'));
 
 // Custom Product Card for Stationery
-const StationeryProductCard = ({ product }) => (
-    <Card className="rounded-3xl overflow-hidden border-none shadow-sm hover:shadow-md transition-shadow group bg-white h-full flex flex-col">
-        <div className="relative h-48 bg-gray-100 p-4 flex items-center justify-center">
-            {product.discount > 0 && (
-                <span className="absolute top-4 right-4 bg-yellow-400 text-black text-xs font-bold px-2 py-1 rounded-full z-10">
-                    -{product.discount}%
-                </span>
-            )}
-            {product.image_url ? (
-                <img
-                    src={product.image_url}
-                    alt={product.name}
-                    className="max-h-full max-w-full object-contain mix-blend-multiply"
-                />
-            ) : (
-                <div className="flex flex-col items-center text-gray-400">
-                    <ImageIcon className="h-10 w-10 mb-2" />
-                    <span className="text-xs">Sin imagen</span>
-                </div>
-            )}
-        </div>
-        <CardContent className="p-4 flex-1 flex flex-col justify-between">
-            <div>
-                <div className="flex justify-between items-start mb-1">
-                    <h3 className="font-bold text-slate-900 line-clamp-2 text-md leading-tight">{product.name}</h3>
-                    {/* Actions could go here */}
-                </div>
-                <p className="text-xs text-gray-500 mb-2">Papelería • SKU: {product.sku || 'N/A'}</p>
-            </div>
+const StationeryProductCard = ({ product }) => {
+    // Workaround: Extract SKU from description if column doesn't exist
+    const displaySku = product.sku || product.description?.match(/SKU:\s*([^\n]+)/)?.[1] || 'N/A';
 
-            <div className="flex items-center gap-2 mt-2">
-                <span className="text-lg font-bold text-slate-900">${Number(product.price).toLocaleString()}</span>
+    return (
+        <Card className="rounded-3xl overflow-hidden border-none shadow-sm hover:shadow-md transition-shadow group bg-white h-full flex flex-col">
+            <div className="relative h-48 bg-gray-100 p-4 flex items-center justify-center">
                 {product.discount > 0 && (
-                    <span className="text-sm text-gray-400 line-through">
-                        ${(product.price * (1 + product.discount / 100)).toLocaleString()}
+                    <span className="absolute top-4 right-4 bg-yellow-400 text-black text-xs font-bold px-2 py-1 rounded-full z-10">
+                        -{product.discount}%
                     </span>
                 )}
+                {product.image_url ? (
+                    <img
+                        src={product.image_url}
+                        alt={product.name}
+                        className="max-h-full max-w-full object-contain mix-blend-multiply"
+                    />
+                ) : (
+                    <div className="flex flex-col items-center text-gray-400">
+                        <ImageIcon className="h-10 w-10 mb-2" />
+                        <span className="text-xs">Sin imagen</span>
+                    </div>
+                )}
             </div>
-        </CardContent>
-    </Card>
-);
+            <CardContent className="p-4 flex-1 flex flex-col justify-between">
+                <div>
+                    <div className="flex justify-between items-start mb-1">
+                        <h3 className="font-bold text-slate-900 line-clamp-2 text-md leading-tight">{product.name}</h3>
+                        {/* Actions could go here */}
+                    </div>
+                    <p className="text-xs text-gray-500 mb-2">Papelería • SKU: {displaySku}</p>
+                </div>
+
+                <div className="flex items-center gap-2 mt-2">
+                    <span className="text-lg font-bold text-slate-900">${Number(product.price).toLocaleString()}</span>
+                    {product.discount > 0 && (
+                        <span className="text-sm text-gray-400 line-through">
+                            ${(product.price * (1 + product.discount / 100)).toLocaleString()}
+                        </span>
+                    )}
+                </div>
+            </CardContent>
+        </Card>
+    );
+};
 
 const StationeryProductsView = () => {
     const { products, fetchProducts, addProduct, deleteProduct, store } = useStoreDashboard();
@@ -142,15 +147,25 @@ const StationeryProductsView = () => {
                 imageUrl = await uploadFile(imageFile, 'product-images', imagePath);
             }
 
-            await addProduct({
-                ...formData,
-                store_id: store?.id,
+            // Prepare payload WITHOUT sku column to avoid schema error
+            // Embed SKU in description
+            const productDescription = formData.sku
+                ? `${formData.description || ''}\n\nSKU: ${formData.sku}`
+                : formData.description;
+
+            const productPayload = {
+                name: formData.name,
                 price: parseFloat(formData.price),
                 stock: parseInt(formData.stock),
                 product_type: 'physical',
                 requires_shipping: true,
-                image_url: imageUrl
-            });
+                image_url: imageUrl,
+                description: productDescription,
+                store_id: store?.id,
+                // Do NOT include 'sku' here as column is missing in DB
+            };
+
+            await addProduct(productPayload);
 
             toast({ title: "Producto creado", description: "El producto se ha añadido correctamente." });
             setIsAddOpen(false);
