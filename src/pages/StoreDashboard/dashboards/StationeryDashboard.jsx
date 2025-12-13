@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Routes, Route, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect, Suspense } from 'react';
+import { Routes, Route } from 'react-router-dom';
 import { DashboardLayout } from '@/components/dashboards/DashboardLayout';
 import {
     LayoutDashboard,
@@ -12,30 +12,28 @@ import {
     Search,
     Plus,
     Grid,
-    List,
-    Filter
+    List
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-
-// Reusing existing tabs where appropriate, but customizing the Products view
-import OverviewTab from '../OverviewTab';
-import OrdersTab from '../OrdersTab';
-import ProfileTab from '../ProfileTab';
-import AdminTab from '../AdminTab';
-import BulkUploadTab from '../BulkUploadTab';
-import FinancialsTab from '../FinancialsTab';
+import LoadingSpinner from '@/components/shared/LoadingSpinner';
 
 import { useStoreDashboard } from '@/stores/useStoreDashboard';
 
-// Custom Product Card for Stationery (Matches the requested design)
+// Lazy Load Tabs to avoid circular dependency/build issues
+const OverviewTab = React.lazy(() => import('../OverviewTab'));
+const OrdersTab = React.lazy(() => import('../OrdersTab'));
+const ProfileTab = React.lazy(() => import('../ProfileTab'));
+const AdminTab = React.lazy(() => import('../AdminTab'));
+const BulkUploadTab = React.lazy(() => import('../BulkUploadTab'));
+const FinancialsTab = React.lazy(() => import('../FinancialsTab'));
+
+// Custom Product Card for Stationery
 const StationeryProductCard = ({ product }) => (
     <Card className="rounded-3xl overflow-hidden border-none shadow-sm hover:shadow-md transition-shadow group bg-white">
         <div className="relative h-48 bg-gray-100 p-4 flex items-center justify-center">
-            {/* Discount Badge */}
             {product.discount > 0 && (
                 <span className="absolute top-4 right-4 bg-yellow-400 text-black text-xs font-bold px-2 py-1 rounded-full">
                     -{product.discount}%
@@ -50,7 +48,6 @@ const StationeryProductCard = ({ product }) => (
         <CardContent className="p-4">
             <div className="flex justify-between items-start mb-1">
                 <h3 className="font-bold text-slate-900 line-clamp-2 text-md leading-tight">{product.name}</h3>
-                {/* Context Menu or Icon */}
                 <div className="text-gray-400">⋮</div>
             </div>
             <p className="text-xs text-gray-500 mb-2">Papelería • SKU: {product.sku || '0000'}</p>
@@ -78,7 +75,6 @@ const StationeryProductsView = () => {
 
     const filteredProducts = products.filter(p => p.name.toLowerCase().includes(searchTerm.toLowerCase()));
 
-    // Mock functionality for UI
     const handleAddProduct = () => alert("Funcionalidad de Agregar Producto");
 
     return (
@@ -158,7 +154,6 @@ const StationeryProductsView = () => {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
                 {filteredProducts.map((product) => (
-                    // Adding dummy discount/sku for visualization if missing
                     <StationeryProductCard key={product.id} product={{ ...product, discount: 10, sku: product.id.slice(0, 4).toUpperCase() }} />
                 ))}
                 {filteredProducts.length === 0 && (
@@ -175,7 +170,7 @@ const StationeryDashboard = ({ store }) => {
     const navItems = [
         { icon: LayoutDashboard, label: 'Resumen', path: '' },
         { icon: ShoppingCart, label: 'Pedidos', path: 'pedidos' },
-        { icon: Package, label: 'Productos', path: 'productos' }, // Using 'productos' path to default to our custom view if needed, but standard is usually 'productos' or 'menu'
+        { icon: Package, label: 'Productos', path: 'productos' },
         { icon: Upload, label: 'Importar', path: 'importar' },
         { icon: DollarSign, label: 'Finanzas', path: 'finanzas' },
         { icon: Users, label: 'Equipo', path: 'equipo' },
@@ -184,17 +179,17 @@ const StationeryDashboard = ({ store }) => {
 
     return (
         <DashboardLayout title="Papelería Admin" subtitle="Panel de Gestión" navItems={navItems}>
-            <Routes>
-                <Route path="/" element={<OverviewTab storeId={store.id} />} />
-                <Route path="pedidos" element={<OrdersTab storeId={store.id} />} />
-                {/* Custom Products View */}
-                <Route path="productos" element={<StationeryProductsView />} />
-
-                <Route path="importar" element={<BulkUploadTab storeId={store.id} />} />
-                <Route path="finanzas" element={<FinancialsTab storeId={store.id} />} />
-                <Route path="equipo" element={<AdminTab storeId={store.id} />} />
-                <Route path="configuracion" element={<ProfileTab />} />
-            </Routes>
+            <Suspense fallback={<div className="h-full flex items-center justify-center"><LoadingSpinner /></div>}>
+                <Routes>
+                    <Route path="/" element={<OverviewTab storeId={store.id} />} />
+                    <Route path="pedidos" element={<OrdersTab storeId={store.id} />} />
+                    <Route path="productos" element={<StationeryProductsView />} />
+                    <Route path="importar" element={<BulkUploadTab storeId={store.id} />} />
+                    <Route path="finanzas" element={<FinancialsTab storeId={store.id} />} />
+                    <Route path="equipo" element={<AdminTab storeId={store.id} />} />
+                    <Route path="configuracion" element={<ProfileTab />} />
+                </Routes>
+            </Suspense>
         </DashboardLayout>
     );
 };
