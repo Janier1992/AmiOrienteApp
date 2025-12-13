@@ -56,47 +56,47 @@ export const BulkUploadTab = ({ onProductsUploaded, storeId }) => {
         const csvData = event.target.result;
         const lines = csvData.split('\n').slice(1);
         const productsToInsert = [];
-        
+
         for (const line of lines) {
-            if (line.trim() === '') continue;
-            const [name, description, price, category, stock, discount] = line.split(',');
-            
-            if (name && price && stock) {
+          if (line.trim() === '') continue;
+          const [name, description, price, category, stock, discount] = line.split(',');
+
+          if (name && price && stock) {
             productsToInsert.push({
-                store_id: storeId,
-                name: name.trim(),
-                description: description?.trim() || '',
-                price: parseFloat(price) || 0,
-                category: category?.trim() || 'General',
-                stock: parseInt(stock, 10) || 0,
-                discount: discount ? parseFloat(discount) : 0,
-                product_type: 'physical',
-                requires_shipping: true,
-                created_at: new Date().toISOString()
+              store_id: storeId,
+              name: name.trim(),
+              description: description?.trim() || '',
+              price: parseFloat(price) || 0,
+              category: category?.trim() || 'General',
+              stock: parseInt(stock, 10) || 0,
+              discount: discount ? parseFloat(discount) : 0,
+              product_type: 'physical',
+              requires_shipping: true,
+              created_at: new Date().toISOString()
             });
-            }
+          }
         }
 
         if (productsToInsert.length > 0) {
-            const { error } = await supabase.from('products').insert(productsToInsert);
-            
-            if (error) {
+          const { error } = await supabase.from('products').insert(productsToInsert);
+
+          if (error) {
             toast({ title: "Error en la carga", description: error.message, variant: "destructive" });
-            } else {
-            toast({ 
-                title: "¡Carga Exitosa!", 
-                description: `${productsToInsert.length} productos han sido añadidos a tu inventario.`,
-                className: "bg-green-50 border-green-200 text-green-800"
+          } else {
+            toast({
+              title: "¡Carga Exitosa!",
+              description: `${productsToInsert.length} productos han sido añadidos a tu inventario.`,
+              className: "bg-green-50 border-green-200 text-green-800"
             });
-            if(onProductsUploaded) onProductsUploaded();
+            if (onProductsUploaded) onProductsUploaded();
             setFile(null);
             setPreview([]);
-            }
+          }
         } else {
-            toast({ title: "Archivo vacío", description: "No se encontraron datos válidos.", variant: "destructive" });
+          toast({ title: "Archivo vacío", description: "No se encontraron datos válidos.", variant: "destructive" });
         }
       } catch (err) {
-          toast({ title: "Error al procesar", description: "El archivo no tiene el formato correcto.", variant: "destructive" });
+        toast({ title: "Error al procesar", description: "El archivo no tiene el formato correcto.", variant: "destructive" });
       } finally {
         setLoading(false);
       }
@@ -109,61 +109,63 @@ export const BulkUploadTab = ({ onProductsUploaded, storeId }) => {
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-            <Upload className="h-5 w-5 text-primary" />
-            Importación Masiva de Inventario
+          <Upload className="h-5 w-5 text-primary" />
+          Importación Masiva de Inventario
         </CardTitle>
         <p className="text-sm text-muted-foreground">Sube tu inventario completo usando un archivo Excel (.csv).</p>
       </CardHeader>
       <CardContent className="space-y-6">
-        
+
         <Alert className="bg-blue-50 border-blue-200">
-            <AlertCircle className="h-4 w-4 text-blue-600" />
-            <AlertTitle className="text-blue-800">Instrucciones</AlertTitle>
-            <AlertDescription className="text-blue-700 text-sm mt-1">
-                1. Descarga la plantilla de ejemplo.<br/>
-                2. Llena los datos de tus productos.<br/>
-                3. Guarda el archivo como .CSV.<br/>
-                4. Sube el archivo aquí.
-            </AlertDescription>
+          <AlertCircle className="h-4 w-4 text-blue-600" />
+          <AlertTitle className="text-blue-800">Instrucciones</AlertTitle>
+          <AlertDescription className="text-blue-700 text-sm mt-1">
+            1. Descarga la plantilla de ejemplo.<br />
+            2. Llena los datos de tus productos.<br />
+            3. Guarda el archivo como .CSV.<br />
+            4. Sube el archivo aquí.
+          </AlertDescription>
         </Alert>
 
         <div className="flex flex-col items-center justify-center border-2 border-dashed border-gray-200 rounded-lg p-8 bg-gray-50/50 hover:bg-gray-50 transition-colors">
           <Upload className="h-10 w-10 text-gray-400 mb-4" />
-          
+
           <div className="flex gap-4 mb-4">
-              <label htmlFor="file-upload" className="cursor-pointer">
-                <Button variant="outline" className="pointer-events-none" tabIndex={-1}>
-                    Seleccionar Archivo
-                </Button>
-                <input id="file-upload" type="file" className="hidden" accept=".csv" onChange={handleFileChange} />
-              </label>
-              <Button variant="ghost" onClick={downloadTemplate} className="text-primary hover:text-primary/90">
-                <Download className="mr-2 h-4 w-4" /> Descargar Plantilla
+            <label htmlFor="file-upload" className="cursor-pointer">
+              <Button variant="outline" className="pointer-events-none" tabIndex={-1}>
+                Seleccionar Archivo
               </Button>
+              <input id="file-upload" type="file" className="hidden" accept=".csv" onChange={handleFileChange} />
+            </label>
+            <Button variant="ghost" onClick={downloadTemplate} className="text-primary hover:text-primary/90">
+              <Download className="mr-2 h-4 w-4" /> Descargar Plantilla
+            </Button>
           </div>
 
           {file && (
             <div className="w-full max-w-sm bg-white p-4 rounded border shadow-sm mt-4">
-                <div className="flex items-center gap-2 font-medium text-sm mb-2">
-                    <FileText className="h-4 w-4 text-blue-500" />
-                    {file.name}
+              <div className="flex items-center gap-2 font-medium text-sm mb-2">
+                <FileText className="h-4 w-4 text-blue-500" />
+                {file.name}
+              </div>
+              {preview.length > 0 && (
+                <div className="text-xs text-gray-500 bg-gray-100 p-2 rounded font-mono">
+                  {preview.map((line, i) => <div key={i} className="truncate">{line}</div>)}
                 </div>
-                {preview.length > 0 && (
-                    <div className="text-xs text-gray-500 bg-gray-100 p-2 rounded font-mono">
-                        {preview.map((line, i) => <div key={i} className="truncate">{line}</div>)}
-                    </div>
-                )}
+              )}
             </div>
           )}
         </div>
 
         <div className="flex justify-end">
-            <Button onClick={handleBulkUpload} disabled={!file || loading} className="w-full sm:w-auto">
-                {loading ? "Procesando..." : `Importar Productos`}
-            </Button>
+          <Button onClick={handleBulkUpload} disabled={!file || loading} className="w-full sm:w-auto">
+            {loading ? "Procesando..." : `Importar Productos`}
+          </Button>
         </div>
 
       </CardContent>
     </Card>
   );
 };
+
+export default BulkUploadTab;
