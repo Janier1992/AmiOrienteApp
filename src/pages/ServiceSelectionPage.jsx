@@ -14,6 +14,28 @@ const ServiceSelectionPage = () => {
 
   const { user } = useAuth();
   const { toast } = useToast();
+  const [userStoreCategory, setUserStoreCategory] = React.useState(null);
+  const [checkingSession, setCheckingSession] = React.useState(true);
+
+  React.useEffect(() => {
+    const checkUserStore = async () => {
+      if (user) {
+        setCheckingSession(true);
+        const { data: store } = await supabase
+          .from('stores')
+          .select('category')
+          .eq('owner_id', user.id)
+          .single();
+
+        if (store) {
+          setUserStoreCategory(store.category);
+        }
+      }
+      setCheckingSession(false);
+    };
+
+    checkUserStore();
+  }, [user]);
 
   const handleSelectService = async (serviceType) => {
     if (user) {
@@ -89,19 +111,33 @@ const ServiceSelectionPage = () => {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {services.map((service, index) => (
-              <Card
-                key={index}
-                className="flex flex-col items-center text-center p-6 cursor-pointer hover:shadow-xl transition-all duration-300 group hover:-translate-y-1"
-                onClick={() => handleSelectService(service.name)}
-              >
-                <div className="p-4 rounded-full bg-primary/10 group-hover:bg-primary/20 transition-colors mb-4">
-                  <service.icon className="h-8 w-8 text-primary" />
-                </div>
-                <h3 className="text-lg font-semibold mb-1">{service.name}</h3>
-                <p className="text-sm text-muted-foreground">{service.description}</p>
-              </Card>
-            ))}
+            {services.map((service, index) => {
+              // VISIBILITY LOGIC:
+              // 1. If checking session, show nothing or skeleton (optional, here we show nothing to prevent flicker)
+              // 2. If no user, show ALL.
+              // 3. If user exists but has no category (rare, maybe glitch), show ALL.
+              // 4. If user has category, ONLY show that category.
+
+              if (checkingSession) return null;
+
+              if (user && userStoreCategory) {
+                if (service.name !== userStoreCategory) return null;
+              }
+
+              return (
+                <Card
+                  key={index}
+                  className="flex flex-col items-center text-center p-6 cursor-pointer hover:shadow-xl transition-all duration-300 group hover:-translate-y-1"
+                  onClick={() => handleSelectService(service.name)}
+                >
+                  <div className="p-4 rounded-full bg-primary/10 group-hover:bg-primary/20 transition-colors mb-4">
+                    <service.icon className="h-8 w-8 text-primary" />
+                  </div>
+                  <h3 className="text-lg font-semibold mb-1">{service.name}</h3>
+                  <p className="text-sm text-muted-foreground">{service.description}</p>
+                </Card>
+              );
+            })}
           </div>
           <div className="mt-8 text-center">
             <Button variant="outline" onClick={() => navigate(-1)} className="mt-4">
