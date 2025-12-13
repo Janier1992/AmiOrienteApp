@@ -1,18 +1,55 @@
 
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ArrowLeft, Home, Package, UtensilsCrossed, BedDouble, Shirt, Pill, Wheat, ShoppingCart, Sprout } from 'lucide-react';
+import { useAuth } from '@/contexts/SupabaseAuthContext';
+import { useToast } from '@/components/ui/use-toast';
+import { supabase } from '@/lib/customSupabaseClient';
 
 const ServiceSelectionPage = () => {
   const navigate = useNavigate();
 
-  const handleSelectService = (serviceType) => {
-    // In a real application, this would redirect to a specific registration form
-    // or set a context for the next registration step.
-    // For now, we'll navigate to the generic store registration with the serviceType as a query param.
+  const { user } = useAuth();
+  const { toast } = useToast();
+
+  const handleSelectService = async (serviceType) => {
+    if (user) {
+      // Check if user has a store and if it matches the service type
+      try {
+        const { data: store, error } = await supabase
+          .from('stores')
+          .select('category')
+          .eq('owner_id', user.id)
+          .single();
+
+        if (error && error.code !== 'PGRST116') {
+          console.error("Error checking store:", error);
+          return;
+        }
+
+        if (store) {
+          if (store.category && store.category !== serviceType) {
+            toast({
+              variant: "destructive",
+              title: "Acceso Restringido",
+              description: `Tienes una sesión activa como negocio tipo "${store.category}". No puedes acceder al módulo de "${serviceType}".`
+            });
+            return; // BLOCK ACCESS
+          } else {
+            // Same category, redirect to generic dashboard (the router handles the rest)
+            navigate('/tienda/dashboard');
+            return;
+          }
+        }
+      } catch (err) {
+        console.error("Validation error:", err);
+      }
+    }
+
+    // Normal flow if not logged in or no conflicting store
     navigate(`/tienda/registro?service=${serviceType}`);
   };
 
@@ -53,8 +90,8 @@ const ServiceSelectionPage = () => {
         <CardContent>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {services.map((service, index) => (
-              <Card 
-                key={index} 
+              <Card
+                key={index}
                 className="flex flex-col items-center text-center p-6 cursor-pointer hover:shadow-xl transition-all duration-300 group hover:-translate-y-1"
                 onClick={() => handleSelectService(service.name)}
               >
