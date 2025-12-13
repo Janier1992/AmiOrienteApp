@@ -4,7 +4,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowLeft, Home, Package, UtensilsCrossed, BedDouble, Shirt, Pill, Wheat, ShoppingCart, Sprout } from 'lucide-react';
+import { ArrowLeft, Home, Package, UtensilsCrossed, BedDouble, Shirt, Pill, Wheat, ShoppingCart, Sprout, Pencil } from 'lucide-react';
 import { useAuth } from '@/contexts/SupabaseAuthContext';
 import { useToast } from '@/components/ui/use-toast';
 import { supabase } from '@/lib/customSupabaseClient';
@@ -84,6 +84,7 @@ const ServiceSelectionPage = () => {
     { name: 'Hotel', icon: BedDouble, description: 'Gestión de reservas y habitaciones.' },
     { name: 'Ropa', icon: Shirt, description: 'Tiendas de moda y accesorios.' },
     { name: 'Farmacia', icon: Pill, description: 'Medicamentos y productos de salud.' },
+    { name: 'Papelería', icon: Pencil, description: 'Suministros de oficina y escolares.' },
     { name: 'Panadería', icon: Wheat, description: 'Pan, pasteles y postres.' },
     { name: 'Supermercado', icon: ShoppingCart, description: 'Comestibles y productos para el hogar.' },
     { name: 'Cultivador', icon: Sprout, description: 'Productos frescos de la granja.' },

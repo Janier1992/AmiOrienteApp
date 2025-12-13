@@ -209,5 +209,5 @@ export const SAMPLE_TOURISM_SPOTS = [
 ];
 
 export const SERVICE_CATEGORIES_LIST = [
-  "Restaurante", "Farmacia", "Ropa", "Panadería", "Mercado", "Mascotas", "Tecnología", "Hotel", "Servicios"
+  "Restaurante", "Farmacia", "Ropa", "Panadería", "Mercado", "Mascotas", "Tecnología", "Hotel", "Servicios", "Papelería"
 ];
