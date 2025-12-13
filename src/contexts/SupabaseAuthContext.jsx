@@ -23,14 +23,14 @@ export const AuthProvider = ({ children }) => {
     const getSession = async () => {
       try {
         const { data, error } = await supabase.auth.getSession();
-        
+
         if (error) {
           // If the refresh token is invalid, we must clear the session locally
           // to prevent the app from getting stuck in an error loop.
-          if (error.message.includes("Refresh Token Not Found") || 
-              error.message.includes("Invalid Refresh Token")) {
+          if (error.message.includes("Refresh Token Not Found") ||
+            error.message.includes("Invalid Refresh Token")) {
             console.warn("Session expired or invalid, clearing local session.");
-            await supabase.auth.signOut(); 
+            await supabase.auth.signOut();
             handleSession(null);
           } else {
             console.warn("Error getting session:", error);
@@ -50,16 +50,16 @@ export const AuthProvider = ({ children }) => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         if (event === 'SIGNED_OUT') {
-           setSession(null);
-           setUser(null);
-           setLoading(false);
+          setSession(null);
+          setUser(null);
+          setLoading(false);
         } else if (event === 'TOKEN_REFRESHED') {
-           handleSession(session);
+          handleSession(session);
         } else if (event === 'SIGNED_IN') {
-           handleSession(session);
+          handleSession(session);
         } else {
-           // For INITIAL_SESSION and any other events
-           handleSession(session);
+          // For INITIAL_SESSION and any other events
+          handleSession(session);
         }
       }
     );
@@ -71,7 +71,7 @@ export const AuthProvider = ({ children }) => {
   const getFriendlyErrorMessage = (error) => {
     if (!error) return null;
     const msg = error.message || "";
-    
+
     // Check for specific error codes or messages from Supabase
     if (error.code === "user_already_exists" || msg.includes("User already registered") || msg.includes("already exists")) {
       return "Este correo electrónico ya está registrado. Por favor, inicia sesión o utiliza otro correo.";
@@ -85,7 +85,7 @@ export const AuthProvider = ({ children }) => {
     if (msg.includes("Email not confirmed")) {
       return "Por favor confirma tu correo electrónico antes de continuar.";
     }
-    
+
     return msg; // Fallback to original message if no translation found
   };
 
@@ -126,15 +126,22 @@ export const AuthProvider = ({ children }) => {
 
   const signOut = useCallback(async () => {
     try {
+      // 1. Clear Global Stores (Crucial for Data Isolation)
+      // We import it dynamically to avoid circular dependencies if possible, 
+      // or just rely on the module cache.
+      // Ideally correct way:
+      const { useStoreDashboard } = await import('@/stores/useStoreDashboard');
+      useStoreDashboard.getState().reset();
+
       const { error } = await supabase.auth.signOut();
-      
+
       // If the user was already deleted or token is invalid (403 user_not_found), 
       // we should consider the logout successful locally and not show an error.
       if (error) {
-        const isIgnorableError = 
-          error.message?.includes('user_not_found') || 
+        const isIgnorableError =
+          error.message?.includes('user_not_found') ||
           error.message?.includes('Invalid Refresh Token') ||
-          error.status === 403 || 
+          error.status === 403 ||
           error.code === '403';
 
         if (!isIgnorableError) {

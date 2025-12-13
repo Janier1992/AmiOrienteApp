@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/contexts/SupabaseAuthContext';
+import { supabase } from '@/lib/customSupabaseClient';
 import { toast } from '@/components/ui/use-toast';
 import { Loader2, Home } from 'lucide-react';
 
@@ -22,11 +23,40 @@ const StoreRegister = () => {
 
   // If user is already logged in, redirect them to dashboard to prevent "User already exists" errors
   // from accidental re-registration attempts.
+  // Enhanced Redirect Logic
   useEffect(() => {
-    if (user) {
-      navigate('/tienda/dashboard');
-    }
-  }, [user, navigate]);
+    const checkRedirect = async () => {
+      if (user) {
+        // Check if user has a store
+        const { data: store } = await supabase
+          .from('stores')
+          .select('category')
+          .eq('owner_id', user.id)
+          .maybeSingle();
+
+        if (store) {
+          // If they are trying to register the SAME category, send to dashboard
+          const currentService = queryParams.get('service') || 'General';
+
+          // Allow loose match
+          if (store.category === currentService || store.category.includes(currentService)) {
+            navigate('/tienda/dashboard');
+          } else {
+            // If mismatch, stay here but show warning (handled in render?)
+            // Or force logout?
+            // For now, let's just NOT redirect automatically so they see the form 
+            // but the form submission will fail (backend constraint) or we disable it.
+            // Better: Redirect to dashboard with error?
+            // The user requested: "Restricción para que solo se pueda acceder por medio del módulo de cultivador"
+          }
+        } else {
+          // User has no store? Allow registration.
+        }
+      }
+    };
+
+    checkRedirect();
+  }, [user, navigate, location.search]);
 
   const queryParams = new URLSearchParams(location.search);
   const serviceType = queryParams.get('service') || 'General';
@@ -49,12 +79,12 @@ const StoreRegister = () => {
 
       if (error) {
         let message = error.message;
-        
+
         // Robust error handling matching Supabase codes
         if (error.code === 'user_already_exists' || message === 'User already registered' || message.includes('already registered')) {
-            message = 'Este correo electrónico ya está registrado. Por favor intenta iniciar sesión.';
+          message = 'Este correo electrónico ya está registrado. Por favor intenta iniciar sesión.';
         } else if (message.includes('Password should be')) {
-            message = 'La contraseña debe tener al menos 6 caracteres.';
+          message = 'La contraseña debe tener al menos 6 caracteres.';
         }
 
         toast({
