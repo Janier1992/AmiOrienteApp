@@ -35,22 +35,13 @@ const StoreRegister = () => {
           .maybeSingle();
 
         if (store) {
-          // If they are trying to register the SAME category, send to dashboard
-          const currentService = queryParams.get('service') || 'General';
-
-          // Allow loose match
-          if (store.category === currentService || store.category.includes(currentService)) {
-            navigate('/tienda/dashboard');
-          } else {
-            // If mismatch, stay here but show warning (handled in render?)
-            // Or force logout?
-            // For now, let's just NOT redirect automatically so they see the form 
-            // but the form submission will fail (backend constraint) or we disable it.
-            // Better: Redirect to dashboard with error?
-            // The user requested: "Restricción para que solo se pueda acceder por medio del módulo de cultivador"
-          }
-        } else {
-          // User has no store? Allow registration.
+          // Strict Isolation: If user has ANY store, force them to their dashboard.
+          // They cannot verify or register a second store.
+          navigate('/tienda/dashboard');
+          toast({
+            title: "Acceso Redirigido",
+            description: `Ya tienes registrado un negocio de tipo "${store.category}".`,
+          });
         }
       }
     };
