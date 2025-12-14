@@ -89,17 +89,40 @@ const StoreDashboardRouter = () => {
         <ErrorBoundary>
             <React.Suspense fallback={<div className="h-screen flex items-center justify-center"><LoadingSpinner text="Cargando panel..." /></div>}>
                 {(() => {
-                    const category = store?.category;
+                    const category = store?.category ? store.category.trim() : '';
+                    // Normalize for comparison (remove accents, lowercase?) 
+                    // Actually, database should be consistent, but let's be safe against trailing spaces.
+
                     switch (category) {
-                        case 'Cultivador': return <AgriculturalDashboard store={store} />;
-                        case 'Restaurante': return <RestaurantDashboard store={store} />;
-                        case 'Hotel': return <HotelDashboard store={store} />;
-                        case 'Ropa': return <ClothingStoreDashboard store={store} />;
-                        case 'Farmacia': return <PharmacyDashboard store={store} />;
-                        case 'Panadería': return <BakeryDashboard store={store} />;
-                        case 'Supermercado': return <GroceryDashboard store={store} />;
-                        case 'Papelería': return <StationeryDashboard store={store} />;
-                        default: return <GeneralStoreDashboard store={store} />;
+                        case 'Cultivador':
+                        case 'Cultivadores':
+                            return <AgriculturalDashboard store={store} />;
+
+                        case 'Restaurante':
+                            return <RestaurantDashboard store={store} />;
+
+                        case 'Hotel':
+                            return <HotelDashboard store={store} />;
+
+                        case 'Ropa':
+                        case 'Tienda de Ropa':
+                            return <ClothingStoreDashboard store={store} />;
+
+                        case 'Farmacia':
+                            return <PharmacyDashboard store={store} />;
+
+                        case 'Panadería':
+                            return <BakeryDashboard store={store} />;
+
+                        case 'Supermercado':
+                            return <GroceryDashboard store={store} />;
+
+                        case 'Papelería':
+                            return <StationeryDashboard store={store} />;
+
+                        default:
+                            console.warn('Dashboard fallback for category:', category);
+                            return <GeneralStoreDashboard store={store} />;
                     }
                 })()}
             </React.Suspense>
