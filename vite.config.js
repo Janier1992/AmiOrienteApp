@@ -254,8 +254,8 @@ export default defineConfig({
 				background_color: '#ffffff',
 				display: 'standalone',
 				orientation: 'portrait',
-				scope: '/',
-				start_url: '/',
+				scope: './', // Relative scope for subfolder support
+				start_url: './', // Relative start URL
 				categories: ['shopping', 'food', 'travel', 'lifestyle'],
 				icons: [
 					{
