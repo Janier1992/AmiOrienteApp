@@ -1,13 +1,9 @@
 
 import React, { useState, useEffect } from 'react';
 import {
-    Search,
     Plus,
     Pill,
     Loader2,
-    Calendar,
-    Thermometer,
-    FileText,
     Trash2,
     Pencil
 } from 'lucide-react';
@@ -15,38 +11,21 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { toast } from '@/components/ui/use-toast';
-import { supabase } from '@/lib/customSupabaseClient';
 import { useStoreDashboard } from '@/stores/useStoreDashboard';
-
-/**
- * Helper to parse/stringify pharmacy metadata
- */
-const getPharmacyMetadata = (product) => {
-    // Attempt to parse metadata from description or use defaults
-    const match = product.description?.match(/PHARMA_META:\s*({.*})/s);
-    try {
-        if (match) return JSON.parse(match[1]);
-    } catch (e) { }
-    return {
-        expirationDate: '',
-        batchNumber: '',
-        requiresPrescription: false,
-        presentation: 'Caja',
-        laboratory: ''
-    };
-};
+import { usePharmacyStore } from '@/stores/usePharmacyStore';
 
 /**
  * Tarjeta de Medicamento
  */
 const PharmacyProductCard = ({ product, onEdit, onDelete }) => {
-    const meta = getPharmacyMetadata(product);
+    // Meta is now pre-parsed by the service
+    const meta = product.meta || {};
 
     // Check expiration risk
     const daysUntilExpiration = meta.expirationDate
@@ -112,7 +91,9 @@ const PharmacyProductCard = ({ product, onEdit, onDelete }) => {
  * Vista de Farmacia
  */
 const PharmacyProductsView = () => {
-    const { products, fetchProducts, addProduct, updateProduct, deleteProduct, store } = useStoreDashboard();
+    const { products, fetchProducts, saveProduct, deleteProduct, isLoading } = usePharmacyStore();
+    const { store } = useStoreDashboard();
+
     const [searchTerm, setSearchTerm] = useState('');
     const [isAddOpen, setIsAddOpen] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -148,14 +129,13 @@ const PharmacyProductsView = () => {
 
     const openEditModal = (product) => {
         setEditingProduct(product);
-        const meta = getPharmacyMetadata(product);
-        const cleanDesc = product.description ? product.description.replace(/\n\nPHARMA_META:\s*{.*}/s, '') : '';
+        const meta = product.meta || {};
 
         setFormData({
             name: product.name,
             price: product.price,
             stock: product.stock,
-            description: cleanDesc,
+            description: product.description || '', // Clean description from service
             ...meta
         });
         setIsAddOpen(true);
@@ -165,38 +145,32 @@ const PharmacyProductsView = () => {
         e.preventDefault();
         setIsSubmitting(true);
         try {
-            // Serialize Metadata
-            const meta = {
-                expirationDate: formData.expirationDate,
-                batchNumber: formData.batchNumber,
-                requiresPrescription: formData.requiresPrescription,
-                presentation: formData.presentation,
-                laboratory: formData.laboratory
-            };
-
-            const productDescription = `${formData.description || ''}\n\nPHARMA_META: ${JSON.stringify(meta)}`;
-
             const productPayload = {
+                id: editingProduct ? editingProduct.id : undefined,
                 name: formData.name,
                 price: parseFloat(formData.price),
                 stock: parseInt(formData.stock),
                 product_type: 'physical',
                 requires_shipping: true,
-                description: productDescription,
+                description: formData.description,
                 category: 'Farmacia',
                 store_id: store?.id,
+                meta: {
+                    expirationDate: formData.expirationDate,
+                    batchNumber: formData.batchNumber,
+                    requiresPrescription: formData.requiresPrescription,
+                    presentation: formData.presentation,
+                    laboratory: formData.laboratory
+                }
             };
 
-            if (editingProduct) {
-                await updateProduct(editingProduct.id, productPayload);
-                toast({ title: "Medicamento actualizado" });
-            } else {
-                await addProduct(productPayload);
-                toast({ title: "Medicamento registrado" });
-            }
+            await saveProduct(productPayload);
+
+            toast({ title: editingProduct ? "Medicamento actualizado" : "Medicamento registrado" });
 
             setIsAddOpen(false);
         } catch (error) {
+            console.error(error);
             toast({ title: "Error", variant: "destructive" });
         } finally {
             setIsSubmitting(false);
@@ -207,6 +181,7 @@ const PharmacyProductsView = () => {
         if (!window.confirm("¿Retirar medicamento?")) return;
         await deleteProduct(id);
     };
+
 
     return (
         <div className="space-y-6">

@@ -3,39 +3,32 @@ import React, { useState, useEffect } from 'react';
 import {
     Search,
     Plus,
-    Grid,
-    List,
     Loader2,
     FileImage as ImageIcon,
     Pencil,
     Trash2,
     Shirt,
-    Tags,
-    Palette
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { toast } from '@/components/ui/use-toast';
 import { supabase } from '@/lib/customSupabaseClient';
 import { useStoreDashboard } from '@/stores/useStoreDashboard';
+import { useClothingStore } from '@/stores/useClothingStore';
 
 /**
  * Tarjeta de producto de Ropa.
  * Muestra previo de variantes (Talla/Color).
  */
 const ClothingProductCard = ({ product, onEdit, onDelete }) => {
-    // Parse variants from description
-    const variantsMatch = product.description?.match(/VARIANTS_JSON:\s*(\[.*\])/s);
-    let variants = [];
-    try {
-        if (variantsMatch) variants = JSON.parse(variantsMatch[1]);
-    } catch (e) { }
+    // Variants are now pre-parsed by the service/store
+    const variants = product.variants || [];
 
     // Extract unique sizes for display
     const sizes = [...new Set(variants.map(v => v.size))].sort();
@@ -134,7 +127,10 @@ const VARIANT_COLORS = [
  * Vista especializada para Tiendas de Ropa.
  */
 const ClothingProductsView = () => {
-    const { products, fetchProducts, addProduct, updateProduct, deleteProduct, store } = useStoreDashboard();
+    // Modular Store usage
+    const { products, fetchProducts, saveProduct, deleteProduct, isLoading } = useClothingStore();
+    const { store } = useStoreDashboard();
+
     const [searchTerm, setSearchTerm] = useState('');
     const [isAddOpen, setIsAddOpen] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -178,25 +174,15 @@ const ClothingProductsView = () => {
 
     const openEditModal = (product) => {
         setEditingProduct(product);
-        // Extract Variants
-        const variantsMatch = product.description?.match(/VARIANTS_JSON:\s*(\[.*\])/s);
-        let loadedVariants = [];
-        let cleanDesc = product.description || '';
-
-        if (variantsMatch) {
-            try {
-                loadedVariants = JSON.parse(variantsMatch[1]);
-                // Ensure IDs
-                loadedVariants = loadedVariants.map(v => ({ ...v, id: v.id || Math.random() }));
-
-                cleanDesc = product.description.replace(/\n\nVARIANTS_JSON:\s*\[.*\]/s, '');
-            } catch (e) { }
-        }
+        // Variants come pre-parsed from the store
+        let loadedVariants = product.variants || [];
+        // Ensure IDs for UI keys
+        loadedVariants = loadedVariants.map(v => ({ ...v, id: v.id || Math.random() }));
 
         setFormData({
             name: product.name,
             price: product.price,
-            description: cleanDesc,
+            description: product.description || '',
             category: product.category || 'General',
             image_url: product.image_url || ''
         });
@@ -237,36 +223,21 @@ const ClothingProductsView = () => {
                 imageUrl = await uploadFile(imageFile, 'product-images', imagePath);
             }
 
-            // Serialize Variants
-            const variantsJson = JSON.stringify(variants);
-            const totalStock = variants.reduce((sum, v) => sum + parseInt(v.qty), 0);
-
-            // If no variants, default to 1 stock to prevent logic errors if user forgot
-            const finalStock = variants.length > 0 ? totalStock : 1;
-
-            const productDescription = variants.length > 0
-                ? `${formData.description || ''}\n\nVARIANTS_JSON: ${variantsJson}`
-                : formData.description;
-
             const productPayload = {
+                id: editingProduct ? editingProduct.id : undefined,
                 name: formData.name,
                 price: parseFloat(formData.price),
-                stock: finalStock,
-                product_type: 'physical',
-                requires_shipping: true,
+                stock: 0, // Calculated by service based on variants
+                variants: variants, // Passed as object, handled by Service
                 image_url: imageUrl,
-                description: productDescription,
+                description: formData.description,
                 category: formData.category,
                 store_id: store?.id,
             };
 
-            if (editingProduct) {
-                await updateProduct(editingProduct.id, productPayload);
-                toast({ title: "Prenda actualizada", description: "Inventario recalculado." });
-            } else {
-                await addProduct(productPayload);
-                toast({ title: "Prenda añadida", description: "Lista para la venta." });
-            }
+            await saveProduct(productPayload);
+
+            toast({ title: editingProduct ? "Prenda actualizada" : "Prenda añadida", description: "Inventario sincronizado." });
 
             setIsAddOpen(false);
             setEditingProduct(null);

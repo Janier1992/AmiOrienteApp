@@ -21,6 +21,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { toast } from '@/components/ui/use-toast';
 import { supabase } from '@/lib/customSupabaseClient';
 import { useStoreDashboard } from '@/stores/useStoreDashboard';
+import { useAgroStore } from '@/stores/useAgroStore';
 
 /**
  * Tarjeta de cultivo para Agricultores.
@@ -102,7 +103,16 @@ const AgroProductCard = ({ product, onEdit, onDelete }) => {
  * Vista de Cosechas (Productos Agrícolas).
  */
 const AgroCropsView = () => {
-    const { products, fetchProducts, addProduct, updateProduct, deleteProduct, store } = useStoreDashboard();
+
+    const {
+        crops: products,
+        fetchCrops: fetchProducts,
+        addCrop: addProduct,
+        updateCrop: updateProduct,
+        deleteCrop: deleteProduct,
+        isLoadingCrops
+    } = useAgroStore();
+    const { store } = useStoreDashboard(); // Keep generic store only for store.id
     const [viewMode, setViewMode] = useState('grid');
     const [searchTerm, setSearchTerm] = useState('');
 
@@ -201,6 +211,7 @@ const AgroCropsView = () => {
                 image_url: imageUrl,
                 description: productDescription,
                 category: formData.category,
+                sku: formData.sku, // Now passing SKU directly if supported by table or filtered by service
                 store_id: store?.id,
             };
 
@@ -233,6 +244,7 @@ const AgroCropsView = () => {
             toast({ title: "Error", description: "No se pudo eliminar.", variant: "destructive" });
         }
     };
+
 
     return (
         <div className="space-y-6">

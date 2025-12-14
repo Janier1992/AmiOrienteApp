@@ -13,19 +13,28 @@ import {
     XCircle,
     PackageOpen
 } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-
 import { Badge } from '@/components/ui/badge';
 import { toast } from '@/components/ui/use-toast';
-import { supabase } from '@/lib/customSupabaseClient';
 import { useStoreDashboard } from '@/stores/useStoreDashboard';
+import { useStationeryStore } from '@/stores/useStationeryStore';
 
 const StationeryPOSView = () => {
+    // Generic Data (Products)
     const { products, fetchProducts, store } = useStoreDashboard();
-    const [cart, setCart] = useState([]);
+
+    // Modular POS State
+    const {
+        cart,
+        addToCart: addToCartAction,
+        removeFromCart,
+        updateCartQty,
+        processCheckout,
+        isLoadingCheckout
+    } = useStationeryStore();
+
     const [searchTerm, setSearchTerm] = useState('');
     const [checkoutMode, setCheckoutMode] = useState(false);
     const [paymentMethod, setPaymentMethod] = useState('Efectivo');
@@ -41,78 +50,19 @@ const StationeryPOSView = () => {
         return { subtotal: sub, total: sub, itemCount: cart.reduce((sum, item) => sum + item.qty, 0) };
     }, [cart]);
 
-    const addToCart = (product) => {
-        setCart(prev => {
-            const existing = prev.find(p => p.id === product.id);
-            if (existing) {
-                // Check stock limit
-                if (existing.qty >= product.stock) {
-                    toast({ title: "Stock insuficiente", variant: "destructive" });
-                    return prev;
-                }
-                return prev.map(p => p.id === product.id ? { ...p, qty: p.qty + 1 } : p);
-            }
-            return [...prev, { ...product, qty: 1 }];
-        });
-    };
-
-    const updateQty = (id, delta) => {
-        setCart(prev => prev.map(item => {
-            if (item.id === id) {
-                const newQty = Math.max(1, item.qty + delta);
-                // Basic stock check (optimistic)
-                if (delta > 0 && newQty > item.stock) return item;
-                return { ...item, qty: newQty };
-            }
-            return item;
-        }));
-    };
-
-    const removeFromCart = (id) => {
-        setCart(prev => prev.filter(item => item.id !== id));
+    const handleAddToCart = (product) => {
+        const success = addToCartAction(product);
+        if (!success) {
+            toast({ title: "Stock insuficiente", variant: "destructive" });
+        }
     };
 
     const handleCheckout = async () => {
-        if (cart.length === 0) return;
-
         try {
-            // 1. Create Transaction Record
-            const orderPayload = {
-                store_id: store.id,
-                customer_id: null, // Anonymous/Walk-in
-                status: 'Entregado', // Immediate fulfillment
-                total: total,
-                delivery_address: JSON.stringify({
-                    guest: { name: customerName, method: paymentMethod, type: 'POS' },
-                    items: cart.map(i => ({ id: i.id, name: i.name, qty: i.qty, price: i.price }))
-                })
-            };
-
-            const { data: orderData, error: orderError } = await supabase
-                .from('orders')
-                .insert(orderPayload)
-                .select()
-                .single();
-
-            if (orderError) throw orderError;
-
-            // 2. Update Inventory (Batch)
-            // Real-world would use RPC function or backend loop.
-            // Here we loop updates.
-            for (const item of cart) {
-                const newStock = Math.max(0, item.stock - item.qty);
-                await supabase.from('products').update({ stock: newStock }).eq('id', item.id);
-            }
-
-            toast({ title: "Venta registrada", description: `Ticket #${orderData.id.slice(0, 8)}` });
-
-            // 3. Reset
-            setCart([]);
+            await processCheckout(store.id, customerName, paymentMethod, total);
+            toast({ title: "Venta registrada exitosamente" });
             setCheckoutMode(false);
             setCustomerName('Cliente Mostrador');
-            // Refresh products to show new stock
-            fetchProducts(store.id);
-
         } catch (error) {
             console.error(error);
             toast({ title: "Error en venta", description: error.message, variant: "destructive" });
@@ -151,7 +101,7 @@ const StationeryPOSView = () => {
                                     group relative bg-white border rounded-xl p-3 shadow-sm hover:shadow-md transition-all cursor-pointer select-none
                                     ${product.stock <= 0 ? 'opacity-50 grayscale' : 'hover:border-yellow-400'}
                                 `}
-                                onClick={() => product.stock > 0 && addToCart(product)}
+                                onClick={() => product.stock > 0 && handleAddToCart(product)}
                             >
                                 <div className="h-24 bg-gray-100 rounded-lg mb-2 flex items-center justify-center overflow-hidden">
                                     {product.image_url ? (
@@ -208,9 +158,9 @@ const StationeryPOSView = () => {
                                 <p className="text-xs text-gray-500">${Number(item.price).toLocaleString()}</p>
                             </div>
                             <div className="flex items-center gap-1 bg-gray-50 rounded-lg p-1">
-                                <Button size="icon" variant="ghost" className="h-6 w-6" onClick={() => updateQty(item.id, -1)}><Minus className="h-3 w-3" /></Button>
+                                <Button size="icon" variant="ghost" className="h-6 w-6" onClick={() => updateCartQty(item.id, -1)}><Minus className="h-3 w-3" /></Button>
                                 <span className="w-6 text-center text-sm font-mono">{item.qty}</span>
-                                <Button size="icon" variant="ghost" className="h-6 w-6" onClick={() => updateQty(item.id, 1)}><Plus className="h-3 w-3" /></Button>
+                                <Button size="icon" variant="ghost" className="h-6 w-6" onClick={() => updateCartQty(item.id, 1)}><Plus className="h-3 w-3" /></Button>
                             </div>
                             <div className="text-right min-w-[60px]">
                                 <p className="font-bold text-sm text-slate-700">${(item.price * item.qty).toLocaleString()}</p>
@@ -277,14 +227,15 @@ const StationeryPOSView = () => {
                                 <Button variant="outline" className="flex-1" onClick={() => setCheckoutMode(false)}>
                                     <XCircle className="h-4 w-4 mr-2" /> Cancelar
                                 </Button>
-                                <Button className="flex-[2] bg-green-600 hover:bg-green-700" onClick={handleCheckout}>
-                                    <Printer className="h-4 w-4 mr-2" /> Confirmar Venta
+                                <Button className="flex-[2] bg-green-600 hover:bg-green-700" onClick={handleCheckout} disabled={isLoadingCheckout}>
+                                    <Printer className="h-4 w-4 mr-2" /> {isLoadingCheckout ? 'Procesando...' : 'Confirmar Venta'}
                                 </Button>
                             </div>
                         </div>
                     )}
                 </div>
             </div>
+
         </div>
     );
 };
