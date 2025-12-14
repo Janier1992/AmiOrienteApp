@@ -36,9 +36,10 @@ class ErrorBoundary extends React.Component {
           <Button onClick={this.handleReset} variant="destructive">
             Recargar Página
           </Button>
-          {process.env.NODE_ENV === 'development' && (
+          {import.meta.env.DEV && (
             <pre className="mt-4 p-4 bg-gray-900 text-red-400 rounded text-xs text-left w-full overflow-auto max-w-lg">
               {this.state.error?.toString()}
+              {this.state.error?.stack}
             </pre>
           )}
         </div>

@@ -8,16 +8,16 @@ import { Button } from '@/components/ui/button';
 import ErrorBoundary from '@/components/shared/ErrorBoundary';
 
 // Dashboard Imports - Ensuring all are present and correct
-import RestaurantDashboard from './dashboards/RestaurantDashboard';
-import HotelDashboard from './dashboards/HotelDashboard';
-import ClothingStoreDashboard from './dashboards/ClothingStoreDashboard';
-import PharmacyDashboard from './dashboards/PharmacyDashboard';
-import BakeryDashboard from './dashboards/BakeryDashboard';
-import GroceryDashboard from './dashboards/GroceryDashboard';
-import GeneralStoreDashboard from './dashboards/GeneralStoreDashboard';
-import AgriculturalDashboard from './dashboards/AgriculturalDashboard';
-
-import StationeryDashboard from './dashboards/StationeryDashboard';
+// Lazy Load Dashboards to optimize bundle size and enforce separation of concerns
+const RestaurantDashboard = React.lazy(() => import('./dashboards/RestaurantDashboard'));
+const HotelDashboard = React.lazy(() => import('./dashboards/HotelDashboard'));
+const ClothingStoreDashboard = React.lazy(() => import('./dashboards/ClothingStoreDashboard'));
+const PharmacyDashboard = React.lazy(() => import('./dashboards/PharmacyDashboard'));
+const BakeryDashboard = React.lazy(() => import('./dashboards/BakeryDashboard'));
+const GroceryDashboard = React.lazy(() => import('./dashboards/GroceryDashboard'));
+const GeneralStoreDashboard = React.lazy(() => import('./dashboards/GeneralStoreDashboard'));
+const AgriculturalDashboard = React.lazy(() => import('./dashboards/AgriculturalDashboard'));
+const StationeryDashboard = React.lazy(() => import('./dashboards/StationeryDashboard'));
 
 const StoreDashboardRouter = () => {
     const { user, signOut } = useAuth();
@@ -87,20 +87,22 @@ const StoreDashboardRouter = () => {
     // Simplified render logic to prevent component re-definition
     return (
         <ErrorBoundary>
-            {(() => {
-                const category = store?.category;
-                switch (category) {
-                    case 'Cultivador': return <AgriculturalDashboard store={store} />;
-                    case 'Restaurante': return <RestaurantDashboard store={store} />;
-                    case 'Hotel': return <HotelDashboard store={store} />;
-                    case 'Ropa': return <ClothingStoreDashboard store={store} />;
-                    case 'Farmacia': return <PharmacyDashboard store={store} />;
-                    case 'Panadería': return <BakeryDashboard store={store} />;
-                    case 'Supermercado': return <GroceryDashboard store={store} />;
-                    case 'Papelería': return <StationeryDashboard store={store} />;
-                    default: return <GeneralStoreDashboard store={store} />;
-                }
-            })()}
+            <React.Suspense fallback={<div className="h-screen flex items-center justify-center"><LoadingSpinner text="Cargando panel..." /></div>}>
+                {(() => {
+                    const category = store?.category;
+                    switch (category) {
+                        case 'Cultivador': return <AgriculturalDashboard store={store} />;
+                        case 'Restaurante': return <RestaurantDashboard store={store} />;
+                        case 'Hotel': return <HotelDashboard store={store} />;
+                        case 'Ropa': return <ClothingStoreDashboard store={store} />;
+                        case 'Farmacia': return <PharmacyDashboard store={store} />;
+                        case 'Panadería': return <BakeryDashboard store={store} />;
+                        case 'Supermercado': return <GroceryDashboard store={store} />;
+                        case 'Papelería': return <StationeryDashboard store={store} />;
+                        default: return <GeneralStoreDashboard store={store} />;
+                    }
+                })()}
+            </React.Suspense>
         </ErrorBoundary>
     );
 };

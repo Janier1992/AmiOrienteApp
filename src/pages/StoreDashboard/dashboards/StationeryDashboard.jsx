@@ -1,6 +1,4 @@
-import React, { Suspense } from 'react';
-import { Routes, Route } from 'react-router-dom';
-import { DashboardLayout } from '@/components/dashboards/DashboardLayout';
+import React from 'react';
 import {
     LayoutDashboard,
     ShoppingCart,
@@ -10,7 +8,7 @@ import {
     Users,
     Settings
 } from 'lucide-react';
-import LoadingSpinner from '@/components/shared/LoadingSpinner';
+import BaseStoreDashboard from './BaseStoreDashboard';
 
 // Logic Components
 import StationeryProductsView from '../views/StationeryProductsView';
@@ -24,32 +22,17 @@ const BulkUploadTab = React.lazy(() => import('../BulkUploadTab'));
 const FinancialsTab = React.lazy(() => import('../FinancialsTab'));
 
 const StationeryDashboard = ({ store }) => {
-    const navItems = [
-        { icon: LayoutDashboard, label: 'Resumen', path: '' },
-        { icon: ShoppingCart, label: 'Pedidos', path: 'pedidos' },
-        { icon: Package, label: 'Productos', path: 'productos' },
-        { icon: Upload, label: 'Importar', path: 'importar' },
-        { icon: DollarSign, label: 'Finanzas', path: 'finanzas' },
-        { icon: Users, label: 'Equipo', path: 'equipo' },
-        { icon: Settings, label: 'Configuración', path: 'configuracion' },
+    const tabs = [
+        { path: '', label: 'Resumen', icon: LayoutDashboard, element: <OverviewTab storeId={store.id} /> },
+        { path: 'pedidos', label: 'Pedidos', icon: ShoppingCart, element: <OrdersTab storeId={store.id} /> },
+        { path: 'productos', label: 'Productos', icon: Package, element: <StationeryProductsView /> },
+        { path: 'importar', label: 'Importar', icon: Upload, element: <BulkUploadTab storeId={store.id} /> },
+        { path: 'finanzas', label: 'Finanzas', icon: DollarSign, element: <FinancialsTab storeId={store.id} /> },
+        { path: 'equipo', label: 'Equipo', icon: Users, element: <AdminTab storeId={store.id} /> },
+        { path: 'configuracion', label: 'Configuración', icon: Settings, element: <ProfileTab /> }
     ];
 
-    return (
-        <DashboardLayout title={store?.name || "Papelería Admin"} subtitle="Panel de Gestión" navItems={navItems}>
-            <Suspense fallback={<div className="h-full flex items-center justify-center"><LoadingSpinner /></div>}>
-                <Routes>
-                    <Route path="/" element={<OverviewTab storeId={store.id} />} />
-                    <Route path="pedidos" element={<OrdersTab storeId={store.id} />} />
-                    {/* Use the extracted view component */}
-                    <Route path="productos" element={<StationeryProductsView />} />
-                    <Route path="importar" element={<BulkUploadTab storeId={store.id} />} />
-                    <Route path="finanzas" element={<FinancialsTab storeId={store.id} />} />
-                    <Route path="equipo" element={<AdminTab storeId={store.id} />} />
-                    <Route path="configuracion" element={<ProfileTab />} />
-                </Routes>
-            </Suspense>
-        </DashboardLayout>
-    );
+    return <BaseStoreDashboard store={store} tabs={tabs} title="Papelería Admin" />;
 };
 
 export default StationeryDashboard;
