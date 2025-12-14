@@ -27,6 +27,36 @@
 
 import { supabase } from '@/lib/customSupabaseClient';
 
+/**
+ * @typedef {Object} Store
+ * @property {string} id - UUID de la tienda
+ * @property {string} owner_id - UUID del propietario
+ * @property {string} name - Nombre del negocio
+ * @property {string} category - Categoría (Ej: Papelería)
+ * @property {string} [image_url] - Logo de la tienda
+ */
+
+/**
+ * @typedef {Object} Product
+ * @property {string} id - UUID del producto
+ * @property {string} store_id - UUID de la tienda
+ * @property {string} name - Nombre del producto
+ * @property {number} price - Precio unitario
+ * @property {number} stock - Cantidad disponible
+ * @property {string} [description] - Descripción detallada
+ * @property {string} [image_url] - URL de la imagen
+ */
+
+/**
+ * @typedef {Object} Order
+ * @property {string} id - UUID del pedido
+ * @property {string} store_id - UUID de la tienda
+ * @property {string} customer_id - UUID del cliente
+ * @property {number} total - Monto total
+ * @property {string} status - Estado (Pendiente, Entregado, etc.)
+ * @property {string} created_at - Timestamp de creación
+ */
+
 // =============================================================================
 // CONSTANTES DEL MÓDULO
 // =============================================================================

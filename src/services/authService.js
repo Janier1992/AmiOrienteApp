@@ -34,6 +34,20 @@
 
 import { supabase } from '@/lib/customSupabaseClient';
 
+/**
+ * @typedef {Object} UserMetadata
+ * @property {string} role - Rol del usuario (cliente, tienda, domiciliario)
+ * @property {string} [full_name] - Nombre completo
+ * @property {string} [phone] - Número de teléfono
+ */
+
+/**
+ * @typedef {Object} AuthResponse
+ * @property {Object|null} user - Objeto de usuario de Supabase
+ * @property {Object|null} session - Objeto de sesión de Supabase
+ * @property {Error|null} [error] - Error si ocurrió
+ */
+
 // =============================================================================
 // CONSTANTES DEL MÓDULO
 // =============================================================================
