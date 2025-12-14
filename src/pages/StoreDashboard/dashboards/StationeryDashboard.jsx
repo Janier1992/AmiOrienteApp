@@ -328,7 +328,7 @@ const StationeryDashboard = ({ store }) => {
     ];
 
     return (
-        <DashboardLayout title="Papelería Admin" subtitle="Panel de Gestión" navItems={navItems}>
+        <DashboardLayout title={store?.name || "Papelería Admin"} subtitle="Panel de Gestión" navItems={navItems}>
             <Suspense fallback={<div className="h-full flex items-center justify-center"><LoadingSpinner /></div>}>
                 <Routes>
                     <Route path="/" element={<OverviewTab storeId={store.id} />} />
