@@ -7,8 +7,11 @@ import LoadingSpinner from '@/components/shared/LoadingSpinner';
 import { Button } from '@/components/ui/button';
 import ErrorBoundary from '@/components/shared/ErrorBoundary';
 
-// Dashboard Imports - Ensuring all are present and correct
-// Lazy Load Dashboards to optimize bundle size and enforce separation of concerns
+// -----------------------------------------------------------------------------
+// MODULE REGISTRY - SCALABILITY CONFIGURATION (Step 6 & 7)
+// -----------------------------------------------------------------------------
+// To add a new business module, simply import it and add it to the map below.
+
 const RestaurantDashboard = React.lazy(() => import('./dashboards/RestaurantDashboard'));
 const HotelDashboard = React.lazy(() => import('./dashboards/HotelDashboard'));
 const ClothingStoreDashboard = React.lazy(() => import('./dashboards/ClothingStoreDashboard'));
@@ -19,6 +22,27 @@ const GeneralStoreDashboard = React.lazy(() => import('./dashboards/GeneralStore
 const AgriculturalDashboard = React.lazy(() => import('./dashboards/AgriculturalDashboard'));
 const StationeryDashboard = React.lazy(() => import('./dashboards/StationeryDashboard'));
 
+/**
+ * Maps business categories to their specific Dashboard components.
+ * keys: Lowercase, normalized category names for matching.
+ */
+const MODULE_REGISTRY = {
+    'restaurante': RestaurantDashboard,
+    'hotel': HotelDashboard,
+    'ropa': ClothingStoreDashboard,
+    'tienda de ropa': ClothingStoreDashboard, // Alias
+    'farmacia': PharmacyDashboard,
+    'panadería': BakeryDashboard,
+    'panaderia': BakeryDashboard, // No accent alias
+    'supermercado': GroceryDashboard,
+    'cultivador': AgriculturalDashboard,
+    'cultivadores': AgriculturalDashboard,
+    'papelería': StationeryDashboard,
+    'papeleria': StationeryDashboard
+};
+
+// -----------------------------------------------------------------------------
+
 const StoreDashboardRouter = () => {
     const { user, signOut } = useAuth();
     const navigate = useNavigate();
@@ -26,8 +50,6 @@ const StoreDashboardRouter = () => {
 
     useEffect(() => {
         if (user) {
-            // Paranoid check: If store exists in state but belongs to another user, 
-            // FORCE nullify it before fetching.
             if (store && store.owner_id !== user.id) {
                 useStoreDashboard.getState().reset();
             }
@@ -40,7 +62,6 @@ const StoreDashboardRouter = () => {
         return null;
     }
 
-    // Critical fix: Ensure loading spinner has background so it doesn't look transparent/broken
     if (isLoadingStore) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-slate-50">
@@ -84,47 +105,25 @@ const StoreDashboardRouter = () => {
         );
     }
 
-    // Simplified render logic to prevent component re-definition
+    // Logic to select dashboard
+    const getDashboardComponent = () => {
+        if (!store.category) return GeneralStoreDashboard;
+
+        const key = store.category.toLowerCase().trim();
+        const Component = MODULE_REGISTRY[key];
+
+        if (Component) return Component;
+
+        console.warn(`[StoreDashboardRouter] Unknown category: "${store.category}". Falling back to General Dashboard.`);
+        return GeneralStoreDashboard;
+    };
+
+    const SelectedDashboard = getDashboardComponent();
+
     return (
         <ErrorBoundary>
             <React.Suspense fallback={<div className="h-screen flex items-center justify-center"><LoadingSpinner text="Cargando panel..." /></div>}>
-                {(() => {
-                    const category = store?.category ? store.category.trim() : '';
-                    // Normalize for comparison (remove accents, lowercase?) 
-                    // Actually, database should be consistent, but let's be safe against trailing spaces.
-
-                    switch (category) {
-                        case 'Cultivador':
-                        case 'Cultivadores':
-                            return <AgriculturalDashboard store={store} />;
-
-                        case 'Restaurante':
-                            return <RestaurantDashboard store={store} />;
-
-                        case 'Hotel':
-                            return <HotelDashboard store={store} />;
-
-                        case 'Ropa':
-                        case 'Tienda de Ropa':
-                            return <ClothingStoreDashboard store={store} />;
-
-                        case 'Farmacia':
-                            return <PharmacyDashboard store={store} />;
-
-                        case 'Panadería':
-                            return <BakeryDashboard store={store} />;
-
-                        case 'Supermercado':
-                            return <GroceryDashboard store={store} />;
-
-                        case 'Papelería':
-                            return <StationeryDashboard store={store} />;
-
-                        default:
-                            console.warn('Dashboard fallback for category:', category);
-                            return <GeneralStoreDashboard store={store} />;
-                    }
-                })()}
+                <SelectedDashboard store={store} />
             </React.Suspense>
         </ErrorBoundary>
     );

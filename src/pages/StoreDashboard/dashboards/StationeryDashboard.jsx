@@ -26,6 +26,8 @@ const AdminTab = React.lazy(() => import('../AdminTab'));
 const BulkUploadTab = React.lazy(() => import('../BulkUploadTab'));
 const FinancialsTab = React.lazy(() => import('../FinancialsTab'));
 
+import { withStoreCategory } from '@/components/shared/withStoreCategory';
+
 const StationeryDashboard = ({ store }) => {
     const tabs = [
         { path: '', label: 'Resumen', icon: LayoutDashboard, element: <OverviewTab storeId={store.id} /> },
@@ -44,4 +46,4 @@ const StationeryDashboard = ({ store }) => {
     return <BaseStoreDashboard store={store} tabs={tabs} title="Papelería Admin" />;
 };
 
-export default StationeryDashboard;
+export default withStoreCategory(StationeryDashboard, ['Papelería', 'Papeleria']);

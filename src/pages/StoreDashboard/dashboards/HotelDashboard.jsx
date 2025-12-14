@@ -13,6 +13,8 @@ import FinancialsTab from '../FinancialsTab';
 import StoreSettingsTab from '../views/StoreSettingsTab';
 import StoreCustomersTab from '../views/StoreCustomersTab';
 
+import { withStoreCategory } from '@/components/shared/withStoreCategory';
+
 const HotelDashboard = ({ store }) => {
   const tabs = [
     { path: '', label: 'Recepción', icon: LayoutDashboard, element: <HotelReceptionTab storeId={store.id} /> },
@@ -33,4 +35,4 @@ const HotelDashboard = ({ store }) => {
   return <BaseStoreDashboard store={store} tabs={tabs} />;
 };
 
-export default HotelDashboard;
+export default withStoreCategory(HotelDashboard, ['Hotel']);
