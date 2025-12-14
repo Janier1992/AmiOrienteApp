@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -13,7 +12,9 @@ import AvailableOrdersTab from '@/components/delivery-dashboard/AvailableOrdersT
 import InProgressOrdersTab from '@/components/delivery-dashboard/InProgressOrdersTab';
 import HistoryOrdersTab from '@/components/delivery-dashboard/HistoryOrdersTab';
 import OrderDetailsModal from '@/components/delivery-dashboard/OrderDetailsModal';
+import deliveryService from '@/services/deliveryService';
 
+// ... (DeliverySidebar component remains unchanged, assuming it is defined above or imported)
 const DeliverySidebar = ({ isOpen, onClose, activeTab, onTabChange, isConnected, onConnect, onLogout, user }) => {
   const navigate = useNavigate();
   return (
@@ -30,7 +31,7 @@ const DeliverySidebar = ({ isOpen, onClose, activeTab, onTabChange, isConnected,
         className={`
                   fixed top-0 left-0 z-50 h-full w-64 bg-card border-r shadow-lg lg:shadow-none lg:relative lg:translate-x-0
                   transform transition-transform duration-300 ease-in-out
-                  \${isOpen ? 'translate-x-0' : '-translate-x-full'}
+                  ${isOpen ? 'translate-x-0' : '-translate-x-full'}
                 `}
       >
         <div className="flex flex-col h-full">
@@ -50,7 +51,7 @@ const DeliverySidebar = ({ isOpen, onClose, activeTab, onTabChange, isConnected,
               <Button
                 onClick={onConnect}
                 size="sm"
-                className={`w-full \${isConnected ? "bg-destructive hover:bg-destructive/80" : "bg-primary hover:bg-primary/80"}`}
+                className={`w-full ${isConnected ? "bg-destructive hover:bg-destructive/80" : "bg-primary hover:bg-primary/80"}`}
               >
                 {isConnected ? "Desconectarse" : "Conectarse"}
               </Button>
@@ -104,60 +105,57 @@ const DeliveryDashboard = () => {
   const { user, signOut, loading: authLoading } = useAuth();
   const [isConnected, setIsConnected] = useState(false);
   const [activeTab, setActiveTab] = useState('disponibles');
-  const [orders, setOrders] = useState([]);
+
+  // Estados para datos
+  const [availableOrders, setAvailableOrders] = useState([]);
+  const [currentDelivery, setCurrentDelivery] = useState(null);
+  const [historyOrders, setHistoryOrders] = useState([]);
+
   const [loading, setLoading] = useState(true);
   const [selectedOrderForDetails, setSelectedOrderForDetails] = useState(null);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const locationIntervalRef = useRef(null);
 
-  const fetchAllOrders = useCallback(async (currentUserId) => {
+  const fetchData = useCallback(async (currentUserId) => {
     if (!currentUserId) return;
     setLoading(true);
     try {
-      // Corrected Query Logic:
-      // We explicitly specify the foreign key constraint for products to avoid PGRST201 (Ambiguous embedding)
-      // 'products:products!order_items_product_id_fkey!inner' ensures we use the correct FK and alias it back to 'products'
+      // Cargar pedidos disponibles
+      const disponibles = await deliveryService.obtenerPedidosDisponibles();
+      setAvailableOrders(disponibles || []);
 
-      const { data, error } = await supabase
-        .from('orders')
-        .select(`
-          id, created_at, total, status, delivery_address,
-          stores (name, address),
-          profiles (full_name, phone),
-          order_items (
-            id, quantity, price, 
-            products:products!order_items_product_id_fkey!inner(name, image_url)
-          ),
-          deliveries!left (
-            id, delivery_person_id, status, pickup_address, delivery_address,
-            pickup_coords, delivery_coords
-          )
-        `)
-        // Filter mainly by status to reduce initial set
-        .in('status', ['Pendiente', 'Pendiente de pago en efectivo', 'En curso', 'Entregado'])
+      // Cargar entrega actual
+      const actual = await deliveryService.obtenerEntregaActual(currentUserId);
 
-      if (error) {
-        console.error("Supabase query error:", error);
-        throw error;
+      // Si hay una entrega actual, la formateamos para que coincida con lo que esperan los componentes hijos
+      // La estructura retornada por el servicio tiene `orders` anidado, pero los componentes pueden esperar la orden plana con `deliveries`
+      // Ajustamos según necesidad visual. 
+      // Si el componente InProgressOrdersTab espera una lista de ordenes, le pasamos un array con la orden actual.
+      // Pero InProgressOrdersTab espera `orders` donde la orden tiene `deliveries`.
+      // El servicio retorna el objeto `delivery` con `orders` dentro.
+      // Transformamos para compatibilidad:
+      let formattedCurrent = [];
+      if (actual && actual.orders) {
+        formattedCurrent = [{
+          ...actual.orders,
+          deliveries: [actual] // Simulamos la estructura original de array 
+        }];
       }
+      setCurrentDelivery(formattedCurrent);
 
-      // Perform client-side filtering for complex OR logic that is hard to express in PostgREST without raw SQL
-      // or causing parse errors with deep relations.
-      const filteredOrders = (data || []).filter(order => {
-        const orderDelivery = order.deliveries?.[0] || order.deliveries; // Handle if it returns array or object
-        const isAssignedToMe = orderDelivery?.delivery_person_id === currentUserId;
-        const isUnassigned = !orderDelivery || !orderDelivery.id;
-        const isPendingStatus = ['Pendiente', 'Pendiente de pago en efectivo'].includes(order.status);
+      // Cargar historial
+      const historial = await deliveryService.obtenerHistorialEntregas(currentUserId);
+      // Historial retorna deliveries con orders anidados. Transformamos a orders.
+      const formattedHistory = historial.map(h => ({
+        ...h.orders,
+        deliveries: [h]
+      }));
+      setHistoryOrders(formattedHistory);
 
-        // Logic: Show if (Assigned to me) OR (Unassigned AND Pending)
-        return isAssignedToMe || (isUnassigned && isPendingStatus);
-      });
-
-      setOrders(filteredOrders);
     } catch (error) {
-      console.error("Error fetching orders:", error);
-      toast({ title: "Error", description: "No se pudieron cargar los pedidos.", variant: "destructive" });
+      console.error("Error fetching data:", error);
+      toast({ title: "Error", description: "No se pudieron cargar los datos.", variant: "destructive" });
     } finally {
       setLoading(false);
     }
@@ -169,33 +167,29 @@ const DeliveryDashboard = () => {
       navigate('/domiciliario/login');
       return;
     }
-    fetchAllOrders(user.id);
-  }, [user, navigate, authLoading, fetchAllOrders]);
+    fetchData(user.id);
+  }, [user, navigate, authLoading, fetchData]);
 
   useEffect(() => {
     if (!user) return;
+    // Suscripción simplificada para refrescar todo al haber cambios
     const channel = supabase
-      .channel('public-orders-deliveries')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, () => fetchAllOrders(user.id))
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'deliveries' }, () => fetchAllOrders(user.id))
+      .channel('public-changes')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, () => fetchData(user.id))
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'deliveries' }, () => fetchData(user.id))
       .subscribe();
 
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [user, fetchAllOrders]);
+  }, [user, fetchData]);
 
   const sendLocation = useCallback(async () => {
     if (!user) return;
     navigator.geolocation.getCurrentPosition(
       async (position) => {
         const { latitude, longitude } = position.coords;
-        await supabase.from('delivery_locations').upsert({
-          delivery_person_id: user.id,
-          lat: latitude,
-          lng: longitude,
-          updated_at: new Date().toISOString()
-        }, { onConflict: 'delivery_person_id' });
+        await deliveryService.actualizarUbicacion(user.id, latitude, longitude);
       },
       (error) => console.error("Error getting location:", error),
       { enableHighAccuracy: true }
@@ -225,36 +219,27 @@ const DeliveryDashboard = () => {
   const handleAcceptOrder = async (orderId) => {
     if (!user) return;
     try {
-      const { error } = await supabase.rpc('accept_order', {
-        order_id_to_accept: orderId,
-        delivery_person_id_to_assign: user.id
-      });
-      if (error) throw error;
-
-      fetchAllOrders(user.id);
+      await deliveryService.aceptarEntrega(orderId, user.id);
+      await fetchData(user.id);
 
       toast({ title: "¡Pedido Aceptado!", description: "El pedido ahora está en tu lista 'En Curso'." });
       setActiveTab('curso');
     } catch (error) {
       console.error("Error accepting order:", error);
-      toast({ title: "Error", description: "No se pudo aceptar el pedido.", variant: "destructive" });
+      toast({ title: "Error", description: error.message || "No se pudo aceptar el pedido.", variant: "destructive" });
     }
   };
 
   const handleCompleteOrder = async (orderId) => {
     try {
-      const { error } = await supabase.rpc('complete_delivery', {
-        order_id_to_complete: orderId
-      });
-      if (error) throw error;
-
-      fetchAllOrders(user.id);
+      await deliveryService.actualizarEstadoEntrega(orderId, 'Entregado');
+      await fetchData(user.id);
 
       toast({ title: "¡Entrega Completada!", description: "¡Buen trabajo!" });
       setActiveTab('historial');
     } catch (error) {
       console.error("Error completing order:", error);
-      toast({ title: "Error", description: "No se pudo completar la entrega.", variant: "destructive" });
+      toast({ title: "Error", description: error.message || "No se pudo completar la entrega.", variant: "destructive" });
     }
   };
 
@@ -262,21 +247,6 @@ const DeliveryDashboard = () => {
     setSelectedOrderForDetails(order);
     setIsDetailsModalOpen(true);
   };
-
-  const availableOrders = useMemo(() => orders.filter(o => {
-    const delivery = o.deliveries?.[0] || o.deliveries;
-    return ['Pendiente', 'Pendiente de pago en efectivo'].includes(o.status) && (!delivery || !delivery.id);
-  }), [orders]);
-
-  const ordersEnCurso = useMemo(() => orders.filter(o => {
-    const delivery = o.deliveries?.[0] || o.deliveries;
-    return o.status === 'En curso' && delivery?.delivery_person_id === user?.id
-  }), [orders, user]);
-
-  const ordersHistorial = useMemo(() => orders.filter(o => {
-    const delivery = o.deliveries?.[0] || o.deliveries;
-    return o.status === 'Entregado' && delivery?.delivery_person_id === user?.id
-  }), [orders, user]);
 
   if (authLoading) {
     return (
@@ -335,11 +305,11 @@ const DeliveryDashboard = () => {
                     </TabsTrigger>
                     <TabsTrigger value="curso" className="text-xs sm:text-sm">
                       <Truck className="mr-1 sm:mr-2 h-4 w-4" />
-                      <span className="hidden sm:inline">En curso</span> ({ordersEnCurso.length})
+                      <span className="hidden sm:inline">En curso</span> ({currentDelivery ? currentDelivery.length : 0})
                     </TabsTrigger>
                     <TabsTrigger value="historial" className="text-xs sm:text-sm">
                       <History className="mr-1 sm:mr-2 h-4 w-4" />
-                      <span className="hidden sm:inline">Historial</span> ({ordersHistorial.length})
+                      <span className="hidden sm:inline">Historial</span> ({historyOrders.length})
                     </TabsTrigger>
                   </TabsList>
 
@@ -355,13 +325,13 @@ const DeliveryDashboard = () => {
 
                     <TabsContent value="curso" className="mt-0">
                       <InProgressOrdersTab
-                        orders={ordersEnCurso}
+                        orders={currentDelivery || []}
                         onCompleteOrder={handleCompleteOrder}
                       />
                     </TabsContent>
 
                     <TabsContent value="historial" className="mt-0">
-                      <HistoryOrdersTab orders={ordersHistorial} />
+                      <HistoryOrdersTab orders={historyOrders} />
                     </TabsContent>
                   </div>
 

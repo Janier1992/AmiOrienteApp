@@ -236,7 +236,7 @@ logger.error = (msg, options) => {
 
 export default defineConfig({
 	customLogger: logger,
-	base: isDev ? '/' : '/AmiOrienteApp/',
+	base: './', // Use relative base for flexibility
 	plugins: [
 		...(isDev ? [inlineEditPlugin(), editModeDevPlugin(), iframeRouteRestorationPlugin(), selectionModePlugin()] : []),
 		react(),
@@ -244,30 +244,28 @@ export default defineConfig({
 		VitePWA({
 			registerType: 'autoUpdate',
 			injectRegister: 'auto',
-			// Only include assets that actually exist
-			includeAssets: ['manifest.json'],
+			includeAssets: ['logo.svg'], // Include the logo
 			manifest: {
-				name: 'AmiOriente - Servicios y Domicilios',
-				short_name: 'AmiOriente',
-				id: 'amioriente-pwa-v2',
-
+				name: 'MiOriente - Servicios y Domicilios',
+				short_name: 'MiOriente',
+				id: 'mioriente-app-v3', // Updated ID
 				description: 'La plataforma integral de servicios, domicilios y turismo en el Oriente Antioqueño.',
 				theme_color: '#16a34a',
 				background_color: '#ffffff',
 				display: 'standalone',
-				orientation: 'portrait-primary',
-				scope: '/AmiOrienteApp/',
-				start_url: '/AmiOrienteApp/',
+				orientation: 'portrait',
+				scope: '/',
+				start_url: '/',
 				categories: ['shopping', 'food', 'travel', 'lifestyle'],
 				icons: [
 					{
-						src: '/AmiOrienteApp/logo.svg',
+						src: 'logo.svg', // Relative path
 						sizes: '192x192',
 						type: 'image/svg+xml',
 						purpose: 'any'
 					},
 					{
-						src: '/AmiOrienteApp/logo.svg',
+						src: 'logo.svg', // Relative path
 						sizes: '512x512',
 						type: 'image/svg+xml',
 						purpose: 'any maskable'
@@ -279,14 +277,14 @@ export default defineConfig({
 						sizes: '2070x1380',
 						type: 'image/jpeg',
 						form_factor: 'wide',
-						label: 'Vista Panorámica'
+						label: 'Vista Panorámica de Dashboard'
 					},
 					{
 						src: 'https://horizons-cdn.hostinger.com/9a2f1d5f-26c5-4fa8-b3e7-17e2b7bc86a9/eaa5c3ede657a14fb3f5ca74349a2d50.jpg',
 						sizes: '2070x1380',
 						type: 'image/jpeg',
 						form_factor: 'narrow',
-						label: 'Aplicación Móvil'
+						label: 'Vista Móvil'
 					}
 				]
 			},
@@ -377,7 +375,7 @@ export default defineConfig({
 				clientsClaim: true
 			},
 			devOptions: {
-				enabled: false, // Disabled in dev to prevent caching issues
+				enabled: true, // Habilitar en desarrollo para pruebas
 				type: 'module'
 			}
 		})
