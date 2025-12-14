@@ -52,6 +52,19 @@ const StoreRegister = () => {
   const queryParams = new URLSearchParams(location.search);
   const serviceType = queryParams.get('service') || 'General';
 
+  // DB Mapping to ensure Trigger finds the correct service_category_id
+  const CATEGORY_DB_MAP = {
+    'Restaurante': 'Restaurante',
+    'Hotel': 'Hotel',
+    'Ropa': 'Tienda de Ropa / Moda',
+    'Farmacia': 'Farmacia / Droguería',
+    'Papelería': 'Papelería / Miscelánea',
+    'Panadería': 'Panadería / Repostería',
+    'Supermercado': 'Supermercado / Abarrotes',
+    'Cultivador': 'Cultivadores',
+    'General': 'Otro Comercio'
+  };
+
   const handleRegister = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -64,7 +77,9 @@ const StoreRegister = () => {
           role: 'tienda',
           store_name: storeName,
           address: address,
-          category: serviceType, // Use the selected service type as the store category
+          address: address,
+          category: serviceType, // Display Category (e.g. 'Cultivador')
+          service_category: CATEGORY_DB_MAP[serviceType] || 'Domicilios', // FK Lookup Name (e.g. 'Cultivadores')
         },
       }, true);
 
