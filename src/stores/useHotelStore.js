@@ -22,7 +22,7 @@ export const useHotelStore = create((set, get) => ({
                 .from('hotel_rooms')
                 .select('*')
                 .eq('store_id', storeId)
-                .order('room_number', { ascending: true }); // Assumes room_number exists or created_at
+                .order('number', { ascending: true }); // Assumes number exists
 
             if (error) throw error;
             set({ rooms: data || [] });
