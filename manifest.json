@@ -1,0 +1,49 @@
+{
+  "name": "MiOriente - Servicios y Domicilios",
+  "short_name": "MiOriente",
+  "id": "mioriente-app-v1",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#16a34a",
+  "orientation": "portrait",
+  "description": "La plataforma integral de servicios, domicilios y turismo en el Oriente Antioqueño.",
+  "categories": [
+    "shopping",
+    "food",
+    "travel"
+  ],
+  "icons": [
+    {
+      "src": "/logo.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/logo.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "https://horizons-cdn.hostinger.com/9a2f1d5f-26c5-4fa8-b3e7-17e2b7bc86a9/eaa5c3ede657a14fb3f5ca74349a2d50.jpg",
+      "sizes": "2070x1380",
+      "type": "image/jpeg",
+      "form_factor": "wide",
+      "label": "Vista Panorámica"
+    },
+    {
+      "src": "https://horizons-cdn.hostinger.com/9a2f1d5f-26c5-4fa8-b3e7-17e2b7bc86a9/eaa5c3ede657a14fb3f5ca74349a2d50.jpg",
+      "sizes": "2070x1380",
+      "type": "image/jpeg",
+      "form_factor": "narrow",
+      "label": "Aplicación Móvil"
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false
+}
