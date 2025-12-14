@@ -1,44 +1,29 @@
-
 import React, { memo } from 'react';
-import { Routes, Route } from 'react-router-dom';
-import { DashboardLayout } from '@/components/dashboards/DashboardLayout';
 import { LayoutDashboard, Sprout, Tractor, DollarSign, Settings, Users, CloudSun, Upload } from 'lucide-react';
-import { BulkUploadTab } from '../BulkUploadTab';
+import BaseStoreDashboard from './BaseStoreDashboard';
 
+// Logic Components
 import OverviewTab from '../OverviewTab';
-import ProductsTab from '../ProductsTab';
+import AgroCropsView from '../views/AgroCropsView'; // Specialized View
 import OrdersTab from '../OrdersTab';
-import ProfileTab from '../ProfileTab';
-import AdminTab from '../AdminTab';
+import { BulkUploadTab } from '../BulkUploadTab';
 import FinancialsTab from '../FinancialsTab';
+import AdminTab from '../AdminTab'; // Equipo / Trabajadores
+import ProfileTab from '../ProfileTab';
 
-// Optimized with React.memo to prevent re-renders of the entire layout on minor updates
 const AgriculturalDashboard = memo(({ store }) => {
-  const navItems = [
-    { icon: LayoutDashboard, label: 'Mi Finca', path: '' },
-    { icon: Sprout, label: 'Cosechas', path: 'cosechas' }, 
-    { icon: Tractor, label: 'Pedidos', path: 'pedidos' },
-    { icon: Upload, label: 'Importar', path: 'importar' },
-    { icon: CloudSun, label: 'Clima', path: 'clima' }, 
-    { icon: DollarSign, label: 'Balance', path: 'finanzas' },
-    { icon: Users, label: 'Trabajadores', path: 'equipo' },
-    { icon: Settings, label: 'Cuenta', path: 'configuracion' },
+  const tabs = [
+    { path: '', label: 'Admin Finca', icon: LayoutDashboard, element: <OverviewTab storeId={store.id} /> },
+    { path: 'cosechas', label: 'Cosechas', icon: Sprout, element: <AgroCropsView /> }, // Specialized Tab
+    { path: 'pedidos', label: 'Pedidos', icon: Tractor, element: <OrdersTab storeId={store.id} /> },
+    { path: 'importar', label: 'Importar', icon: Upload, element: <BulkUploadTab storeId={store.id} onProductsUploaded={() => { }} /> },
+    { path: 'clima', label: 'Clima', icon: CloudSun, element: <div className="p-8 text-center text-muted-foreground">Módulo de clima en desarrollo...</div> },
+    { path: 'finanzas', label: 'Balance', icon: DollarSign, element: <FinancialsTab storeId={store.id} /> },
+    { path: 'equipo', label: 'Trabajadores', icon: Users, element: <AdminTab storeId={store.id} /> },
+    { path: 'configuracion', label: 'Cuenta', icon: Settings, element: <ProfileTab /> },
   ];
 
-  return (
-    <DashboardLayout title={store.name} navItems={navItems}>
-      <Routes>
-        <Route path="/" element={<OverviewTab storeId={store.id} />} />
-        <Route path="cosechas" element={<ProductsTab storeId={store.id} />} />
-        <Route path="pedidos" element={<OrdersTab storeId={store.id} />} />
-        <Route path="importar" element={<BulkUploadTab storeId={store.id} onProductsUploaded={() => {}} />} />
-        <Route path="clima" element={<div className="p-8 text-center text-muted-foreground">Módulo de clima en desarrollo...</div>} />
-        <Route path="finanzas" element={<FinancialsTab storeId={store.id} />} />
-        <Route path="equipo" element={<AdminTab storeId={store.id} />} />
-        <Route path="configuracion" element={<ProfileTab />} />
-      </Routes>
-    </DashboardLayout>
-  );
+  return <BaseStoreDashboard store={store} tabs={tabs} />;
 });
 
 export default AgriculturalDashboard;

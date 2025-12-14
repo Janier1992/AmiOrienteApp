@@ -6,7 +6,8 @@ import TableManagementTab from '../views/TableManagementTab';
 
 // Lazy Load Tabs
 const OverviewTab = React.lazy(() => import('../OverviewTab'));
-const ProductsTab = React.lazy(() => import('../ProductsTab'));
+// const ProductsTab = React.lazy(() => import('../ProductsTab')); // Replaced by Menu View
+import RestaurantMenuView from '../views/RestaurantMenuView';
 const OrdersTab = React.lazy(() => import('../OrdersTab'));
 const ProfileTab = React.lazy(() => import('../ProfileTab'));
 const AdminTab = React.lazy(() => import('../AdminTab'));
@@ -16,7 +17,7 @@ const RestaurantDashboard = ({ store }) => {
   const tabs = [
     { path: '', label: 'Resumen', icon: LayoutDashboard, element: <OverviewTab storeId={store.id} /> },
     { path: 'pedidos', label: 'Cocina y Pedidos', icon: ChefHat, element: <OrdersTab storeId={store.id} /> },
-    { path: 'menu', label: 'Menú', icon: UtensilsCrossed, element: <ProductsTab storeId={store.id} /> },
+    { path: 'menu', label: 'Menú Digital', icon: UtensilsCrossed, element: <RestaurantMenuView /> }, // Specialized View
     { path: 'importar', label: 'Importar', icon: Upload, element: <BulkUploadTab storeId={store.id} /> },
     { path: 'mesas', label: 'Mesas', icon: LayoutGrid, element: <TableManagementTab storeId={store.id} /> },
     { path: 'finanzas', label: 'Finanzas', icon: DollarSign, element: <FinancialsTab storeId={store.id} /> },

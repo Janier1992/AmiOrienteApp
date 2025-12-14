@@ -1,8 +1,10 @@
 
 import React from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
-import { DashboardLayout } from '@/components/dashboards/DashboardLayout';
+
 import { LayoutDashboard, BedDouble, CalendarCheck, Users, DollarSign, Settings } from 'lucide-react';
+import BaseStoreDashboard from './BaseStoreDashboard';
+
+// Logic Components (Tabs)
 import HotelReceptionTab from '../HotelReceptionTab';
 import HotelReservationsTab from '../HotelReservationsTab';
 import HotelRoomsTab from '../HotelRoomsTab';
@@ -11,28 +13,16 @@ import FinancialsTab from '../FinancialsTab';
 import ProfileTab from '../ProfileTab';
 
 const HotelDashboard = ({ store }) => {
-  const navItems = [
-    { icon: LayoutDashboard, label: 'Recepción', path: '' },
-    { icon: CalendarCheck, label: 'Reservas', path: 'reservas' },
-    { icon: BedDouble, label: 'Habitaciones', path: 'habitaciones' },
-    { icon: Users, label: 'Huéspedes', path: 'huespedes' }, 
-    { icon: DollarSign, label: 'Caja', path: 'finanzas' },
-    { icon: Settings, label: 'Configuración', path: 'configuracion' },
+  const tabs = [
+    { path: '', label: 'Recepción', icon: LayoutDashboard, element: <HotelReceptionTab storeId={store.id} /> },
+    { path: 'reservas', label: 'Reservas', icon: CalendarCheck, element: <HotelReservationsTab storeId={store.id} /> },
+    { path: 'habitaciones', label: 'Habitaciones', icon: BedDouble, element: <HotelRoomsTab storeId={store.id} /> },
+    { path: 'huespedes', label: 'Huéspedes', icon: Users, element: <HotelGuestsTab storeId={store.id} /> },
+    { path: 'finanzas', label: 'Caja', icon: DollarSign, element: <FinancialsTab storeId={store.id} /> },
+    { path: 'configuracion', label: 'Configuración', icon: Settings, element: <ProfileTab /> },
   ];
 
-  return (
-    <DashboardLayout title={store.name} navItems={navItems}>
-      <Routes>
-        <Route path="/" element={<HotelReceptionTab storeId={store.id} />} />
-        <Route path="reservas" element={<HotelReservationsTab storeId={store.id} />} />
-        <Route path="habitaciones" element={<HotelRoomsTab storeId={store.id} />} />
-        <Route path="huespedes" element={<HotelGuestsTab storeId={store.id} />} /> 
-        <Route path="finanzas" element={<FinancialsTab storeId={store.id} />} />
-        <Route path="configuracion" element={<ProfileTab />} />
-        <Route path="*" element={<Navigate to="" replace />} />
-      </Routes>
-    </DashboardLayout>
-  );
+  return <BaseStoreDashboard store={store} tabs={tabs} />;
 };
 
 export default HotelDashboard;

@@ -29,21 +29,13 @@ const RetailBaseDashboard = ({ store, icon: Icon, extraTabs = [] }) => {
   return <BaseStoreDashboard store={store} tabs={tabs} />;
 };
 
-export const ClothingDashboard = ({ store }) => (
-  <RetailBaseDashboard store={store} icon={Shirt} />
-);
 
-export const PharmacyDashboard = ({ store }) => (
-  <RetailBaseDashboard store={store} icon={Pill} />
-);
 
-export const BakeryDashboard = ({ store }) => (
-  <RetailBaseDashboard store={store} icon={Wheat} />
-);
 
-export const GroceryDashboard = ({ store }) => (
-  <RetailBaseDashboard store={store} icon={ShoppingCart} />
-);
+
+
+
+
 
 export const GeneralDashboard = ({ store }) => (
   <RetailBaseDashboard store={store} icon={Package} />
