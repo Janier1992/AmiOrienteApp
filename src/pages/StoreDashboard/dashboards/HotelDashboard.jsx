@@ -8,18 +8,26 @@ import BaseStoreDashboard from './BaseStoreDashboard';
 import HotelReceptionTab from '../HotelReceptionTab';
 import HotelReservationsTab from '../HotelReservationsTab';
 import HotelRoomsTab from '../HotelRoomsTab';
-import HotelGuestsTab from '../HotelGuestsTab';
 import FinancialsTab from '../FinancialsTab';
-import ProfileTab from '../ProfileTab';
+// Base Model Components
+import StoreSettingsTab from '../views/StoreSettingsTab';
+import StoreCustomersTab from '../views/StoreCustomersTab';
 
 const HotelDashboard = ({ store }) => {
   const tabs = [
     { path: '', label: 'Recepción', icon: LayoutDashboard, element: <HotelReceptionTab storeId={store.id} /> },
     { path: 'reservas', label: 'Reservas', icon: CalendarCheck, element: <HotelReservationsTab storeId={store.id} /> },
     { path: 'habitaciones', label: 'Habitaciones', icon: BedDouble, element: <HotelRoomsTab storeId={store.id} /> },
-    { path: 'huespedes', label: 'Huéspedes', icon: Users, element: <HotelGuestsTab storeId={store.id} /> },
+    // Extension: Hotel specific guests view could be kept if it has passport info etc, but trying to use Base where possible. 
+    // However, HotelGuestsTab has history. Let's keep it as an override or use Base if HotelGuestsTab is just a clone.
+    // Looking at file analysis, HotelGuestsTab was specific. But user asked for Base Model "Usuarios".
+    // I will use the Base StoreCustomersTab for "Clientes" generic, and maybe keep "Huéspedes" for in-house specific?
+    // User instruction: "Usuario... Extender... agregar UNICAMENTE lo que tiene sentido".
+    // Hotel Customers = Guests. I should probably replace HotelGuestsTab with StoreCustomersTab OR have HotelGuestsTab EXTEND standard customer data.
+    // For now, I will add "Usuarios" (Users) as the Base Model Users tab.
+    { path: 'clientes', label: 'Clientes (Base)', icon: Users, element: <StoreCustomersTab /> },
     { path: 'finanzas', label: 'Caja', icon: DollarSign, element: <FinancialsTab storeId={store.id} /> },
-    { path: 'configuracion', label: 'Configuración', icon: Settings, element: <ProfileTab /> },
+    { path: 'configuracion', label: 'Configuración', icon: Settings, element: <StoreSettingsTab /> },
   ];
 
   return <BaseStoreDashboard store={store} tabs={tabs} />;

@@ -58,6 +58,9 @@ export const useStoreDashboard = create((set, get) => ({
   /** Lista de productos de la tienda */
   products: [],
 
+  /** Lista de clientes de la tienda (Base Model: Usuarios) */
+  customers: [],
+
   // ---------------------------------------------------------------------------
   // ESTADOS DE CARGA (Granulares para mejor UX)
   // ---------------------------------------------------------------------------
@@ -74,6 +77,9 @@ export const useStoreDashboard = create((set, get) => ({
   /** Indica si se están cargando los productos */
   isLoadingProducts: false,
 
+  /** Indica si se están cargando los clientes */
+  isLoadingCustomers: false,
+
   /** Mensaje de error si ocurre alguno */
   error: null,
 
@@ -85,7 +91,8 @@ export const useStoreDashboard = create((set, get) => ({
   lastFetch: {
     stats: 0,
     orders: 0,
-    products: 0
+    products: 0,
+    customers: 0
   },
 
   // ---------------------------------------------------------------------------
@@ -97,6 +104,48 @@ export const useStoreDashboard = create((set, get) => ({
    * @param {Object} store - Datos de la tienda
    */
   setStore: (store) => set({ store }),
+
+  /**
+   * Actualiza la configuración de la tienda.
+   * @param {Object} updates - Datos a actualizar
+   */
+  updateStoreSettings: async (updates) => {
+    const currentStore = get().store;
+    if (!currentStore) return;
+
+    try {
+      const updated = await storeService.actualizarTienda(currentStore.id, updates);
+      set({ store: updated });
+      return updated;
+    } catch (err) {
+      throw err;
+    }
+  },
+
+  /**
+   * Carga los clientes de la tienda.
+   * @param {string} storeId
+   */
+  fetchCustomers: async (storeId) => {
+    if (!storeId) return;
+
+    const ahora = Date.now();
+    // Cache 5 min for customers
+    if (ahora - get().lastFetch.customers < 300000 && get().customers.length > 0) return;
+
+    set({ isLoadingCustomers: true });
+    try {
+      const data = await storeService.obtenerClientesTienda(storeId);
+      set(state => ({
+        customers: data,
+        lastFetch: { ...state.lastFetch, customers: ahora }
+      }));
+    } catch (err) {
+      console.error(err);
+    } finally {
+      set({ isLoadingCustomers: false });
+    }
+  },
 
   /**
    * Limpia el error actual.

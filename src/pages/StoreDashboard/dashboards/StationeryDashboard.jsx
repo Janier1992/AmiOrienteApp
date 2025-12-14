@@ -14,11 +14,14 @@ import BaseStoreDashboard from './BaseStoreDashboard';
 // Logic Components
 import StationeryProductsView from '../views/StationeryProductsView';
 import StationeryPOSView from '../views/StationeryPOSView';
+// Base Model Components
+import StoreSettingsTab from '../views/StoreSettingsTab';
+import StoreCustomersTab from '../views/StoreCustomersTab';
 
 // Lazy Load Tabs
 const OverviewTab = React.lazy(() => import('../OverviewTab'));
 const OrdersTab = React.lazy(() => import('../OrdersTab'));
-const ProfileTab = React.lazy(() => import('../ProfileTab'));
+// ProfileTab replaced by StoreSettingsTab
 const AdminTab = React.lazy(() => import('../AdminTab'));
 const BulkUploadTab = React.lazy(() => import('../BulkUploadTab'));
 const FinancialsTab = React.lazy(() => import('../FinancialsTab'));
@@ -32,7 +35,10 @@ const StationeryDashboard = ({ store }) => {
         { path: 'importar', label: 'Importar', icon: Upload, element: <BulkUploadTab storeId={store.id} /> },
         { path: 'finanzas', label: 'Finanzas', icon: DollarSign, element: <FinancialsTab storeId={store.id} /> },
         { path: 'equipo', label: 'Equipo', icon: Users, element: <AdminTab storeId={store.id} /> },
-        { path: 'configuracion', label: 'Configuración', icon: Settings, element: <ProfileTab /> }
+        // Added Base Model Customers Tab if needed, but 'Equipo' is different (Staff). 
+        // Let's add 'Clientes' as requested by the model.
+        { path: 'clientes', label: 'Clientes', icon: Users, element: <StoreCustomersTab /> },
+        { path: 'configuracion', label: 'Configuración', icon: Settings, element: <StoreSettingsTab /> }
     ];
 
     return <BaseStoreDashboard store={store} tabs={tabs} title="Papelería Admin" />;

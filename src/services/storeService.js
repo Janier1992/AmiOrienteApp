@@ -118,16 +118,15 @@ export const storeService = {
   // OPERACIONES DE TIENDA
   // ---------------------------------------------------------------------------
 
+  // ---------------------------------------------------------------------------
+  // OPERACIONES DE TIENDA
+  // ---------------------------------------------------------------------------
+
   /**
    * Obtiene la información de una tienda por el ID de su propietario.
    * 
    * @param {string} idPropietario - UUID del usuario propietario de la tienda
    * @returns {Promise<Object|null>} Datos de la tienda o null si no existe
-   * @throws {Error} Si hay un error en la consulta
-   * 
-   * @example
-   * const tienda = await storeService.obtenerTiendaPorPropietario('uuid-del-usuario');
-   * console.log(tienda.name); // "Mi Restaurante"
    */
   async obtenerTiendaPorPropietario(idPropietario) {
     validarId(idPropietario, 'ID del propietario');
@@ -146,6 +145,80 @@ export const storeService = {
       return datosTienda;
     } catch (error) {
       manejarErrorSupabase(error, ERROR_TIENDA_NO_ENCONTRADA);
+    }
+  },
+
+  /**
+   * Actualiza la información de una tienda.
+   * 
+   * @param {string} idTienda - UUID de la tienda
+   * @param {Object} datos - Datos a actualizar
+   */
+  async actualizarTienda(idTienda, datos) {
+    validarId(idTienda, 'ID de la tienda');
+
+    try {
+      const { data, error } = await supabase
+        .from('stores')
+        .update(datos)
+        .eq('id', idTienda)
+        .select()
+        .single();
+
+      if (error) manejarErrorSupabase(error, 'Error actualizando tienda');
+      return data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  /**
+   * Obtiene los clientes que han comprado en la tienda.
+   * Se basa en el historial de pedidos.
+   */
+  async obtenerClientesTienda(idTienda) {
+    validarId(idTienda, 'ID de la tienda');
+
+    try {
+      // Obtener pedidos únicos por cliente
+      const { data, error } = await supabase
+        .from('orders')
+        .select(`
+                  customer_id,
+                  profiles:customer_id (id, full_name, email, phone, avatar_url),
+                  created_at,
+                  total
+              `)
+        .eq('store_id', idTienda)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      // Procesar para obtener clientes únicos y sus estadísticas básicas
+      const clientesMap = new Map();
+
+      data.forEach(order => {
+        if (!order.profiles) return;
+
+        const customerId = order.customer_id;
+        if (!clientesMap.has(customerId)) {
+          clientesMap.set(customerId, {
+            ...order.profiles,
+            last_order: order.created_at,
+            total_spent: 0,
+            total_orders: 0
+          });
+        }
+
+        const cliente = clientesMap.get(customerId);
+        cliente.total_spent += Number(order.total);
+        cliente.total_orders += 1;
+      });
+
+      return Array.from(clientesMap.values());
+    } catch (error) {
+      console.error("Error cargando clientes", error);
+      return [];
     }
   },
 
