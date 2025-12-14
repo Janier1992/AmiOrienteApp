@@ -7,7 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Plus, Search, Trash2, Package, FileImage as ImageIcon, Loader2 } from 'lucide-react';
+import { Plus, Search, Trash2, Package, FileImage as ImageIcon, Loader2, Pencil } from 'lucide-react';
 import { useStoreDashboard } from '@/stores/useStoreDashboard';
 import { toast } from '@/components/ui/use-toast';
 import LoadingSpinner from '@/components/shared/LoadingSpinner';
@@ -15,10 +15,11 @@ import { supabase } from '@/lib/customSupabaseClient';
 
 const ProductsTab = ({ storeId }) => {
   // Using granular loading state
-  const { products, fetchProducts, addProduct, deleteProduct, isLoadingProducts } = useStoreDashboard();
+  const { products, fetchProducts, addProduct, updateProduct, deleteProduct, isLoadingProducts } = useStoreDashboard();
   const [searchTerm, setSearchTerm] = useState('');
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [editingId, setEditingId] = useState(null);
 
   // Form State
   const [formData, setFormData] = useState({
@@ -65,6 +66,27 @@ const ProductsTab = ({ storeId }) => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
+  const openAddModal = () => {
+    setEditingId(null);
+    setFormData({ name: '', price: '', description: '', stock: '1', category: 'General', image_url: '' });
+    setImageFile(null);
+    setIsAddOpen(true);
+  };
+
+  const handleEdit = (product) => {
+    setEditingId(product.id);
+    setFormData({
+      name: product.name,
+      price: product.price,
+      description: product.description || '',
+      stock: product.stock,
+      category: product.category || 'General',
+      image_url: product.image_url || ''
+    });
+    setImageFile(null);
+    setIsAddOpen(true);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -75,7 +97,7 @@ const ProductsTab = ({ storeId }) => {
         imageUrl = await uploadFile(imageFile, 'product-images', imagePath);
       }
 
-      await addProduct({
+      const productPayload = {
         ...formData,
         store_id: storeId,
         price: parseFloat(formData.price),
@@ -83,9 +105,18 @@ const ProductsTab = ({ storeId }) => {
         product_type: 'physical',
         requires_shipping: true,
         image_url: imageUrl
-      });
-      toast({ title: "Producto creado", description: "El producto se ha añadido correctamente." });
+      };
+
+      if (editingId) {
+        await updateProduct(editingId, productPayload);
+        toast({ title: "Producto actualizado", description: "Los cambios se han guardado correctamente." });
+      } else {
+        await addProduct(productPayload);
+        toast({ title: "Producto creado", description: "El producto se ha añadido correctamente." });
+      }
+
       setIsAddOpen(false);
+      setEditingId(null);
       setFormData({ name: '', price: '', description: '', stock: '1', category: 'General', image_url: '' });
       setImageFile(null);
     } catch (error) {
@@ -117,13 +148,13 @@ const ProductsTab = ({ storeId }) => {
         </div>
         <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
           <DialogTrigger asChild>
-            <Button className="w-full sm:w-auto bg-green-600 hover:bg-green-700">
+            <Button className="w-full sm:w-auto bg-green-600 hover:bg-green-700" onClick={openAddModal}>
               <Plus className="h-4 w-4 mr-2" /> Nuevo Producto
             </Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Agregar Nuevo Producto</DialogTitle>
+              <DialogTitle>{editingId ? "Editar Producto" : "Agregar Nuevo Producto"}</DialogTitle>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4 py-4">
               <div className="space-y-2">
@@ -147,10 +178,10 @@ const ProductsTab = ({ storeId }) => {
               <div className="space-y-2">
                 <Label htmlFor="image_upload">Imagen del Producto</Label>
                 <div className="flex items-center gap-4">
-                  <Input id="image_upload" type="file" accept="image/*" onChange={handleFileChange} className="cursor-pointer" />
-                  {imageFile && (
-                    <span className="text-sm text-green-600 font-medium">Seleccionada</span>
+                  {formData.image_url && (
+                    <img src={formData.image_url} alt="Preview" className="h-10 w-10 object-cover rounded border" />
                   )}
+                  <Input id="image_upload" type="file" accept="image/*" onChange={handleFileChange} className="cursor-pointer" />
                 </div>
               </div>
               <div className="space-y-2">
@@ -158,7 +189,7 @@ const ProductsTab = ({ storeId }) => {
                 <Textarea id="description" name="description" value={formData.description} onChange={handleInputChange} rows={3} />
               </div>
               <Button type="submit" className="w-full bg-green-600 hover:bg-green-700" disabled={isSubmitting}>
-                {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Guardar Producto"}
+                {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : (editingId ? "Actualizar Producto" : "Guardar Producto")}
               </Button>
             </form>
           </DialogContent>
@@ -220,9 +251,14 @@ const ProductsTab = ({ storeId }) => {
                       </span>
                     </TableCell>
                     <TableCell className="text-right">
-                      <Button variant="ghost" size="icon" onClick={() => handleDelete(product.id)} className="text-red-500 hover:text-red-700 hover:bg-red-50">
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+                      <div className="flex justify-end gap-2">
+                        <Button variant="ghost" size="icon" onClick={() => handleEdit(product)} className="text-blue-500 hover:text-blue-700 hover:bg-blue-50">
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+                        <Button variant="ghost" size="icon" onClick={() => handleDelete(product.id)} className="text-red-500 hover:text-red-700 hover:bg-red-50">
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))
