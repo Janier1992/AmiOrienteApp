@@ -1,82 +1,152 @@
 # AmiOriente - Plataforma Multiservicios
 
-![AmiOriente Logo](https://via.placeholder.com/150)
+![AmiOriente Logo](https://raw.githubusercontent.com/Janier1992/AmiOrienteApp/main/public/logo.svg)
 
-**AmiOriente** es una plataforma web progresiva (PWA) moderna diseñada para conectar diversos sectores comerciales (restaurantes, papelerías, cultivos, ropa, etc.) con clientes y domiciliarios en la región de Oriente.
+**AmiOriente** es una plataforma integral de comercio electrónico y servicios diseñada para el Oriente Antioqueño. Funciona como una **Progressive Web App (PWA)**, permitiendo su instalación en dispositivos móviles y de escritorio como si fuera una aplicación nativa, con soporte offline y alto rendimiento.
 
-## 🚀 Tecnologías
+---
 
-El proyecto está construido con un stack moderno enfocado en rendimiento y escalabilidad:
+## 🚀 Stack Tecnológico
 
-*   **Frontend**: [React 18](https://react.dev/) + [Vite](https://vitejs.dev/)
-*   **Lenguaje**: JavaScript (ES6+) con JSDoc para tipado estático ligero.
-*   **Estilos**: [Tailwind CSS](https://tailwindcss.com/) + [Shadcn/ui](https://ui.shadcn.com/)
-*   **Estado Global**: [Zustand](https://github.com/pmndrs/zustand)
-*   **Base de Datos y Auth**: [Supabase](https://supabase.com/)
-*   **Iconos**: [Lucide React](https://lucide.dev/)
-*   **Routing**: React Router DOM (HashRouter para compatibilidad estática)
+La aplicación está construida sobre una arquitectura moderna, escalable y mantenible:
 
-## 📂 Estructura del Proyecto
+### Frontend Core
+*   **[React 18](https://react.dev/)**: Biblioteca principal para la construcción de interfaces de usuario interactivas.
+*   **[Vite](https://vitejs.dev/)**: Entorno de desarrollo ultrarrápido y empaquetador (Bundler) optimizado.
+*   **[React Router DOM](https://reactrouter.com/)**: Manejo de rutas y navegación (SPA).
+
+### Estilos y UI
+*   **[Tailwind CSS](https://tailwindcss.com/)**: Framework de utilidades CSS para diseño rápido y responsivo.
+*   **[Shadcn/ui](https://ui.shadcn.com/)**: Colección de componentes UI reutilizables y accesibles (basados en Radix UI).
+*   **[Lucide React](https://lucide.dev/)**: Librería de iconos vectoriales ligeros y consistentes.
+*   **[Framer Motion](https://www.framer.com/motion/)**: Biblioteca para animaciones complejas y transiciones de layout.
+
+### Estado y Datos
+*   **[Zustand](https://github.com/pmndrs/zustand)**: Gestión de estado global ligera y escalable (usada para Carrito, Autenticación, Datos de Tienda).
+*   **[Supabase](https://supabase.com/)**: Backend-as-a-Service (BaaS) que provee Base de Datos PostgreSQL, Autenticación y Almacenamiento.
+
+### Funcionalidades Especiales
+*   **[Leaflet](https://leafletjs.com/)**: Mapas interactivos para geolocalización de pedidos y tiendas.
+*   **[Vite PWA Plugin](https://vite-pwa-org.netlify.app/)**: Configuración automatizada de Service Workers y Manifiestos para capacidades offline e instalabilidad.
+
+---
+
+## 📂 Estructura del Proyecto y Archivos Clave
+
+El proyecto sigue una estructura modular para facilitar el mantenimiento y la escalabilidad:
 
 ```bash
 src/
-├── components/         # Componentes UI reutilizables (Botones, Inputs, Layouts)
-│   ├── ui/             # Componentes base (Shadcn)
-│   └── dashboards/     # Layouts de paneles de control
-├── contexts/           # Contextos de React (Auth, Carrito, Tema)
-├── lib/                # Utilidades y configuración (Supabase cliente, PWA util)
-├── pages/              # Vistas principales de la aplicación
-│   ├── StoreDashboard/ # Módulo complejo de administración de tiendas
-│   │   ├── dashboards/ # Implementaciones específicas (Papelería, Restaurante)
-│   │   └── views/      # Vistas extraídas y reutilizables
+├── components/          # Bloques de construcción de UI
+│   ├── pwa/             # Componentes específicos de PWA (Banner de instalación)
+│   ├── shared/          # Componentes compartidos entre módulos (ProductCard, MapView)
+│   └── ui/              # Átomos de diseño (Botones, Inputs, Modales - Shadcn)
+│
+├── contexts/            # Contextos de React para estado global compartido (AuthContext)
+│
+├── data/                # Datos estáticos o mockups para desarrollo y pruebas
+│
+├── hooks/               # Custom Hooks (Lógica reutilizable)
+│   └── use-pwa-install.js # Lógica para controlar el banner de instalación PWA
+│
+├── lib/                 # Librerías y utilidades de configuración
+│   └── customSupabaseClient.js # Cliente de conexión a Supabase
+│
+├── pages/               # Vistas principales (Rutas)
+│   ├── StoreDashboard/  # Módulo COMPLEJO: Panel de Administración de Tiendas
+│   │   ├── dashboards/  # Dashboards especializados (Hotel, Farmacia, Ropa, Agro)
+│   │   └── views/       # Vistas internas (Productos, Pedidos, Configuración)
+│   ├── CheckoutPage.jsx # Flujo final de compra
+│   ├── DeliveryDashboard.jsx # Panel para repartidores
 │   └── ...
-├── services/           # Capa de lógica de negocio y llamadas a API
-│   ├── authService.js  # Gestión de usuarios y sesiones
-│   └── storeService.js # Gestión de datos de tiendas
-└── stores/             # Stores de Zustand (Estado global)
+│
+├── services/            # Capa de Lógica de Negocio (¡CRÍTICO!)
+│   ├── authService.js   # Login, Registro, Roles
+│   ├── deliveryService.js # Lógica de repartidores (Aceptar pedidos, Rutas)
+│   ├── orderService.js  # Creación y gestión de pedidos
+│   └── storeService.js  # CRUD de tiendas y productos
+│
+├── stores/              # Gestores de Estado Global (Zustand)
+│   ├── useAuth.js       # Estado del usuario logueado
+│   ├── useCartStore.js  # Estado del carrito de compras
+│   └── useStoreDashboard.js # Estado de la tienda activa
+│
+└── main.jsx             # Punto de entrada de la aplicación
 ```
 
-## 🛠️ Instalación y Ejecución
+---
 
-1.  **Clonar el repositorio:**
-    ```bash
-    git clone https://github.com/Janier1992/AmiOrienteApp.git
-    cd AplicaciónMiOriente_UltAct
-    ```
+## 📐 Arquitectura: Modelo Base + Extensiones
 
-2.  **Instalar dependencias:**
-    ```bash
-    npm install
-    ```
+Para manejar la diversidad de negocios (Hoteles vs Farmacias vs Restaurantes), el sistema utiliza un patrón de **"Modelo Base con Extensiones"**:
 
-3.  **Ejecutar en desarrollo:**
-    ```bash
-    npm run dev
-    ```
+1.  **Dashboard Genérico (`BaseStoreDashboard`)**:
+    *   Provee la estructura común: Sidebar, Header, Navegación.
+    *   Maneja funcionalidades universales: "Configuración", "Clientes".
 
-4.  **Compilar para producción:**
-    ```bash
-    npm run build
-    ```
-
-## 📐 Arquitectura y Buenas Prácticas
-
-### Capa de Servicios
-Toda la lógica de interacción con Supabase está centralizada en `src/services/`.
-*   **Importante**: No hacer llamadas directas a `supabase` desde los componentes de UI. Usar siempre el servicio correspondiente (`storeService`, `authService`).
-
-### Manejo de Estado
-Utilizamos **Zustand** (`src/stores/`) para el estado global complejo (carrito, dashboard data). El estado local de UI se maneja con `useState`.
-
-### PWA
-La lógica de Service Worker está encapsulada en `src/lib/pwaUtils.js`. El archivo `main.jsx` se mantiene limpio e importa estas utilidades.
-
-## 🤝 Contribución
-
-1.  Asegúrate de seguir el estilo de código existente (ESLint configurado).
-2.  Documenta nuevas funciones con JSDoc en español.
-3.  Crea componentes pequeños y reutilizables.
+2.  **Dashboards Especializados**:
+    *   Cada tipo de negocio tiene su propio componente (ej. `PharmacyDashboard`, `HotelDashboard`).
+    *   Estos inyectan vistas específicas (ej. "Habitaciones" para hoteles, "Recetas" para farmacias) en el layout base.
+    *   Utilizan un **Service Registry** para cargar la lógica de datos correcta según el tipo de tienda.
 
 ---
-**Desarrollado por el Equipo MiOriente**
-*Auditoría Técnica realizada el 13 de Diciembre, 2025*
+
+## 📱 PWA (Progressive Web App)
+
+La aplicación es completamente instalable.
+*   **Manifest**: Configurado en `vite.config.js` y generado en `dist/manifest.json`. Define nombre, iconos y colores.
+*   **Service Worker**: Generado por Workbox. Cachea recursos estáticos (JS, CSS, HTML, JSON) para carga instantánea y funcionamiento offline.
+*   **Prompt de Instalación**: Componente personalizado `PWAInstallPrompt` que detecta si la app es instalable y guía al usuario (con instrucciones especiales para iOS).
+
+---
+
+## 🛠️ Guía de Desarrollo y Despliegue
+
+### Requisitos Previos
+*   Node.js (v18+)
+*   NPM
+
+### 1. Instalación Local
+```bash
+git clone https://github.com/Janier1992/AmiOrienteApp.git
+cd AmiOrienteApp
+npm install
+```
+
+### 2. Ejecución en Desarrollo
+```bash
+npm run dev
+# Abre http://localhost:5173
+```
+
+### 3. Construcción (Build)
+Para generar la versión optimizada para producción:
+```bash
+npm run build
+# Genera la carpeta 'dist' con archivos minificados y el Service Worker.
+```
+
+### 4. Despliegue en GitHub Pages
+El proyecto está configurado para desplegarse en GitHub Pages usando rutas absolutas.
+1.  Asegúrate de que `vite.config.js` tenga `base: '/AmiOrienteApp/'`.
+2.  Ejecuta el script de despliegue manual (o usa Actions):
+    ```bash
+    cd dist
+    git init
+    git add .
+    git commit -m "Deploy"
+    git push -f https://github.com/Janier1992/AmiOrienteApp.git HEAD:gh-pages
+    ```
+
+---
+
+## 🔒 Variables de Entorno
+El proyecto requiere un archivo `.env` en la raíz para conectar con Supabase:
+```env
+VITE_SUPABASE_URL=tu_url_de_supabase
+VITE_SUPABASE_ANON_KEY=tu_clave_anonima
+```
+
+---
+**Desarrollado con ❤️ por el Equipo de Tecnología de AmiOriente**
+*Última actualización: Diciembre 2025*
