@@ -236,7 +236,7 @@ logger.error = (msg, options) => {
 
 export default defineConfig({
 	customLogger: logger,
-	base: './', // Use relative base for flexibility
+	base: '/AmiOrienteApp/', // Absolute base for GitHub Pages stability
 	plugins: [
 		...(isDev ? [inlineEditPlugin(), editModeDevPlugin(), iframeRouteRestorationPlugin(), selectionModePlugin()] : []),
 		react(),
@@ -244,9 +244,10 @@ export default defineConfig({
 		VitePWA({
 			registerType: 'autoUpdate',
 			injectRegister: 'auto',
+			manifestFilename: 'manifest.json', // Explicit filename
 			includeAssets: ['logo.svg'], // Include the logo
 			manifest: {
-				name: 'MiOriente - Servicios y Domicilios',
+				name: 'MiOriente App', // Shorter name
 				short_name: 'MiOriente',
 				id: 'mioriente-app-v3', // Updated ID
 				description: 'La plataforma integral de servicios, domicilios y turismo en el Oriente Antioqueño.',
@@ -254,18 +255,18 @@ export default defineConfig({
 				background_color: '#ffffff',
 				display: 'standalone',
 				orientation: 'portrait',
-				scope: './', // Relative scope for subfolder support
-				start_url: './', // Relative start URL
+				scope: '/AmiOrienteApp/', // Absolute scope
+				start_url: '/AmiOrienteApp/', // Absolute start URL
 				categories: ['shopping', 'food', 'travel', 'lifestyle'],
 				icons: [
 					{
-						src: 'logo.svg', // Relative path
+						src: '/AmiOrienteApp/logo.svg', // Absolute path
 						sizes: '192x192',
 						type: 'image/svg+xml',
 						purpose: 'any'
 					},
 					{
-						src: 'logo.svg', // Relative path
+						src: '/AmiOrienteApp/logo.svg', // Absolute path
 						sizes: '512x512',
 						type: 'image/svg+xml',
 						purpose: 'any maskable'
@@ -289,8 +290,8 @@ export default defineConfig({
 				]
 			},
 			workbox: {
-				// Precache all JS, CSS, and HTML files
-				globPatterns: ['**/*.{js,css,html,ico,png,jpg,jpeg,svg,woff,woff2}'],
+				// Precache all JS, CSS, HTML, and JSON files
+				globPatterns: ['**/*.{js,css,html,ico,png,jpg,jpeg,svg,woff,woff2,json}'],
 
 				// Runtime caching strategies
 				runtimeCaching: [

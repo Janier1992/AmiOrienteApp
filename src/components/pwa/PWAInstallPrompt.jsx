@@ -16,8 +16,8 @@ export const PWAInstallPrompt = () => {
     const dismissed = localStorage.getItem('pwa-install-dismissed');
     if (dismissed) {
       const dismissedTime = parseInt(dismissed, 10);
-      const threeDays = 3 * 24 * 60 * 60 * 1000;
-      if (Date.now() - dismissedTime < threeDays) {
+      const oneMinute = 60 * 1000; // 1 minute for testing purposes
+      if (Date.now() - dismissedTime < oneMinute) {
         return; // Don't show - dismissed recently
       }
     }
@@ -59,10 +59,10 @@ export const PWAInstallPrompt = () => {
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 100, opacity: 0 }}
             className={cn(
-              "fixed z-50 left-4 right-4 md:left-auto md:right-4 md:w-96",
-              "bottom-20 md:bottom-4", // Above bottom nav on mobile, bottom right on desktop
-              "bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800",
-              "rounded-xl shadow-2xl p-4",
+              "fixed z-[100] left-4 right-4 md:left-auto md:right-4 md:w-96", // Higher Z-index
+              "bottom-4 safe-area-bottom", // Standard bottom spacing
+              "bg-white dark:bg-slate-900 border border-green-500/20 shadow-2xl p-4", // Added border highlight
+              "rounded-xl backdrop-blur-sm",
               "flex flex-col gap-3"
             )}
           >
