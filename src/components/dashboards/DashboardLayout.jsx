@@ -18,7 +18,7 @@ export const DashboardLayout = ({ title, navItems, children }) => {
   return (
     <div className="min-h-screen bg-slate-50 flex">
       <Helmet>
-        <title>{title || 'Dashboard'} | MiOriente</title>
+        <title>{title || 'Dashboard'} | AmiOriente</title>
       </Helmet>
 
       {/* Mobile Toggle Button - Fixed and Z-indexed to be above everything */}
@@ -33,11 +33,11 @@ export const DashboardLayout = ({ title, navItems, children }) => {
       </Button>
 
       {/* Sidebar Component */}
-      <DashboardSidebar 
-        title={title} 
-        navItems={navItems} 
-        isOpen={isSidebarOpen} 
-        toggleSidebar={setIsSidebarOpen} 
+      <DashboardSidebar
+        title={title}
+        navItems={navItems}
+        isOpen={isSidebarOpen}
+        toggleSidebar={setIsSidebarOpen}
       />
 
       {/* Main Content Area - Proper margin for desktop sidebar */}

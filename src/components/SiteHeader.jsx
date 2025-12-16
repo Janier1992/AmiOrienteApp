@@ -33,7 +33,7 @@ const SiteHeader = () => {
       <div className="container flex h-14 items-center">
         <div className="mr-4 hidden md:flex">
           <Link to="/" className="mr-6 flex items-center space-x-2">
-            <ShoppingBag className="h-6 w-6 text-primary" />
+            <img src="/AmiOrienteApp/logo.png" alt="Logo" className="h-8 w-8 object-contain" />
             <span className="hidden font-bold sm:inline-block">AmiOriente</span>
           </Link>
           <nav className="flex items-center space-x-6 text-sm font-medium">

@@ -70,14 +70,14 @@ export const PWAInstallPrompt = () => {
               <div className="flex gap-3">
                 <div className="h-12 w-12 bg-green-100 dark:bg-green-900/30 rounded-xl flex items-center justify-center shrink-0">
                   <img
-                    src="https://cdn-icons-png.flaticon.com/512/3081/3081559.png"
+                    src="/AmiOrienteApp/logo.png"
                     alt="App Icon"
                     className="h-8 w-8 object-contain"
                   />
                 </div>
                 <div>
                   <h3 className="font-bold text-slate-900 dark:text-slate-100">
-                    Instalar App MiOriente
+                    Instalar App AmiOriente
                   </h3>
                   <p className="text-sm text-slate-500 dark:text-slate-400 leading-tight mt-1">
                     Instala nuestra app para acceso más rápido y uso sin internet.

@@ -38,7 +38,7 @@ const HomePage = () => {
   return (
     <>
       <Helmet>
-        <title>MiOriente - Tu Conexión con el Oriente Antioqueño</title>
+        <title>AmiOriente - Tu Conexión con el Oriente Antioqueño</title>
         <meta name="description" content="La plataforma integral de servicios, domicilios, comercio y turismo en el Oriente Antioqueño. Conectamos la región en una experiencia única." />
       </Helmet>
       <main className="relative z-10 w-full">
@@ -47,7 +47,7 @@ const HomePage = () => {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             {/* Added a darker backdrop to hero content specifically to make text pop against sunset */}
             <div className="relative bg-black/40 backdrop-blur-sm rounded-3xl p-8 md:p-12 shadow-2xl border border-white/10 text-center">
-              <motion.h1 
+              <motion.h1
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8 }}
@@ -58,7 +58,7 @@ const HomePage = () => {
                   Oriente Antioqueño
                 </span>
               </motion.h1>
-              <motion.p 
+              <motion.p
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.2 }}
@@ -66,7 +66,7 @@ const HomePage = () => {
               >
                 Tu plataforma integral para domicilios, comercio, turismo y todos los servicios que nuestra hermosa región tiene para ofrecer.
               </motion.p>
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.4 }}
@@ -97,7 +97,7 @@ const HomePage = () => {
               <p className="text-center text-muted-foreground text-lg mb-12 max-w-2xl mx-auto">
                 Descubre la variedad de servicios disponibles en nuestra plataforma
               </p>
-              
+
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
                 <FeatureCard icon={<Store className="h-10 w-10 text-primary" />} title="Comercio Local" description="Apoya a los negocios y artesanos de Marinilla, Rionegro y alrededores." />
                 <FeatureCard icon={<Utensils className="h-10 w-10 text-primary" />} title="Gastronomía" description="Descubre los sabores únicos del Oriente en nuestros mejores restaurantes." />
@@ -115,21 +115,21 @@ const HomePage = () => {
               Únete a Nuestra Comunidad
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-              <RoleCard 
+              <RoleCard
                 icon={<Store className="h-10 w-10 text-primary" />}
                 title="Para Negocios"
                 description="Registra tu tienda, restaurante, hotel o servicio turístico y llega a más clientes en todo el Oriente."
                 link="/servicios/registro"
                 buttonText="Comenzar ahora"
               />
-              <RoleCard 
+              <RoleCard
                 icon={<User className="h-10 w-10 text-primary" />}
                 title="Para Clientes"
                 description="Encuentra todo lo que buscas, desde productos locales hasta experiencias únicas, sin salir de casa."
                 link="/cliente/registro"
                 buttonText="Registrarse"
               />
-              <RoleCard 
+              <RoleCard
                 icon={<Truck className="h-10 w-10 text-primary" />}
                 title="Para Domiciliarios"
                 description="Únete a nuestra red de entregas y genera ingresos adicionales con horarios flexibles."

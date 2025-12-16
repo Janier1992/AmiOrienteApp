@@ -244,12 +244,11 @@ export default defineConfig({
 		VitePWA({
 			registerType: 'autoUpdate',
 			injectRegister: 'auto',
-			manifestFilename: 'manifest.json', // Explicit filename
-			includeAssets: ['logo.svg'], // Include the logo
+			includeAssets: ['logo.png'], // Include the logo
 			manifest: {
-				name: 'MiOriente App', // Shorter name
-				short_name: 'MiOriente',
-				id: 'mioriente-app-v3', // Updated ID
+				name: 'AmiOriente - Servicios', // Shorter name
+				short_name: 'AmiOriente',
+				id: 'amioriente-app-v1', // Updated ID
 				description: 'La plataforma integral de servicios, domicilios y turismo en el Oriente Antioqueño.',
 				theme_color: '#16a34a',
 				background_color: '#ffffff',
@@ -260,15 +259,15 @@ export default defineConfig({
 				categories: ['shopping', 'food', 'travel', 'lifestyle'],
 				icons: [
 					{
-						src: '/AmiOrienteApp/logo.svg', // Absolute path
-						sizes: '192x192',
-						type: 'image/svg+xml',
+						src: '/AmiOrienteApp/logo.png', // Absolute path
+						sizes: '192x192', // Scalable
+						type: 'image/png',
 						purpose: 'any'
 					},
 					{
-						src: '/AmiOrienteApp/logo.svg', // Absolute path
-						sizes: '512x512',
-						type: 'image/svg+xml',
+						src: '/AmiOrienteApp/logo.png', // Absolute path
+						sizes: '512x512', // Scalable
+						type: 'image/png',
 						purpose: 'any maskable'
 					}
 				],

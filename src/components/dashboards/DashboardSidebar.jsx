@@ -67,9 +67,9 @@ export const DashboardSidebar = ({ title, navItems, isOpen, toggleSidebar }) => 
           <div className="flex items-center justify-between h-16 border-b border-slate-100 px-4 shrink-0 bg-white">
             <div className="flex items-center gap-2 overflow-hidden">
               <div className="h-8 w-8 bg-green-100 rounded-lg flex items-center justify-center text-green-700 font-bold shrink-0">
-                {title?.charAt(0) || 'M'}
+                {title?.charAt(0) || 'A'}
               </div>
-              <span className="font-bold text-lg text-slate-800 truncate" title={title}>{title || 'Mi Negocio'}</span>
+              <span className="font-bold text-lg text-slate-800 truncate" title={title}>{title || 'AmiOriente'}</span>
             </div>
             <Button variant="ghost" size="icon" className="lg:hidden text-slate-400" onClick={() => toggleSidebar(false)}>
               <X className="h-5 w-5" />
