@@ -95,6 +95,16 @@ export function OnboardingController() {
     } = useOnboardingStore();
 
     useEffect(() => {
+        const handleReset = () => {
+             // Resetear y mostrar bienvenida
+             useOnboardingStore.getState().resetProgress();
+             useOnboardingStore.getState().showWelcome();
+        };
+        window.addEventListener('onboarding-reset', handleReset);
+        return () => window.removeEventListener('onboarding-reset', handleReset);
+    }, []);
+
+    useEffect(() => {
         // Lógica para lanzar guías automáticamente según la ruta
         const checkAndTrigger = (guideId, triggersWelcome = false) => {
             if (!completedGuides.includes(guideId)) {

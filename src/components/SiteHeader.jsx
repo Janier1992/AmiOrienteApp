@@ -62,6 +62,9 @@ const SiteHeader = () => {
           <ThemeSwitcher />
 
           <div className="hidden md:flex items-center space-x-2">
+            <Button variant="ghost" size="icon" onClick={() => window.dispatchEvent(new Event('onboarding-reset'))} title="Ver Tutorial">
+              <span className="text-lg">❓</span>
+            </Button>
             <Button id="cart-button" variant="ghost" size="icon" onClick={() => setIsCartOpen(true)}>
               <ShoppingBag className="h-5 w-5" />
               <span className="sr-only">Carrito</span>

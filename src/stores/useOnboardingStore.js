@@ -75,8 +75,21 @@ export const useOnboardingStore = create(
             getStorage: () => localStorage,        // Usar localStorage
             partialize: (state) => ({              // Solo persistir lo importante
                 completedGuides: state.completedGuides,
-                skippedGuides: state.skippedGuides
-            })
+                skippedGuides: state.skippedGuides,
+                version: state.version
+            }),
+            version: 2, // Incrementamos versión para forzar limpieza
+            migrate: (persistedState, version) => {
+                if (version < 2) {
+                    // Si la versión es vieja, reseteamos el progreso
+                    return {
+                        completedGuides: [],
+                        skippedGuides: [],
+                        version: 2
+                    };
+                }
+                return persistedState;
+            }
         }
     )
 );

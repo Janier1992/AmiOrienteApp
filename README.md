@@ -100,6 +100,20 @@ La aplicación es completamente instalable.
 
 ---
 
+---
+
+## 🎓 Onboarding Guiado e Interactivo
+
+El sistema cuenta con un módulo de onboarding inteligente que guía a los diferentes tipos de usuarios (Clientes, Tiendas, Domiciliarios) a través de sus funcionalidades clave.
+
+*   **Detección de Roles**: El sistema identifica automáticamente el rol del usuario y despliega la guía correspondiente (`client_home`, `store_dashboard`, `delivery_dashboard`).
+*   **Estado Persistente**: Utiliza `Zustand` con persistencia para recordar qué guías ha completado el usuario, evitando mostrar el tour repetidamente.
+*   **Componentes Adaptables**:
+    *   `OnboardingController`: Orquestador que escucha cambios de ruta y gestiona la activación del tour.
+    *   `OnboardingWelcome`: Modal de bienvenida contextual que invita al usuario a iniciar el recorrido.
+
+---
+
 ## 🛠️ Guía de Desarrollo y Despliegue
 
 ### Requisitos Previos
