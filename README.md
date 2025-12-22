@@ -143,9 +143,55 @@ El proyecto está configurado para desplegarse en GitHub Pages usando rutas abso
 ## 🔒 Variables de Entorno
 El proyecto requiere un archivo `.env` en la raíz para conectar con Supabase:
 ```env
-VITE_SUPABASE_URL=tu_url_de_supabase
 VITE_SUPABASE_ANON_KEY=tu_clave_anonima
 ```
+
+---
+
+## 💰 Modelo de Negocio y Proyección Financiera
+
+### Proyección de Costos Operativos
+Para mantener la plataforma en funcionamiento, se estiman los siguientes costos mensuales:
+
+*   **Infraestructura (Hosting)**: $0 COP. GitHub Pages provee hosting gratuito ilimitado para el frontend.
+*   **Base de Datos (Supabase)**:
+    *   *Fase Inicial*: $0 COP (Plan Free - Hasta 500MB y 50k usuarios mensuales).
+    *   *Fase Pro*: ~$25 USD/mes (Plan Pro) cuando se supere el límite de usuarios o almacenamiento.
+*   **Dominio y SSL**: ~$15 USD/año (AmiOriente.com).
+*   **Mantenimiento**: Costos variables de desarrollo para nuevas funcionalidades.
+
+### Modelo de Suscripción para Negocios
+Se establece un modelo híbrido obligatorio para todos los comercios registrados:
+
+1.  **Plan Básico (Comisión por Venta)**
+    *   **Costo de Entrada**: GRATIS.
+    *   **Modelo**: Cobro del **8-10%** sobre cada pedido exitoso gestionado por la app.
+    *   *Ideal para*: Pequeños negocios o emprendimientos que están arrancando.
+
+2.  **Plan Profesional (Suscripción Mensual)**
+    *   **Costo**: $50,000 - $80,000 COP / mes.
+    *   **Beneficio**: 0% de comisión en ventas.
+    *   **Extras**: Posicionamiento destacado en la app y soporte prioritario.
+    *   *Ideal para*: Restaurantes o tiendas con alto volumen de ventas diaria.
+
+---
+
+## 📈 Estrategia de Crecimiento y Marketing
+
+Para lograr la máxima visibilidad en el Oriente Antioqueño, se ejecutará la siguiente estrategia:
+
+### 1. Marketing Digital Hiper-Local
+*   **SEO Local**: Optimización de palabras clave como "Domicilios Rionegro", "Restaurantes Marinilla", "Turismo Guatapé".
+*   **Redes Sociales**: Campañas en Instagram y Facebook segmentadas por geolocalización (Radio de 20km en el Oriente).
+*   **Influencer Marketing**: Alianzas con micro-influencers de comida y turismo de la región.
+
+### 2. Marketing Físico (Activación)
+*   **Stickers "Pídelo por AmiOriente"**: Entrega gratuita de calcomanías con código QR de la app para que los comercios las peguen en sus mesas y vitrinas.
+*   **Alianzas Estratégicas**: Acuerdos con gremios de taxistas y hoteles para que recomienden la app a turistas.
+
+### 3. Programa de Referidos
+*   **Incentivo**: Ofrecer un cupón de $5,000 COP al usuario que invite a un amigo (y el amigo haga su primer pedido).
+*   **Gamificación**: Badges y niveles para usuarios frecuentes ("Explorador del Oriente").
 
 ---
 **Desarrollado con ❤️ por el Equipo de Tecnología de AmiOriente**
