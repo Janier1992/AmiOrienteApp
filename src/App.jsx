@@ -4,7 +4,9 @@ import { HashRouter as Router, Routes, Route, useLocation } from 'react-router-d
 import { Toaster } from '@/components/ui/toaster';
 import BottomNavBar from '@/components/BottomNavBar';
 import SiteHeader from '@/components/SiteHeader';
-import { useAuth } from '@/contexts/SupabaseAuthContext';
+import { useAuth, AuthProvider } from '@/contexts/SupabaseAuthContext';
+import { CartProvider } from '@/contexts/CartContext';
+import { CartSidebarProvider } from '@/contexts/CartSidebarContext';
 import { cn } from '@/lib/utils';
 import { lazyWithPrefetch, prefetchRoutes } from '@/lib/route-utils';
 import { useRouteTransitionTimer } from '@/lib/performance-monitoring';
@@ -175,9 +177,15 @@ const AppContent = () => {
 
 const App = () => (
   <Router>
-    <ScrollToTop />
-    <OnboardingController />
-    <AppContent />
+    <AuthProvider>
+      <CartProvider>
+        <CartSidebarProvider>
+          <ScrollToTop />
+          <OnboardingController />
+          <AppContent />
+        </CartSidebarProvider>
+      </CartProvider>
+    </AuthProvider>
   </Router>
 );
 

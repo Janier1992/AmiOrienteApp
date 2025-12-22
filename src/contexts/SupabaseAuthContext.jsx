@@ -1,5 +1,6 @@
 
 import React, { createContext, useContext, useEffect, useState, useCallback, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import { supabase } from '@/lib/customSupabaseClient';
 import { useToast } from '@/components/ui/use-toast';
@@ -8,6 +9,7 @@ const AuthContext = createContext(undefined);
 
 export const AuthProvider = ({ children }) => {
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const [user, setUser] = useState(null);
   const [session, setSession] = useState(null);
@@ -159,10 +161,11 @@ export const AuthProvider = ({ children }) => {
       setUser(null);
       setSession(null);
       setLoading(false);
+      navigate('/'); // Redirect to home immediately
     }
 
     return { error: null };
-  }, [toast]);
+  }, [toast, navigate]);
 
   const value = useMemo(() => ({
     user,
