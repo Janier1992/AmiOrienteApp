@@ -73,7 +73,7 @@ const HomePage = () => {
                 className="mt-10 max-w-sm mx-auto sm:max-w-none sm:flex sm:justify-center gap-4"
               >
                 <Link to="/productos">
-                  <Button size="lg" className="w-full sm:w-auto text-lg px-8 py-6 shadow-xl bg-primary hover:bg-primary/90">
+                  <Button id="hero-explore-btn" size="lg" className="w-full sm:w-auto text-lg px-8 py-6 shadow-xl bg-primary hover:bg-primary/90">
                     Explorar Productos
                   </Button>
                 </Link>
@@ -87,7 +87,7 @@ const HomePage = () => {
           </div>
         </div>
 
-        <section id="features" className="py-12 md:py-20">
+        <section id="features-section" className="py-12 md:py-20">
           <div className="container mx-auto px-4">
             {/* Semi-transparent container for features section */}
             <div className="bg-white/80 dark:bg-slate-950/80 backdrop-blur-md rounded-3xl p-8 shadow-xl">

@@ -27,6 +27,7 @@ export const DashboardSidebar = ({ title, navItems, isOpen, toggleSidebar }) => 
       <Link
         to={fullPath}
         onClick={() => toggleSidebar(false)}
+        id={`nav-${item.path || 'home'}`}
         className={cn(
           "group flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 mb-1",
           isActive
@@ -81,7 +82,7 @@ export const DashboardSidebar = ({ title, navItems, isOpen, toggleSidebar }) => 
             <div className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4 pl-3">
               Gestión
             </div>
-            <nav className="space-y-1">
+            <nav id="dashboard-sidebar-menu" className="space-y-1">
               {navItems.map(item => <NavLink key={item.label} item={item} />)}
             </nav>
           </div>

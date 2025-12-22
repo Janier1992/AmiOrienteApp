@@ -46,7 +46,7 @@ const DeliverySidebar = ({ isOpen, onClose, activeTab, onTabChange, isConnected,
           </div>
 
           <div className="p-4 space-y-4 flex-1">
-            <div className="p-4 bg-muted/30 rounded-lg border">
+            <div id="delivery-status-card" className="p-4 bg-muted/30 rounded-lg border">
               <p className="text-sm font-medium mb-2">Estado: <span className={isConnected ? "text-green-600" : "text-gray-500"}>{isConnected ? "Conectado" : "Desconectado"}</span></p>
               <Button
                 onClick={onConnect}
@@ -314,7 +314,7 @@ const DeliveryDashboard = () => {
                   </TabsList>
 
                   <div className="p-4 sm:p-0">
-                    <TabsContent value="disponibles" className="mt-0">
+                    <TabsContent id="delivery-available-list" value="disponibles" className="mt-0">
                       <AvailableOrdersTab
                         isConnected={isConnected}
                         orders={availableOrders}
@@ -323,7 +323,7 @@ const DeliveryDashboard = () => {
                       />
                     </TabsContent>
 
-                    <TabsContent value="curso" className="mt-0">
+                    <TabsContent id="delivery-active-map" value="curso" className="mt-0">
                       <InProgressOrdersTab
                         orders={currentDelivery || []}
                         onCompleteOrder={handleCompleteOrder}

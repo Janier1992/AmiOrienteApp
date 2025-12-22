@@ -10,6 +10,7 @@ import { lazyWithPrefetch, prefetchRoutes } from '@/lib/route-utils';
 import { useRouteTransitionTimer } from '@/lib/performance-monitoring';
 import PageSkeleton from '@/components/shared/PageSkeleton';
 import { PWAInstallPrompt } from '@/components/pwa/PWAInstallPrompt';
+import { OnboardingController } from '@/components/onboarding/OnboardingController';
 
 // Optimized Lazy Loading with Prefetch Capabilities
 const HomePage = lazyWithPrefetch('home', () => import('@/pages/HomePage'));
@@ -175,6 +176,7 @@ const AppContent = () => {
 const App = () => (
   <Router>
     <ScrollToTop />
+    <OnboardingController />
     <AppContent />
   </Router>
 );
