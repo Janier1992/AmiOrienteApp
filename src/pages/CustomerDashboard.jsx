@@ -76,7 +76,7 @@ const CustomerDashboard = () => {
       navigate('/cliente/login');
       return;
     }
-    
+
     if (user.user_metadata?.role !== 'cliente') {
       navigate('/');
       toast({ title: "Acceso no autorizado", description: "Esta sección es solo para clientes.", variant: 'destructive' });
@@ -89,7 +89,6 @@ const CustomerDashboard = () => {
   const handleLogout = async () => {
     await signOut();
     toast({ title: "Sesión cerrada", description: "Has cerrado sesión exitosamente." });
-    navigate('/');
   };
 
   const handleTabChange = (tabId) => {
@@ -99,10 +98,10 @@ const CustomerDashboard = () => {
 
   if (authLoading || loading) {
     return (
-        <div className="min-h-screen bg-background flex items-center justify-center">
-            <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            <p className="ml-2 text-foreground">Cargando tu panel...</p>
-        </div>
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <p className="ml-2 text-foreground">Cargando tu panel...</p>
+      </div>
     );
   }
 
@@ -123,9 +122,9 @@ const CustomerDashboard = () => {
         <span className="sr-only">Menu</span>
       </Button>
 
-      <Sidebar 
-        profile={profile} 
-        activeTab={activeTab} 
+      <Sidebar
+        profile={profile}
+        activeTab={activeTab}
         onTabChange={handleTabChange}
         onLogout={handleLogout}
         onHome={() => navigate('/')}
@@ -135,16 +134,16 @@ const CustomerDashboard = () => {
 
       <main className="flex-1 p-4 md:p-8 overflow-y-auto max-h-screen mt-14 md:mt-0">
         <div className="max-w-5xl mx-auto space-y-6">
-            {activeTab === 'pedidos' && <OrdersTab orders={orders} />}
-            {activeTab === 'perfil' && profile && (
-              <ProfileTab profile={{...profile, email: user.email}} />
-            )}
-            {activeTab === 'deseos' && <WishlistTab userId={user.id} />}
-            {activeTab === 'direcciones' && <AddressesTab userId={user.id} />}
-            {activeTab === 'pagos' && <PaymentMethodsTab userId={user.id} />}
-            {activeTab === 'notificaciones' && <NotificationsTab userId={user.id} />}
-            {activeTab === 'resenas' && <ReviewsTab userId={user.id} />}
-            {activeTab === 'cupones' && <CouponsTab />}
+          {activeTab === 'pedidos' && <OrdersTab orders={orders} />}
+          {activeTab === 'perfil' && profile && (
+            <ProfileTab profile={{ ...profile, email: user.email }} />
+          )}
+          {activeTab === 'deseos' && <WishlistTab userId={user.id} />}
+          {activeTab === 'direcciones' && <AddressesTab userId={user.id} />}
+          {activeTab === 'pagos' && <PaymentMethodsTab userId={user.id} />}
+          {activeTab === 'notificaciones' && <NotificationsTab userId={user.id} />}
+          {activeTab === 'resenas' && <ReviewsTab userId={user.id} />}
+          {activeTab === 'cupones' && <CouponsTab />}
         </div>
       </main>
     </div>

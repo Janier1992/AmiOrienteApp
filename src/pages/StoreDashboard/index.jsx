@@ -57,10 +57,13 @@ const StoreDashboardRouter = () => {
         }
     }, [user, fetchStoreData]);
 
-    if (!user) {
-        navigate('/tienda/login');
-        return null;
-    }
+    useEffect(() => {
+        if (!user) {
+            navigate('/tienda/login');
+        }
+    }, [user, navigate]);
+
+    if (!user) return null;
 
     if (isLoadingStore) {
         return (

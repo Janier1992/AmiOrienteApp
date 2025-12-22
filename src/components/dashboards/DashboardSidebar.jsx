@@ -13,7 +13,7 @@ export const DashboardSidebar = ({ title, navItems, isOpen, toggleSidebar }) => 
 
   const handleSignOut = async () => {
     await signOut();
-    navigate('/tienda/login');
+    // Context handles redirection to '/'
   };
 
   const NavLink = ({ item }) => {

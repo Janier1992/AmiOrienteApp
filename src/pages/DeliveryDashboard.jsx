@@ -213,7 +213,6 @@ const DeliveryDashboard = () => {
   const handleLogout = async () => {
     await signOut();
     toast({ title: "Sesión cerrada" });
-    navigate('/');
   };
 
   const handleAcceptOrder = async (orderId) => {
