@@ -12,25 +12,25 @@ const OverviewTab = ({ storeId }) => {
 
   useEffect(() => {
     if (storeId) {
-        fetchStats(storeId);
+      fetchStats(storeId);
     }
   }, [storeId, fetchStats]);
 
   // Show loading only if we have NO data. If we have cached data, show it while updating (stale-while-revalidate pattern)
   if (isLoadingStats && !stats) return <LoadingSpinner text="Actualizando métricas..." className="h-64" />;
 
-  const { 
-      total_sales = 0, 
-      total_orders = 0, 
-      total_products = 0, 
-      platform_commission = 0, 
-      monthlyIncome = [] 
+  const {
+    total_sales = 0,
+    total_orders = 0,
+    total_products = 0,
+    platform_commission = 0,
+    monthlyIncome = []
   } = stats || {};
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
       {/* KPI Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div id="dashboard-stats-cards" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Ventas Totales</CardTitle>
@@ -80,11 +80,11 @@ const OverviewTab = ({ storeId }) => {
             <CardDescription>Resumen mensual de ventas.</CardDescription>
           </CardHeader>
           <CardContent className="pl-2">
-            <LineChart 
-                data={monthlyIncome.length > 0 ? monthlyIncome : [{month: 'Hoy', total: 0}]} 
-                index="month" 
-                categories={["total"]} 
-                valueFormatter={(number) => `$${Number(number).toLocaleString()}`} 
+            <LineChart
+              data={monthlyIncome.length > 0 ? monthlyIncome : [{ month: 'Hoy', total: 0 }]}
+              index="month"
+              categories={["total"]}
+              valueFormatter={(number) => `$${Number(number).toLocaleString()}`}
             />
           </CardContent>
         </Card>

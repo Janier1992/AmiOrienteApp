@@ -299,15 +299,15 @@ const DeliveryDashboard = () => {
               {loading ? <div className="flex items-center justify-center p-8"><Loader2 className="animate-spin h-8 w-8 text-primary" /></div> : (
                 <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                   <TabsList className="grid w-full grid-cols-3 mb-6 bg-muted/50 p-1">
-                    <TabsTrigger value="disponibles" className="text-xs sm:text-sm">
+                    <TabsTrigger id="tab-trigger-disponibles" value="disponibles" className="text-xs sm:text-sm">
                       <Package className="mr-1 sm:mr-2 h-4 w-4" />
                       <span className="hidden sm:inline">Disponibles</span> ({availableOrders.length})
                     </TabsTrigger>
-                    <TabsTrigger value="curso" className="text-xs sm:text-sm">
+                    <TabsTrigger id="tab-trigger-curso" value="curso" className="text-xs sm:text-sm">
                       <Truck className="mr-1 sm:mr-2 h-4 w-4" />
                       <span className="hidden sm:inline">En curso</span> ({currentDelivery ? currentDelivery.length : 0})
                     </TabsTrigger>
-                    <TabsTrigger value="historial" className="text-xs sm:text-sm">
+                    <TabsTrigger id="tab-trigger-historial" value="historial" className="text-xs sm:text-sm">
                       <History className="mr-1 sm:mr-2 h-4 w-4" />
                       <span className="hidden sm:inline">Historial</span> ({historyOrders.length})
                     </TabsTrigger>

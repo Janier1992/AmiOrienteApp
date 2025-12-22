@@ -62,6 +62,10 @@ const SiteHeader = () => {
           <ThemeSwitcher />
 
           <div className="hidden md:flex items-center space-x-2">
+            <Button id="cart-button" variant="ghost" size="icon" onClick={() => setIsCartOpen(true)}>
+              <ShoppingBag className="h-5 w-5" />
+              <span className="sr-only">Carrito</span>
+            </Button>
             <Link to={getDashboardLink()}>
               <Button variant="ghost" size="sm">
                 <User className="mr-2 h-4 w-4" />

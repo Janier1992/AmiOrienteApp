@@ -12,20 +12,26 @@ export const ONBOARDING_GUIDES = {
         {
             targetId: 'site-header-logo',
             title: '¡Bienvenido a AmiOriente!',
-            content: 'Esta es tu nueva plataforma para pedir lo que quieras, cuando quieras. Desde comida hasta reservas de hotel.',
+            content: 'Tu super app para domicilios, compras y turismo en el Oriente Antioqueño.',
             position: 'bottom'
         },
         {
             targetId: 'hero-explore-btn',
-            title: 'Empieza aquí',
-            content: 'Explora todos los productos disponibles en el Oriente Antioqueño con un solo clic.',
+            title: 'Empieza a Explorar',
+            content: 'Entra aquí para ver todo nuestro catálogo de productos ordenado para ti.',
             position: 'bottom'
         },
         {
             targetId: 'features-section',
-            title: 'Todo lo que necesitas',
-            content: 'Descubre restaurantes, hoteles, mercados campesinos y más servicios en nuestra sección destacada.',
+            title: 'Nuestros Servicios',
+            content: 'Descubre restaurantes, hoteles, mercados campesinos y servicios especiales.',
             position: 'top'
+        },
+        {
+            targetId: 'cart-button',
+            title: 'Tu Carrito de Compras',
+            content: 'Aquí verás los productos que agregues. ¡Puedes pedir de múltiples tiendas a la vez!',
+            position: 'left'
         }
     ],
 
@@ -35,26 +41,44 @@ export const ONBOARDING_GUIDES = {
     store_dashboard: [
         {
             targetId: 'dashboard-sidebar-menu',
-            title: 'Tu Centro de Control',
-            content: 'Desde este menú lateral tienes acceso a todas las herramientas: Productos, Pedidos y Configuración.',
+            title: 'Panel de Control',
+            content: 'Tu centro de mando. Desde aquí gestionas cada aspecto de tu negocio.',
             position: 'right'
         },
         {
+            targetId: 'nav-home',
+            title: 'Resumen Diario',
+            content: 'Visualiza tus ventas del día, pedidos pendientes y métricas clave de un vistazo.',
+            position: 'right'
+        },
+        {
+            targetId: 'dashboard-stats-cards',
+            title: 'Tus Métricas',
+            content: 'Analiza el rendimiento de tu tienda en tiempo real: ventas, pedidos y productos.',
+            position: 'bottom'
+        },
+        {
             targetId: 'nav-productos',
-            title: 'Gestiona tus Productos',
-            content: 'Entra aquí para crear, editar o pausar tus productos. ¡Mantén tu catálogo actualizado!',
+            title: 'Inventario',
+            content: 'Agrega, edita o pausa productos. Sube fotos y ajusta precios en segundos.',
+            position: 'right'
+        },
+        {
+            targetId: 'nav-caja',
+            title: 'Punto de Venta (POS)',
+            content: '¿Tienes tienda física? Usa esta herramienta para registrar ventas presenciales.',
             position: 'right'
         },
         {
             targetId: 'nav-pedidos',
-            title: 'Tus Pedidos',
-            content: 'Aquí llegarán las notificaciones de nuevos pedidos. ¡Debes estar atento!',
+            title: 'Gestión de Pedidos',
+            content: 'Recibe, prepara y despacha tus pedidos online desde aquí.',
             position: 'right'
         },
         {
-            targetId: 'nav-ajustes',
+            targetId: 'nav-configuracion',
             title: 'Configuración',
-            content: 'Horarios, métodos de pago y estado de tu tienda.',
+            content: 'Ajusta tus horarios de atención, logo y métodos de pago.',
             position: 'right'
         }
     ],
@@ -65,39 +89,56 @@ export const ONBOARDING_GUIDES = {
     delivery_dashboard: [
         {
             targetId: 'delivery-status-card',
-            title: 'Tu Estado',
-            content: 'Mantente activo para recibir notificaciones de nuevas entregas.',
+            title: 'Tu Estado de Conexión',
+            content: '¡Recuerda conectarte! Debes estar "En Línea" para recibir notificaciones de pedidos.',
+            position: 'bottom'
+        },
+        {
+            targetId: 'tab-trigger-disponibles',
+            title: 'Pedidos Disponibles',
+            content: 'Revisa esta pestaña frecuentemente para encontrar nuevos pedidos en tu zona.',
             position: 'bottom'
         },
         {
             targetId: 'delivery-available-list',
-            title: 'Zona de Pedidos',
-            content: 'Aquí verás la lista de pedidos listos para recoger cercanos a tu ubicación.',
+            title: 'Acepta tu Misión',
+            content: 'Toca un pedido para ver detalles y aceptarlo. ¡El más rápido se lo lleva!',
             position: 'top'
         },
         {
-            targetId: 'delivery-active-map',
-            title: 'Ruta Activa',
-            content: 'El mapa te mostrará la ruta óptima para recoger y entregar.',
-            position: 'top'
+            targetId: 'tab-trigger-curso',
+            title: 'En Curso',
+            content: 'Aquí gestionas tu pedido actual: ver mapa, contactar al cliente y marcar como entregado.',
+            position: 'bottom'
+        },
+        {
+            targetId: 'tab-trigger-historial',
+            title: 'Tus Ganancias',
+            content: 'Consulta tu historial de entregas realizadas y ganancias acumuladas.',
+            position: 'bottom'
         }
     ]
 };
 
 export const ROLE_WELCOME_MESSAGES = {
     cliente: {
-        title: '¡Te damos la bienvenida a AmiOriente!',
-        message: 'Descubre los mejores comercios del Oriente Antioqueño en un solo lugar. Pide comida, mercado, farmacia y más.',
-        action: 'Explorar la App'
+        title: '¡Descubre el Oriente!',
+        message: 'Te guiamos para que encuentres los mejores productos y servicios de la región.',
+        action: 'Iniciar Tour'
     },
     tienda: {
-        title: '¡Bienvenido, Aliado!',
-        message: 'Tu negocio ahora tiene un alcance digital completo. Vamos a mostrarte cómo gestionar tus pedidos y productos fácilmente.',
-        action: 'Ver Tour del Negocio'
+        title: 'Potencia tu Negocio',
+        message: 'Explora tu nuevo panel de administración. Todo lo que necesitas para vender más.',
+        action: 'Ver Tutorial'
     },
     domiciliario: {
-        title: '¡Bienvenido al Equipo!',
-        message: 'Empieza a generar ingresos entregando pedidos. Te explicaremos cómo aceptar y completar entregas.',
-        action: 'Iniciar Tutorial'
+        title: '¡Vamos a Rodar!',
+        message: 'Aprende a usar tu app de repartidor para maximizar tus entregas y ganancias.',
+        action: 'Empezar'
+    },
+    invitado: {
+        title: '¡Bienvenido a AmiOriente!',
+        message: 'Explora nuestra plataforma y descubre todo lo que el Oriente Antioqueño tiene para ti.',
+        action: 'Dar un vistazo'
     }
 };
