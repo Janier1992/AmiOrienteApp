@@ -22,18 +22,19 @@ export function OnboardingWelcome() {
         startGuide
     } = useOnboardingStore();
     const { user } = useAuth();
-    const role = user?.user_metadata?.role;
+    // Si no hay usuario, asumimos rol 'invitado' para el tour de home
+    const role = user?.user_metadata?.role || 'invitado';
 
-    if (!isWelcomeVisible || !role) return null;
+    if (!isWelcomeVisible) return null;
 
-    const info = ROLE_WELCOME_MESSAGES[role] || ROLE_WELCOME_MESSAGES['cliente'];
+    const info = ROLE_WELCOME_MESSAGES[role] || ROLE_WELCOME_MESSAGES['cliente']; // Fallback a cliente para invitado
 
     // Mapear rol a guía
     const getGuideId = (role) => {
         switch (role) {
             case 'tienda': return 'store_dashboard';
             case 'domiciliario': return 'delivery_dashboard';
-            default: return 'client_home';
+            default: return 'client_home'; // Invitado ve home
         }
     };
 
@@ -62,7 +63,7 @@ export function OnboardingWelcome() {
                         </div>
                         <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300">
                             <CheckCircle2 className="h-4 w-4 text-green-500" />
-                            <span>Conoce las funciones exclusivas de tu perfil</span>
+                            <span>Conoce las funciones exclusivas</span>
                         </div>
                     </div>
                 </div>
@@ -86,7 +87,7 @@ export function OnboardingWelcome() {
 export function OnboardingController() {
     const { pathname } = useLocation();
     const { user } = useAuth();
-    const role = user?.user_metadata?.role;
+    const role = user?.user_metadata?.role || 'invitado';
     const {
         completedGuides,
         showWelcome,
@@ -94,11 +95,10 @@ export function OnboardingController() {
     } = useOnboardingStore();
 
     useEffect(() => {
-        if (!user || !role) return;
-
         // Lógica para lanzar guías automáticamente según la ruta
         const checkAndTrigger = (guideId, triggersWelcome = false) => {
             if (!completedGuides.includes(guideId)) {
+                console.log(`[Onboarding] Triggering ${guideId} for role ${role}`);
                 // Pequeño delay para asegurar carga de UI
                 setTimeout(() => {
                     if (triggersWelcome) {
@@ -106,12 +106,12 @@ export function OnboardingController() {
                     } else {
                         startGuide(guideId);
                     }
-                }, 1000);
+                }, 1500); // Aumentado delay a 1.5s para asegurar render
             }
         };
 
-        // 1. Home Cliente
-        if (pathname === '/' && role === 'cliente') {
+        // 1. Home (Cliente o Invitado)
+        if (pathname === '/' && (role === 'cliente' || role === 'invitado')) {
             checkAndTrigger('client_home', true);
         }
 
