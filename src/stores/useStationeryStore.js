@@ -42,9 +42,23 @@ export const useStationeryStore = create((set, get) => ({
     clearCart: () => set({ cart: [] }),
 
     // Checkout Action
-    processCheckout: async (storeId, customerName, paymentMethod, total) => {
+    processCheckout: async (storeId, customerData, paymentMethod, total) => {
         const cart = get().cart;
         if (cart.length === 0) return;
+
+        // Parse customerData if it's an object, or handle legacy string (just name)
+        const guestInfo = typeof customerData === 'object' ? {
+            name: customerData.name,
+            doc_id: customerData.docId,
+            phone: customerData.phone,
+            email: customerData.email,
+            method: paymentMethod,
+            type: 'POS'
+        } : {
+            name: customerData,
+            method: paymentMethod,
+            type: 'POS'
+        };
 
         set({ isLoadingCheckout: true });
         try {
@@ -54,7 +68,7 @@ export const useStationeryStore = create((set, get) => ({
                 status: 'Entregado',
                 total: total,
                 delivery_address: JSON.stringify({
-                    guest: { name: customerName, method: paymentMethod, type: 'POS' },
+                    guest: guestInfo,
                     items: cart.map(i => ({ id: i.id, name: i.name, qty: i.qty, price: i.price }))
                 })
             };

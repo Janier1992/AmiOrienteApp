@@ -38,7 +38,14 @@ const StationeryPOSView = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [checkoutMode, setCheckoutMode] = useState(false);
     const [paymentMethod, setPaymentMethod] = useState('Efectivo');
-    const [customerName, setCustomerName] = useState('Cliente Mostrador');
+    const [customerName, setCustomerName] = useState('');
+    const [customerDocId, setCustomerDocId] = useState('');
+    const [customerPhone, setCustomerPhone] = useState('');
+    const [customerEmail, setCustomerEmail] = useState('');
+
+    // Invoice Modal State
+    const [invoiceModalOpen, setInvoiceModalOpen] = useState(false);
+    const [lastOrder, setLastOrder] = useState(null);
 
     useEffect(() => {
         if (store?.id) fetchProducts(store.id);
@@ -59,10 +66,38 @@ const StationeryPOSView = () => {
 
     const handleCheckout = async () => {
         try {
-            await processCheckout(store.id, customerName, paymentMethod, total);
-            toast({ title: "Venta registrada exitosamente" });
+            if (!customerName || !customerDocId) {
+                toast({ title: "Datos incompletos", description: "Nombre y Documento son obligatorios", variant: "destructive" });
+                return;
+            }
+
+            const customerData = {
+                name: customerName,
+                docId: customerDocId,
+                phone: customerPhone,
+                email: customerEmail
+            };
+
+            // Capture order details for invoice summary before clearing cart
+            const orderSummary = {
+                customer: customerData,
+                total: total,
+                paymentMethod: paymentMethod,
+                items: [...cart] // Copy cart items
+            };
+
+            await processCheckout(store.id, customerData, paymentMethod, total);
+
+            setLastOrder(orderSummary);
+            setInvoiceModalOpen(true);
+
             setCheckoutMode(false);
-            setCustomerName('Cliente Mostrador');
+            // Reset form
+            setCustomerName('');
+            setCustomerDocId('');
+            setCustomerPhone('');
+            setCustomerEmail('');
+            // Note: Cart is cleared by the store action, so we use orderSummary.items for display if needed diff logic
         } catch (error) {
             console.error(error);
             toast({ title: "Error en venta", description: error.message, variant: "destructive" });
@@ -201,12 +236,32 @@ const StationeryPOSView = () => {
                         </Button>
                     ) : (
                         <div className="space-y-3 animate-in slide-in-from-bottom-4 duration-300">
-                            <Input
-                                placeholder="Nombre Cliente (Opcional)"
-                                value={customerName}
-                                onChange={e => setCustomerName(e.target.value)}
-                                className="bg-white"
-                            />
+                            <div className="grid grid-cols-2 gap-3">
+                                <Input
+                                    placeholder="Nombre Cliente *"
+                                    value={customerName}
+                                    onChange={e => setCustomerName(e.target.value)}
+                                    className="bg-white col-span-2"
+                                />
+                                <Input
+                                    placeholder="Documento (C.C/NIT) *"
+                                    value={customerDocId}
+                                    onChange={e => setCustomerDocId(e.target.value)}
+                                    className="bg-white"
+                                />
+                                <Input
+                                    placeholder="Teléfono"
+                                    value={customerPhone}
+                                    onChange={e => setCustomerPhone(e.target.value)}
+                                    className="bg-white"
+                                />
+                                <Input
+                                    placeholder="Correo Electrónico (Para factura)"
+                                    value={customerEmail}
+                                    onChange={e => setCustomerEmail(e.target.value)}
+                                    className="bg-white col-span-2"
+                                />
+                            </div>
                             <div className="grid grid-cols-2 gap-2">
                                 <Button
                                     variant={paymentMethod === 'Efectivo' ? 'default' : 'outline'}
@@ -236,8 +291,67 @@ const StationeryPOSView = () => {
                 </div>
             </div>
 
-        </div>
+            {/* Invoice Confirmation Modal */}
+            {
+                invoiceModalOpen && lastOrder && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+                        <div className="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+                            <div className="bg-green-600 p-4 text-white text-center">
+                                <div className="mx-auto bg-white/20 w-12 h-12 rounded-full flex items-center justify-center mb-2">
+                                    <Printer className="h-6 w-6" />
+                                </div>
+                                <h2 className="text-xl font-bold">¡Venta Exitosa!</h2>
+                                <p className="text-green-100 text-sm">Factura generada correctamente</p>
+                            </div>
+
+                            <div className="p-6 space-y-4">
+                                <div className="text-center space-y-1 pb-4 border-b">
+                                    <p className="text-sm text-gray-500">Total Pagado</p>
+                                    <p className="text-3xl font-bold text-slate-800">${lastOrder.total.toLocaleString()}</p>
+                                    <p className="text-xs text-gray-400">Método: {lastOrder.paymentMethod}</p>
+                                </div>
+
+                                <div className="space-y-2 text-sm">
+                                    <div className="flex justify-between">
+                                        <span className="text-gray-500">Cliente:</span>
+                                        <span className="font-medium">{lastOrder.customer.name}</span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                        <span className="text-gray-500">Documento:</span>
+                                        <span className="font-medium">{lastOrder.customer.docId}</span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                        <span className="text-gray-500">Email:</span>
+                                        <span className="font-medium">{lastOrder.customer.email || 'N/A'}</span>
+                                    </div>
+                                </div>
+
+                                <div className="bg-slate-50 p-3 rounded-lg text-xs space-y-1">
+                                    <p className="font-semibold text-gray-500 mb-2">Resumen de productos:</p>
+                                    {lastOrder.items.map((item, idx) => (
+                                        <div key={idx} className="flex justify-between">
+                                            <span>{item.qty}x {item.name}</span>
+                                            <span>${(item.price * item.qty).toLocaleString()}</span>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                <div className="pt-2 gap-3 flex">
+                                    <Button variant="outline" className="flex-1" onClick={() => setInvoiceModalOpen(false)}>
+                                        Cerrar
+                                    </Button>
+                                    <Button className="flex-1" onClick={() => window.print()}>
+                                        <Printer className="h-4 w-4 mr-2" /> Imprimir
+                                    </Button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )
+            }
+        </div >
     );
 };
 
 export default StationeryPOSView;
+
