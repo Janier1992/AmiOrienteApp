@@ -48,5 +48,43 @@ export const agroService = {
     async deleteCrop(cropId) {
         const { error } = await supabase.from('products').delete().eq('id', cropId);
         if (error) throw error;
+    },
+
+    async createPOSTransaction({ orderPayload, items }) {
+        // 1. Create Order
+        const { data: orderData, error: orderError } = await supabase
+            .from('orders')
+            .insert(orderPayload)
+            .select()
+            .single();
+
+        if (orderError) throw orderError;
+
+        // 2. Create Order Items
+        const orderItems = items.map(item => ({
+            order_id: orderData.id,
+            product_id: item.id,
+            quantity: item.qty,
+            price: item.price
+        }));
+
+        const { error: itemsError } = await supabase
+            .from('order_items')
+            .insert(orderItems);
+
+        if (itemsError) {
+            console.error("Error creating items", itemsError);
+            throw itemsError;
+        }
+
+        // 3. Update Stock (Simulated)
+        for (const item of items) {
+            if (item.stock !== undefined) {
+                const newStock = Math.max(0, item.stock - item.qty);
+                await supabase.from('products').update({ stock: newStock }).eq('id', item.id);
+            }
+        }
+
+        return orderData;
     }
 };

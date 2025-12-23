@@ -1,7 +1,7 @@
 
 import React from 'react';
 
-import { LayoutDashboard, BedDouble, CalendarCheck, Users, DollarSign, Settings } from 'lucide-react';
+import { LayoutDashboard, BedDouble, CalendarCheck, Users, DollarSign, Settings, CreditCard } from 'lucide-react';
 import BaseStoreDashboard from './BaseStoreDashboard';
 
 // Logic Components (Tabs)
@@ -9,15 +9,18 @@ import HotelReceptionTab from '../HotelReceptionTab';
 import HotelReservationsTab from '../HotelReservationsTab';
 import HotelRoomsTab from '../HotelRoomsTab';
 import FinancialsTab from '../FinancialsTab';
+import GenericPOSView from '../views/GenericPOSView'; // POS View
 // Base Model Components
 import StoreSettingsTab from '../views/StoreSettingsTab';
 import StoreCustomersTab from '../views/StoreCustomersTab';
 
 import { withStoreCategory } from '@/components/shared/withStoreCategory';
+import { useHotelStore } from '@/stores/useHotelStore';
 
 const HotelDashboard = ({ store }) => {
   const tabs = [
     { path: '', label: 'Recepción', icon: LayoutDashboard, element: <HotelReceptionTab storeId={store.id} /> },
+    { path: 'caja', label: 'Caja / Servicios', icon: CreditCard, element: <GenericPOSView useStore={useHotelStore} title="Hotel - Servicios" /> },
     { path: 'reservas', label: 'Reservas', icon: CalendarCheck, element: <HotelReservationsTab storeId={store.id} /> },
     { path: 'habitaciones', label: 'Habitaciones', icon: BedDouble, element: <HotelRoomsTab storeId={store.id} /> },
     // Extension: Hotel specific guests view could be kept if it has passport info etc, but trying to use Base where possible. 

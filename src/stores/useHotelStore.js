@@ -7,9 +7,13 @@ import { supabase } from '@/lib/customSupabaseClient';
  */
 export const useHotelStore = create((set, get) => ({
     rooms: [],
+    products: [], // Added for POS
+    cart: [], // Added for POS
     reservations: [],
     guests: [],
     isLoadingRooms: false,
+    isLoadingProducts: false,
+    isLoadingCheckout: false,
     isLoadingReservations: false,
     error: null,
 
@@ -22,7 +26,7 @@ export const useHotelStore = create((set, get) => ({
                 .from('hotel_rooms')
                 .select('*')
                 .eq('store_id', storeId)
-                .order('number', { ascending: true }); // Assumes number exists
+                .order('number', { ascending: true });
 
             if (error) throw error;
             set({ rooms: data || [] });
@@ -31,6 +35,80 @@ export const useHotelStore = create((set, get) => ({
             set({ error: err.message });
         } finally {
             set({ isLoadingRooms: false });
+        }
+    },
+
+    fetchProducts: async (storeId) => {
+        set({ isLoadingProducts: true });
+        try {
+            // Hotels sell services/products
+            const { data, error } = await supabase
+                .from('products')
+                .select('*')
+                .eq('store_id', storeId)
+                .order('name');
+            if (error) throw error;
+            set({ products: data || [] });
+        } catch (e) {
+            set({ error: e.message });
+        } finally {
+            set({ isLoadingProducts: false });
+        }
+    },
+
+    addToCart: (product) => {
+        const currentCart = get().cart;
+        const existing = currentCart.find(p => p.id === product.id);
+        if (existing) {
+            set({ cart: currentCart.map(p => p.id === product.id ? { ...p, qty: p.qty + 1 } : p) });
+        } else {
+            set({ cart: [...currentCart, { ...product, qty: 1 }] });
+        }
+        return true;
+    },
+
+    removeFromCart: (pid) => set(s => ({ cart: s.cart.filter(p => p.id !== pid) })),
+
+    updateCartQty: (pid, delta) => set(s => ({
+        cart: s.cart.map(i => i.id === pid ? { ...i, qty: Math.max(1, i.qty + delta) } : i)
+    })),
+
+    clearCart: () => set({ cart: [] }),
+
+    processCheckout: async (storeId, customerData, paymentMethod, total) => {
+        const cart = get().cart;
+        if (cart.length === 0) return;
+
+        const guestInfo = typeof customerData === 'object' ? { ...customerData, method: paymentMethod, type: 'POS' } : { name: customerData, method: paymentMethod, type: 'POS' };
+
+        set({ isLoadingCheckout: true });
+        try {
+            // 1. Create Order
+            const { data: order, error: orderError } = await supabase
+                .from('orders')
+                .insert({
+                    store_id: storeId,
+                    customer_id: null,
+                    status: 'Entregado',
+                    total: total,
+                    delivery_address: JSON.stringify({ guest: guestInfo, items: cart.map(i => ({ id: i.id, name: i.name, qty: i.qty, price: i.price })) })
+                })
+                .select()
+                .single();
+
+            if (orderError) throw orderError;
+
+            // 2. Items
+            const items = cart.map(i => ({ order_id: order.id, product_id: i.id, quantity: i.qty, price: i.price }));
+            const { error: itemsError } = await supabase.from('order_items').insert(items);
+            if (itemsError) throw itemsError;
+
+            get().clearCart();
+            return true;
+        } catch (e) {
+            throw e;
+        } finally {
+            set({ isLoadingCheckout: false });
         }
     },
 
