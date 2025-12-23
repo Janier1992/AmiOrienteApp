@@ -18,10 +18,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Separator } from '@/components/ui/separator';
+// import { Separator } from '@/components/ui/separator';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+// import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { toast } from '@/components/ui/use-toast';
 import { useStoreDashboard } from '@/stores/useStoreDashboard';
 
@@ -277,7 +277,7 @@ const GenericPOSView = ({ useStore, title = "Punto de Venta" }) => {
                             <span className="text-slate-500">Subtotal</span>
                             <span>${subtotal.toLocaleString()}</span>
                         </div>
-                        <Separator />
+                        <div className="border-b border-gray-200" />
                         <div className="flex justify-between font-bold text-lg">
                             <span>Total</span>
                             <span className="text-blue-600">${total.toLocaleString()}</span>
@@ -327,20 +327,20 @@ const GenericPOSView = ({ useStore, title = "Punto de Venta" }) => {
                             <Input id="email" value={customerEmail} onChange={e => setCustomerEmail(e.target.value)} className="col-span-3" placeholder="cliente@email.com" />
                         </div>
 
-                        <Separator className="my-2" />
+                        <div className="border-b border-gray-200 my-2" />
 
                         <div className="space-y-2">
                             <Label>Método de Pago</Label>
-                            <RadioGroup value={paymentMethod} onValueChange={setPaymentMethod} className="flex gap-4">
+                            <div className="flex gap-4">
                                 <div className="flex items-center space-x-2">
-                                    <RadioGroupItem value="Efectivo" id="r1" />
+                                    <input type="radio" id="r1" value="Efectivo" checked={paymentMethod === 'Efectivo'} onChange={(e) => setPaymentMethod(e.target.value)} className="h-4 w-4" />
                                     <Label htmlFor="r1">Efectivo</Label>
                                 </div>
                                 <div className="flex items-center space-x-2">
-                                    <RadioGroupItem value="Tarjeta" id="r2" />
+                                    <input type="radio" id="r2" value="Tarjeta" checked={paymentMethod === 'Tarjeta'} onChange={(e) => setPaymentMethod(e.target.value)} className="h-4 w-4" />
                                     <Label htmlFor="r2">Tarjeta</Label>
                                 </div>
-                            </RadioGroup>
+                            </div>
                         </div>
                     </div>
                     <DialogFooter>
