@@ -69,5 +69,36 @@ export const pharmacyService = {
     async deletePharmacyProduct(id) {
         const { error } = await supabase.from('products').delete().eq('id', id);
         if (error) throw error;
+    },
+
+    async createPOSTransaction({ orderPayload, items }) {
+        // 1. Create Order
+        const { data: orderData, error: orderError } = await supabase
+            .from('orders')
+            .insert(orderPayload)
+            .select()
+            .single();
+
+        if (orderError) throw orderError;
+
+        // 2. Create Order Items
+        const orderItems = items.map(item => ({
+            order_id: orderData.id,
+            product_id: item.id,
+            quantity: item.qty,
+            price: item.price
+        }));
+
+        const { error: itemsError } = await supabase
+            .from('order_items')
+            .insert(orderItems);
+
+        if (itemsError) {
+            // Rollback order if possible or just throw (MVP)
+            console.error("Error creating items", itemsError);
+            throw itemsError;
+        }
+
+        return orderData;
     }
 };
