@@ -48,9 +48,17 @@ export const useStationeryStore = create((set, get) => ({
 
         set({ isLoadingCheckout: true });
         try {
+            // Get store owner ID to use as customer_id for POS sales
+            const store = useStoreDashboard.getState().store;
+            const ownerId = store?.owner_id;
+
+            if (!ownerId) {
+                throw new Error("No se pudo identificar el propietario de la tienda para asignar la venta.");
+            }
+
             const orderPayload = {
                 store_id: storeId,
-                customer_id: null,
+                customer_id: ownerId, // Use owner ID as customer for POS sales
                 status: 'Entregado',
                 total: total,
                 delivery_address: JSON.stringify({
