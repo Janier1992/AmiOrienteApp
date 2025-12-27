@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { restaurantService } from '@/services/restaurantService';
+import { storeService } from '@/services/storeService';
 
 /**
  * STORE ESPECÍFICO PARA RESTAURANTE
@@ -7,6 +8,7 @@ import { restaurantService } from '@/services/restaurantService';
  */
 export const useRestaurantStore = create((set, get) => ({
     tables: [],
+    products: [], // Added for POS
     cart: [], // New Cart State
     isLoadingTables: false,
     isLoadingCheckout: false, // New Loading State
@@ -126,6 +128,15 @@ export const useRestaurantStore = create((set, get) => ({
             // Revert
             set({ tables });
             throw err;
+        }
+    },
+
+    fetchProducts: async (storeId) => {
+        try {
+            const products = await storeService.getProducts(storeId);
+            set({ products });
+        } catch (error) {
+            console.error("Error fetching products for POS:", error);
         }
     }
 }));

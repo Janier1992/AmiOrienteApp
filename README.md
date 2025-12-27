@@ -100,6 +100,23 @@ La aplicación es completamente instalable.
 
 ---
 
+## 📥 Instalación de la App (PWA)
+
+AmiOriente es una Progressive Web App, lo que significa que puedes instalarla directamente desde tu navegador sin usar una tienda de aplicaciones.
+
+### 🤖 Android (Chrome)
+1.  Abre la aplicación en **Google Chrome**.
+2.  Debería aparecer un aviso automático en la parte inferior: **"Agregar AmiOriente a la pantalla principal"**.
+3.  Si no aparece, toca el menú de tres puntos (⋮) en la esquina superior derecha.
+4.  Selecciona la opción **"Instalar aplicación"**.
+
+### 🍎 iOS (iPhone/iPad - Safari)
+1.  Es necesario abrir la aplicación en **Safari** (Chrome en iOS no permite la instalación).
+2.  Toca el botón **Compartir** (el cuadrado con una flecha hacia arriba) en la barra inferior.
+3.  Desliza hacia abajo y busca la opción **"Agregar al Inicio"** (Add to Home Screen).
+4.  Toca **Agregar** en la esquina superior derecha.
+5.  La app aparecerá en tu pantalla de inicio con su icono oficial.
+
 ---
 
 ## 🎓 Onboarding Guiado e Interactivo
