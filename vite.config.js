@@ -265,10 +265,16 @@ export default defineConfig({
 						purpose: 'any'
 					},
 					{
-						src: '/AmiOrienteApp/logo.png', // Absolute path
-						sizes: '512x512', // Scalable
+						src: '/AmiOrienteApp/logo.png',
+						sizes: '512x512',
 						type: 'image/png',
 						purpose: 'any maskable'
+					},
+					{
+						src: '/AmiOrienteApp/logo.png',
+						sizes: '180x180',
+						type: 'image/png',
+						purpose: 'any'
 					}
 				],
 				screenshots: [
