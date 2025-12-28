@@ -10,7 +10,7 @@ const OverviewTab = React.lazy(() => import('../OverviewTab'));
 import RestaurantMenuView from '../views/RestaurantMenuView';
 import GenericPOSView from '../views/GenericPOSView';
 import KitchenMaintenanceView from '../views/KitchenMaintenanceView';
-const OrdersTab = React.lazy(() => import('../OrdersTab'));
+const OrdersTab = React.lazy(() => import('../OrdersManagementTab'));
 const ProfileTab = React.lazy(() => import('../ProfileTab'));
 const AdminTab = React.lazy(() => import('../AdminTab'));
 const FinancialsTab = React.lazy(() => import('../FinancialsTab'));
@@ -24,7 +24,7 @@ const RestaurantDashboard = ({ store }) => {
     { path: 'pedidos', label: 'Cocina y Pedidos', icon: ChefHat, element: <OrdersTab storeId={store.id} /> },
     { path: 'menu', label: 'Menú Digital', icon: UtensilsCrossed, element: <RestaurantMenuView /> }, // Specialized View
     { path: 'mesas', label: 'Mesas', icon: LayoutGrid, element: <TableManagementTab storeId={store.id} /> },
-    { path: 'mantenimiento', label: 'Mantenimiento', icon: Wrench, element: <KitchenMaintenanceView /> },
+    { path: 'mantenimiento', label: 'Mantenimiento', icon: Wrench, element: <KitchenMaintenanceView storeId={store.id} /> },
     { path: 'importar', label: 'Importar', icon: Upload, element: <BulkUploadTab storeId={store.id} /> },
     { path: 'finanzas', label: 'Finanzas', icon: DollarSign, element: <FinancialsTab storeId={store.id} /> },
     { path: 'equipo', label: 'Equipo', icon: Users, element: <AdminTab storeId={store.id} /> },

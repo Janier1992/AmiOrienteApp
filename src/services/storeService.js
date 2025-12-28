@@ -112,6 +112,24 @@ function manejarErrorSupabase(error, mensajeContexto) {
 // SERVICIO PRINCIPAL DE TIENDA
 // =============================================================================
 
+// Helper for Variants (Clothing)
+const parseVariants = (product) => {
+  if (!product) return product;
+  let variants = [];
+  const variantsMatch = product.description?.match(/VARIANTS_JSON:\s*(\[.*\])/s);
+  let cleanDesc = product.description || '';
+
+  if (variantsMatch) {
+    try {
+      variants = JSON.parse(variantsMatch[1]);
+      cleanDesc = product.description.replace(/\n\nVARIANTS_JSON:\s*\[.*\]/s, '');
+    } catch (e) {
+      console.error('Error parsing variants', e);
+    }
+  }
+  return { ...product, variants, description: cleanDesc, full_description: product.description };
+};
+
 export const storeService = {
 
   // ---------------------------------------------------------------------------
@@ -348,7 +366,12 @@ export const storeService = {
         manejarErrorSupabase(error, ERROR_PRODUCTOS_NO_CARGADOS);
       }
 
-      return listaProductos || [];
+      if (error) {
+        manejarErrorSupabase(error, ERROR_PRODUCTOS_NO_CARGADOS);
+      }
+
+      // Parse variants for all products (harmless for non-clothing)
+      return (listaProductos || []).map(parseVariants);
     } catch (error) {
       manejarErrorSupabase(error, ERROR_PRODUCTOS_NO_CARGADOS);
     }
@@ -383,10 +406,27 @@ export const storeService = {
       throw new Error('Los datos del producto son requeridos');
     }
 
+    // Handle Variants (Clothing)
+    const { variants, description, ...fields } = datosProducto;
+    let finalDescription = description || '';
+    let totalStock = fields.stock;
+
+    if (variants && Array.isArray(variants) && variants.length > 0) {
+      const variantsJson = JSON.stringify(variants);
+      finalDescription = `${description || ''}\n\nVARIANTS_JSON: ${variantsJson}`;
+      totalStock = variants.reduce((sum, v) => sum + (Number(v.qty) || 0), 0);
+    }
+
     try {
+      const payload = {
+        ...fields,
+        description: finalDescription,
+        stock: totalStock
+      };
+
       const { data: productoCreado, error } = await supabase
         .from('products')
-        .insert(datosProducto)
+        .insert(payload)
         .select()
         .single();
 
@@ -394,7 +434,7 @@ export const storeService = {
         manejarErrorSupabase(error, 'Error creando producto');
       }
 
-      return productoCreado;
+      return parseVariants(productoCreado);
     } catch (error) {
       manejarErrorSupabase(error, 'Error creando producto');
     }
@@ -537,6 +577,179 @@ export const storeService = {
   /** Alias para compatibilidad */
   async updateOrderStatus(orderId, status) {
     return this.actualizarEstadoPedido(orderId, status);
+  },
+
+  /**
+   * Elimina un pedido. (Solo si no tiene restricciones de FK que lo impidan, o si es cascada)
+   * @param {string} idPedido
+   */
+  async eliminarPedido(idPedido) {
+    validarId(idPedido, 'ID del pedido');
+    try {
+      const { error } = await supabase
+        .from('orders')
+        .delete()
+        .eq('id', idPedido);
+
+      if (error) {
+        manejarErrorSupabase(error, 'Error eliminando pedido');
+      }
+    } catch (error) {
+      manejarErrorSupabase(error, 'Error eliminando pedido');
+    }
+  },
+
+  /** Alias para compatibilidad */
+  async deleteOrder(orderId) {
+    return this.eliminarPedido(orderId);
+  },
+
+  // ---------------------------------------------------------------------------
+  // OPERACIONES DE MANTENIMIENTO (EQUIPOS)
+  // ---------------------------------------------------------------------------
+
+  async getEquipment(storeId) {
+    validarId(storeId, 'ID de la tienda');
+    try {
+      const { data, error } = await supabase
+        .from('store_equipment')
+        .select('*')
+        .eq('store_id', storeId)
+        .order('name');
+      if (error) throw error;
+      return data || [];
+    } catch (e) {
+      console.error('[storeService] Error cargando equipos:', e);
+      return [];
+    }
+  },
+
+  async addEquipment(equipmentData) {
+    try {
+      const { data, error } = await supabase.from('store_equipment').insert(equipmentData).select().single();
+      if (error) throw error;
+      return data;
+    } catch (e) {
+      console.error('[storeService] Error agregando equipo:', e);
+      throw e;
+    }
+  },
+
+  async updateEquipment(id, equipmentData) {
+    try {
+      const { data, error } = await supabase.from('store_equipment').update(equipmentData).eq('id', id).select().single();
+      if (error) throw error;
+      return data;
+    } catch (e) {
+      console.error('[storeService] Error actualizando equipo:', e);
+      throw e;
+    }
+  },
+
+  async deleteEquipment(id) {
+    try {
+      const { error } = await supabase.from('store_equipment').delete().eq('id', id);
+      if (error) throw error;
+    } catch (e) {
+      console.error('[storeService] Error eliminando equipo:', e);
+      throw e;
+    }
+  },
+
+  async getMaintenanceLogs(equipmentId) {
+    try {
+      const { data, error } = await supabase
+        .from('maintenance_logs')
+        .select('*')
+        .eq('equipment_id', equipmentId)
+        .order('date', { ascending: false });
+      if (error) throw error;
+      return data || [];
+    } catch (e) {
+      console.error('[storeService] Error cargando bitácora:', e);
+      return [];
+    }
+  },
+
+  async addMaintenanceLog(logData) {
+    try {
+      // 1. Insert Log
+      const { data, error } = await supabase.from('maintenance_logs').insert(logData).select().single();
+      if (error) throw error;
+
+      // 2. Update Equipment "Last Service" if needed (Optional, or handled by trigger. For now manual or just UI calculation).
+      // However, if we want to auto-update 'next_maintenance_date' based on type, we could do it here. 
+      // For simplicity, we just save the log.
+
+      return data;
+    } catch (e) {
+      console.error('[storeService] Error agregando bitácora:', e);
+      throw e;
+    }
+  },
+
+  // ---------------------------------------------------------------------------
+  // OPERACIONES ESPECÍFICAS (RESTAURANT TABLES)
+  // ---------------------------------------------------------------------------
+
+  async getTables(storeId) {
+    const { data, error } = await supabase
+      .from('restaurant_tables')
+      .select('*')
+      .eq('store_id', storeId)
+      .order('number');
+    if (error) throw error;
+    return data;
+  },
+
+  async createTable(tableData) {
+    const { data, error } = await supabase
+      .from('restaurant_tables')
+      .insert(tableData)
+      .select()
+      .single();
+    if (error) throw error;
+    return data;
+  },
+
+  async updateTableStatus(tableId, status) {
+    const { error } = await supabase
+      .from('restaurant_tables')
+      .update({ status })
+      .eq('id', tableId);
+    if (error) throw error;
+  },
+
+  // Optimized POS Transaction (Moved from restaurantService)
+  async createPOSTransaction({ orderPayload, items }) {
+    // 1. Create Order
+    const { data: orderData, error: orderError } = await supabase
+      .from('orders')
+      .insert(orderPayload)
+      .select()
+      .single();
+
+    if (orderError) throw orderError;
+
+    // 2. Create Order Items
+    const orderItems = items.map(item => ({
+      order_id: orderData.id,
+      product_id: item.id,
+      quantity: item.qty,
+      price: item.price
+    }));
+
+    const { error: itemsError } = await supabase
+      .from('order_items')
+      .insert(orderItems);
+
+    if (itemsError) {
+      console.error("Error creating items", itemsError);
+      // Optional: Delete order if items fail?
+      throw itemsError;
+    }
+
+    return orderData;
   }
 };
 

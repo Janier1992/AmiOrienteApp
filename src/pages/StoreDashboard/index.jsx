@@ -7,41 +7,8 @@ import LoadingSpinner from '@/components/shared/LoadingSpinner';
 import { Button } from '@/components/ui/button';
 import ErrorBoundary from '@/components/shared/ErrorBoundary';
 
-// -----------------------------------------------------------------------------
-// MODULE REGISTRY - SCALABILITY CONFIGURATION (Step 6 & 7)
-// -----------------------------------------------------------------------------
-// To add a new business module, simply import it and add it to the map below.
-
-const RestaurantDashboard = React.lazy(() => import('./dashboards/RestaurantDashboard'));
-const HotelDashboard = React.lazy(() => import('./dashboards/HotelDashboard'));
-const ClothingStoreDashboard = React.lazy(() => import('./dashboards/ClothingStoreDashboard'));
-const PharmacyDashboard = React.lazy(() => import('./dashboards/PharmacyDashboard'));
-const BakeryDashboard = React.lazy(() => import('./dashboards/BakeryDashboard'));
-const GroceryDashboard = React.lazy(() => import('./dashboards/GroceryDashboard'));
-const GeneralStoreDashboard = React.lazy(() => import('./dashboards/GeneralStoreDashboard'));
-const AgriculturalDashboard = React.lazy(() => import('./dashboards/AgriculturalDashboard'));
-const StationeryDashboard = React.lazy(() => import('./dashboards/StationeryDashboard'));
-
-/**
- * Maps business categories to their specific Dashboard components.
- * keys: Lowercase, normalized category names for matching.
- */
-const MODULE_REGISTRY = {
-    'restaurante': RestaurantDashboard,
-    'hotel': HotelDashboard,
-    'ropa': ClothingStoreDashboard,
-    'tienda de ropa': ClothingStoreDashboard, // Alias
-    'farmacia': PharmacyDashboard,
-    'panadería': BakeryDashboard,
-    'panaderia': BakeryDashboard, // No accent alias
-    'supermercado': GroceryDashboard,
-    'cultivador': AgriculturalDashboard,
-    'cultivadores': AgriculturalDashboard,
-    'papelería': StationeryDashboard,
-    'papeleria': StationeryDashboard
-};
-
-// -----------------------------------------------------------------------------
+// SCALABILITY UPDATE: Using Universal Dashboard for all Vertical Types
+const UniversalStoreDashboard = React.lazy(() => import('./dashboards/UniversalStoreDashboard'));
 
 const StoreDashboardRouter = () => {
     const { user, signOut } = useAuth();
@@ -108,25 +75,10 @@ const StoreDashboardRouter = () => {
         );
     }
 
-    // Logic to select dashboard
-    const getDashboardComponent = () => {
-        if (!store.category) return GeneralStoreDashboard;
-
-        const key = store.category.toLowerCase().trim();
-        const Component = MODULE_REGISTRY[key];
-
-        if (Component) return Component;
-
-        console.warn(`[StoreDashboardRouter] Unknown category: "${store.category}". Falling back to General Dashboard.`);
-        return GeneralStoreDashboard;
-    };
-
-    const SelectedDashboard = getDashboardComponent();
-
     return (
         <ErrorBoundary>
             <React.Suspense fallback={<div className="h-screen flex items-center justify-center"><LoadingSpinner text="Cargando panel..." /></div>}>
-                <SelectedDashboard store={store} />
+                <UniversalStoreDashboard />
             </React.Suspense>
         </ErrorBoundary>
     );

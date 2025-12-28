@@ -236,7 +236,7 @@ logger.error = (msg, options) => {
 
 export default defineConfig({
 	customLogger: logger,
-	base: '/AmiOrienteApp/', // Absolute base for GitHub Pages stability
+	base: './', // Relative base for flexible deployment
 	plugins: [
 		...(isDev ? [inlineEditPlugin(), editModeDevPlugin(), iframeRouteRestorationPlugin(), selectionModePlugin()] : []),
 		react(),

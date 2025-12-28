@@ -6,7 +6,7 @@ import BaseStoreDashboard from './BaseStoreDashboard';
 // Views
 import OverviewTab from '../OverviewTab';
 import RestaurantMenuView from '../views/RestaurantMenuView'; // Bakeries are visually similar to Menu/Food
-import OrdersTab from '../OrdersTab';
+import OrdersTab from '../OrdersManagementTab';
 import { BulkUploadTab } from '../BulkUploadTab';
 import FinancialsTab from '../FinancialsTab';
 import AdminTab from '../AdminTab';

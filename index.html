@@ -2,39 +2,220 @@
 <html lang="es">
 
 <head>
-  <meta charset="UTF-8" />
-  <link rel="icon"
-    href="https://horizons-cdn.hostinger.com/9a2f1d5f-26c5-4fa8-b3e7-17e2b7bc86a9/19a501ac223e689549688a235c3e1038.jpg" />
+	<meta charset="UTF-8" />
+	<link rel="icon"
+		href="https://horizons-cdn.hostinger.com/9a2f1d5f-26c5-4fa8-b3e7-17e2b7bc86a9/19a501ac223e689549688a235c3e1038.jpg" />
 
-  <!-- PWA Meta Tags -->
-  <meta name="viewport"
-    content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover" />
-  <meta name="theme-color" content="#16a34a" />
-  <meta name="description"
-    content="AmiOriente - La plataforma integral de servicios y domicilios del Oriente Antioqueño." />
+	<!-- PWA Meta Tags -->
+	<meta name="viewport"
+		content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover" />
+	<meta name="theme-color" content="#16a34a" />
+	<meta name="description"
+		content="AmiOriente - La plataforma integral de servicios y domicilios del Oriente Antioqueño." />
 
-  <!-- PWA Manifest handled by vite-plugin-pwa -->
-  <!-- <link rel="manifest" href="./manifest.json" /> -->
+	<!-- PWA Manifest handled by vite-plugin-pwa -->
+	<!-- <link rel="manifest" href="./manifest.json" /> -->
 
-  <!-- iOS Support -->
-  <link rel="apple-touch-icon" href="/AmiOrienteApp/logo.png" />
-  <link rel="apple-touch-icon" sizes="152x152" href="/AmiOrienteApp/logo.png" />
-  <link rel="apple-touch-icon" sizes="180x180" href="/AmiOrienteApp/logo.png" />
-  <link rel="apple-touch-icon" sizes="167x167" href="/AmiOrienteApp/logo.png" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="AmiOriente" />
+	<!-- iOS Support -->
+	<link rel="apple-touch-icon" href="/AmiOrienteApp/logo.png" />
+	<link rel="apple-touch-icon" sizes="152x152" href="/AmiOrienteApp/logo.png" />
+	<link rel="apple-touch-icon" sizes="180x180" href="/AmiOrienteApp/logo.png" />
+	<link rel="apple-touch-icon" sizes="167x167" href="/AmiOrienteApp/logo.png" />
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+	<meta name="apple-mobile-web-app-title" content="AmiOriente" />
 
-  <!-- Performance -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+	<!-- Performance -->
+	<link rel="preconnect" href="https://fonts.googleapis.com" />
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
-  <title>AmiOriente | Servicios y Domicilios</title>
-</head>
+	<title>AmiOriente | Servicios y Domicilios</title>
+  
+  
+  
+  
+  
+  
+  
+<link rel="manifest" href="data:application/manifest+json;base64,eyJuYW1lIjoiQW1pT3JpZW50ZSAtIFNlcnZpY2lvcyIsInNob3J0X25hbWUiOiJBbWlPcmllbnRlIiwiZGVzY3JpcHRpb24iOiJMYSBwbGF0YWZvcm1hIGludGVncmFsIGRlIHNlcnZpY2lvcywgZG9taWNpbGlvcyB5IHR1cmlzbW8gZW4gZWwgT3JpZW50ZSBBbnRpb3F1ZcOxby4iLCJzdGFydF91cmwiOiIvQW1pT3JpZW50ZUFwcC8iLCJkaXNwbGF5Ijoic3RhbmRhbG9uZSIsImJhY2tncm91bmRfY29sb3IiOiIjZmZmZmZmIiwidGhlbWVfY29sb3IiOiIjMTZhMzRhIiwibGFuZyI6ImVuIiwic2NvcGUiOiIvQW1pT3JpZW50ZUFwcC8iLCJpZCI6ImFtaW9yaWVudGUtYXBwLXYxIiwib3JpZW50YXRpb24iOiJwb3J0cmFpdCIsImNhdGVnb3JpZXMiOlsic2hvcHBpbmciLCJmb29kIiwidHJhdmVsIiwibGlmZXN0eWxlIl0sImljb25zIjpbeyJzcmMiOiIvQW1pT3JpZW50ZUFwcC9sb2dvLnBuZyIsInNpemVzIjoiMTkyeDE5MiIsInR5cGUiOiJpbWFnZS9wbmciLCJwdXJwb3NlIjoiYW55In0seyJzcmMiOiIvQW1pT3JpZW50ZUFwcC9sb2dvLnBuZyIsInNpemVzIjoiNTEyeDUxMiIsInR5cGUiOiJpbWFnZS9wbmciLCJwdXJwb3NlIjoiYW55IG1hc2thYmxlIn0seyJzcmMiOiIvQW1pT3JpZW50ZUFwcC9sb2dvLnBuZyIsInNpemVzIjoiMTgweDE4MCIsInR5cGUiOiJpbWFnZS9wbmciLCJwdXJwb3NlIjoiYW55In1dLCJzY3JlZW5zaG90cyI6W3sic3JjIjoiaHR0cHM6Ly9ob3Jpem9ucy1jZG4uaG9zdGluZ2VyLmNvbS85YTJmMWQ1Zi0yNmM1LTRmYTgtYjNlNy0xN2UyYjdiYzg2YTkvZWFhNWMzZWRlNjU3YTE0ZmIzZjVjYTc0MzQ5YTJkNTAuanBnIiwic2l6ZXMiOiIyMDcweDEzODAiLCJ0eXBlIjoiaW1hZ2UvanBlZyIsImZvcm1fZmFjdG9yIjoid2lkZSIsImxhYmVsIjoiVmlzdGEgUGFub3LDoW1pY2EgZGUgRGFzaGJvYXJkIn0seyJzcmMiOiJodHRwczovL2hvcml6b25zLWNkbi5ob3N0aW5nZXIuY29tLzlhMmYxZDVmLTI2YzUtNGZhOC1iM2U3LTE3ZTJiN2JjODZhOS9lYWE1YzNlZGU2NTdhMTRmYjNmNWNhNzQzNDlhMmQ1MC5qcGciLCJzaXplcyI6IjIwNzB4MTM4MCIsInR5cGUiOiJpbWFnZS9qcGVnIiwiZm9ybV9mYWN0b3IiOiJuYXJyb3ciLCJsYWJlbCI6IlZpc3RhIE3Ds3ZpbCJ9XX0K"><script id="vite-plugin-pwa:register-sw" src="./registerSW.js"></script>  
+  
+  
+  
+  
+  
+  
+<link rel="manifest" href="data:application/manifest+json;base64,eyJuYW1lIjoiQW1pT3JpZW50ZSAtIFNlcnZpY2lvcyIsInNob3J0X25hbWUiOiJBbWlPcmllbnRlIiwiZGVzY3JpcHRpb24iOiJMYSBwbGF0YWZvcm1hIGludGVncmFsIGRlIHNlcnZpY2lvcywgZG9taWNpbGlvcyB5IHR1cmlzbW8gZW4gZWwgT3JpZW50ZSBBbnRpb3F1ZcOxby4iLCJzdGFydF91cmwiOiIvQW1pT3JpZW50ZUFwcC8iLCJkaXNwbGF5Ijoic3RhbmRhbG9uZSIsImJhY2tncm91bmRfY29sb3IiOiIjZmZmZmZmIiwidGhlbWVfY29sb3IiOiIjMTZhMzRhIiwibGFuZyI6ImVuIiwic2NvcGUiOiIvQW1pT3JpZW50ZUFwcC8iLCJpZCI6ImFtaW9yaWVudGUtYXBwLXYxIiwib3JpZW50YXRpb24iOiJwb3J0cmFpdCIsImNhdGVnb3JpZXMiOlsic2hvcHBpbmciLCJmb29kIiwidHJhdmVsIiwibGlmZXN0eWxlIl0sImljb25zIjpbeyJzcmMiOiIvQW1pT3JpZW50ZUFwcC9sb2dvLnBuZyIsInNpemVzIjoiMTkyeDE5MiIsInR5cGUiOiJpbWFnZS9wbmciLCJwdXJwb3NlIjoiYW55In0seyJzcmMiOiIvQW1pT3JpZW50ZUFwcC9sb2dvLnBuZyIsInNpemVzIjoiNTEyeDUxMiIsInR5cGUiOiJpbWFnZS9wbmciLCJwdXJwb3NlIjoiYW55IG1hc2thYmxlIn0seyJzcmMiOiIvQW1pT3JpZW50ZUFwcC9sb2dvLnBuZyIsInNpemVzIjoiMTgweDE4MCIsInR5cGUiOiJpbWFnZS9wbmciLCJwdXJwb3NlIjoiYW55In1dLCJzY3JlZW5zaG90cyI6W3sic3JjIjoiaHR0cHM6Ly9ob3Jpem9ucy1jZG4uaG9zdGluZ2VyLmNvbS85YTJmMWQ1Zi0yNmM1LTRmYTgtYjNlNy0xN2UyYjdiYzg2YTkvZWFhNWMzZWRlNjU3YTE0ZmIzZjVjYTc0MzQ5YTJkNTAuanBnIiwic2l6ZXMiOiIyMDcweDEzODAiLCJ0eXBlIjoiaW1hZ2UvanBlZyIsImZvcm1fZmFjdG9yIjoid2lkZSIsImxhYmVsIjoiVmlzdGEgUGFub3LDoW1pY2EgZGUgRGFzaGJvYXJkIn0seyJzcmMiOiJodHRwczovL2hvcml6b25zLWNkbi5ob3N0aW5nZXIuY29tLzlhMmYxZDVmLTI2YzUtNGZhOC1iM2U3LTE3ZTJiN2JjODZhOS9lYWE1YzNlZGU2NTdhMTRmYjNmNWNhNzQzNDlhMmQ1MC5qcGciLCJzaXplcyI6IjIwNzB4MTM4MCIsInR5cGUiOiJpbWFnZS9qcGVnIiwiZm9ybV9mYWN0b3IiOiJuYXJyb3ciLCJsYWJlbCI6IlZpc3RhIE3Ds3ZpbCJ9XX0K"><script id="vite-plugin-pwa:register-sw" src="./registerSW.js"></script>  
+  
+  
+  
+  
+  
+  
+<link rel="manifest" href="data:application/manifest+json;base64,eyJuYW1lIjoiQW1pT3JpZW50ZSAtIFNlcnZpY2lvcyIsInNob3J0X25hbWUiOiJBbWlPcmllbnRlIiwiZGVzY3JpcHRpb24iOiJMYSBwbGF0YWZvcm1hIGludGVncmFsIGRlIHNlcnZpY2lvcywgZG9taWNpbGlvcyB5IHR1cmlzbW8gZW4gZWwgT3JpZW50ZSBBbnRpb3F1ZcOxby4iLCJzdGFydF91cmwiOiIvQW1pT3JpZW50ZUFwcC8iLCJkaXNwbGF5Ijoic3RhbmRhbG9uZSIsImJhY2tncm91bmRfY29sb3IiOiIjZmZmZmZmIiwidGhlbWVfY29sb3IiOiIjMTZhMzRhIiwibGFuZyI6ImVuIiwic2NvcGUiOiIvQW1pT3JpZW50ZUFwcC8iLCJpZCI6ImFtaW9yaWVudGUtYXBwLXYxIiwib3JpZW50YXRpb24iOiJwb3J0cmFpdCIsImNhdGVnb3JpZXMiOlsic2hvcHBpbmciLCJmb29kIiwidHJhdmVsIiwibGlmZXN0eWxlIl0sImljb25zIjpbeyJzcmMiOiIvQW1pT3JpZW50ZUFwcC9sb2dvLnBuZyIsInNpemVzIjoiMTkyeDE5MiIsInR5cGUiOiJpbWFnZS9wbmciLCJwdXJwb3NlIjoiYW55In0seyJzcmMiOiIvQW1pT3JpZW50ZUFwcC9sb2dvLnBuZyIsInNpemVzIjoiNTEyeDUxMiIsInR5cGUiOiJpbWFnZS9wbmciLCJwdXJwb3NlIjoiYW55IG1hc2thYmxlIn0seyJzcmMiOiIvQW1pT3JpZW50ZUFwcC9sb2dvLnBuZyIsInNpemVzIjoiMTgweDE4MCIsInR5cGUiOiJpbWFnZS9wbmciLCJwdXJwb3NlIjoiYW55In1dLCJzY3JlZW5zaG90cyI6W3sic3JjIjoiaHR0cHM6Ly9ob3Jpem9ucy1jZG4uaG9zdGluZ2VyLmNvbS85YTJmMWQ1Zi0yNmM1LTRmYTgtYjNlNy0xN2UyYjdiYzg2YTkvZWFhNWMzZWRlNjU3YTE0ZmIzZjVjYTc0MzQ5YTJkNTAuanBnIiwic2l6ZXMiOiIyMDcweDEzODAiLCJ0eXBlIjoiaW1hZ2UvanBlZyIsImZvcm1fZmFjdG9yIjoid2lkZSIsImxhYmVsIjoiVmlzdGEgUGFub3LDoW1pY2EgZGUgRGFzaGJvYXJkIn0seyJzcmMiOiJodHRwczovL2hvcml6b25zLWNkbi5ob3N0aW5nZXIuY29tLzlhMmYxZDVmLTI2YzUtNGZhOC1iM2U3LTE3ZTJiN2JjODZhOS9lYWE1YzNlZGU2NTdhMTRmYjNmNWNhNzQzNDlhMmQ1MC5qcGciLCJzaXplcyI6IjIwNzB4MTM4MCIsInR5cGUiOiJpbWFnZS9qcGVnIiwiZm9ybV9mYWN0b3IiOiJuYXJyb3ciLCJsYWJlbCI6IlZpc3RhIE3Ds3ZpbCJ9XX0K"><script id="vite-plugin-pwa:register-sw" src="./registerSW.js"></script>  
+  
+  
+  
+  
+  
+  
+<link rel="manifest" href="data:application/manifest+json;base64,eyJuYW1lIjoiQW1pT3JpZW50ZSAtIFNlcnZpY2lvcyIsInNob3J0X25hbWUiOiJBbWlPcmllbnRlIiwiZGVzY3JpcHRpb24iOiJMYSBwbGF0YWZvcm1hIGludGVncmFsIGRlIHNlcnZpY2lvcywgZG9taWNpbGlvcyB5IHR1cmlzbW8gZW4gZWwgT3JpZW50ZSBBbnRpb3F1ZcOxby4iLCJzdGFydF91cmwiOiIvQW1pT3JpZW50ZUFwcC8iLCJkaXNwbGF5Ijoic3RhbmRhbG9uZSIsImJhY2tncm91bmRfY29sb3IiOiIjZmZmZmZmIiwidGhlbWVfY29sb3IiOiIjMTZhMzRhIiwibGFuZyI6ImVuIiwic2NvcGUiOiIvQW1pT3JpZW50ZUFwcC8iLCJpZCI6ImFtaW9yaWVudGUtYXBwLXYxIiwib3JpZW50YXRpb24iOiJwb3J0cmFpdCIsImNhdGVnb3JpZXMiOlsic2hvcHBpbmciLCJmb29kIiwidHJhdmVsIiwibGlmZXN0eWxlIl0sImljb25zIjpbeyJzcmMiOiIvQW1pT3JpZW50ZUFwcC9sb2dvLnBuZyIsInNpemVzIjoiMTkyeDE5MiIsInR5cGUiOiJpbWFnZS9wbmciLCJwdXJwb3NlIjoiYW55In0seyJzcmMiOiIvQW1pT3JpZW50ZUFwcC9sb2dvLnBuZyIsInNpemVzIjoiNTEyeDUxMiIsInR5cGUiOiJpbWFnZS9wbmciLCJwdXJwb3NlIjoiYW55IG1hc2thYmxlIn0seyJzcmMiOiIvQW1pT3JpZW50ZUFwcC9sb2dvLnBuZyIsInNpemVzIjoiMTgweDE4MCIsInR5cGUiOiJpbWFnZS9wbmciLCJwdXJwb3NlIjoiYW55In1dLCJzY3JlZW5zaG90cyI6W3sic3JjIjoiaHR0cHM6Ly9ob3Jpem9ucy1jZG4uaG9zdGluZ2VyLmNvbS85YTJmMWQ1Zi0yNmM1LTRmYTgtYjNlNy0xN2UyYjdiYzg2YTkvZWFhNWMzZWRlNjU3YTE0ZmIzZjVjYTc0MzQ5YTJkNTAuanBnIiwic2l6ZXMiOiIyMDcweDEzODAiLCJ0eXBlIjoiaW1hZ2UvanBlZyIsImZvcm1fZmFjdG9yIjoid2lkZSIsImxhYmVsIjoiVmlzdGEgUGFub3LDoW1pY2EgZGUgRGFzaGJvYXJkIn0seyJzcmMiOiJodHRwczovL2hvcml6b25zLWNkbi5ob3N0aW5nZXIuY29tLzlhMmYxZDVmLTI2YzUtNGZhOC1iM2U3LTE3ZTJiN2JjODZhOS9lYWE1YzNlZGU2NTdhMTRmYjNmNWNhNzQzNDlhMmQ1MC5qcGciLCJzaXplcyI6IjIwNzB4MTM4MCIsInR5cGUiOiJpbWFnZS9qcGVnIiwiZm9ybV9mYWN0b3IiOiJuYXJyb3ciLCJsYWJlbCI6IlZpc3RhIE3Ds3ZpbCJ9XX0K"><script id="vite-plugin-pwa:register-sw" src="./registerSW.js"></script>  <script type="module" crossorigin src="./assets/index-87ab05f1.js"></script>
+  <link rel="stylesheet" href="./assets/index-dc19931e.css">
+  <script type="module">
+window.onerror = (message, source, lineno, colno, errorObj) => {
+	const errorDetails = errorObj ? JSON.stringify({
+		name: errorObj.name,
+		message: errorObj.message,
+		stack: errorObj.stack,
+		source,
+		lineno,
+		colno,
+	}) : null;
+
+	window.parent.postMessage({
+		type: 'horizons-runtime-error',
+		message,
+		error: errorDetails
+	}, '*');
+};
+</script>
+  <script type="module">
+const observer = new MutationObserver((mutations) => {
+	for (const mutation of mutations) {
+		for (const addedNode of mutation.addedNodes) {
+			if (
+				addedNode.nodeType === Node.ELEMENT_NODE &&
+				(
+					addedNode.tagName?.toLowerCase() === 'vite-error-overlay' ||
+					addedNode.classList?.contains('backdrop')
+				)
+			) {
+				handleViteOverlay(addedNode);
+			}
+		}
+	}
+});
+
+observer.observe(document.documentElement, {
+	childList: true,
+	subtree: true
+});
+
+function handleViteOverlay(node) {
+	if (!node.shadowRoot) {
+		return;
+	}
+
+	const backdrop = node.shadowRoot.querySelector('.backdrop');
+
+	if (backdrop) {
+		const overlayHtml = backdrop.outerHTML;
+		const parser = new DOMParser();
+		const doc = parser.parseFromString(overlayHtml, 'text/html');
+		const messageBodyElement = doc.querySelector('.message-body');
+		const fileElement = doc.querySelector('.file');
+		const messageText = messageBodyElement ? messageBodyElement.textContent.trim() : '';
+		const fileText = fileElement ? fileElement.textContent.trim() : '';
+		const error = messageText + (fileText ? ' File:' + fileText : '');
+
+		window.parent.postMessage({
+			type: 'horizons-vite-error',
+			error,
+		}, '*');
+	}
+}
+</script>
+  <script type="module">
+const originalConsoleError = console.error;
+console.error = function(...args) {
+	originalConsoleError.apply(console, args);
+
+	let errorString = '';
+
+	for (let i = 0; i < args.length; i++) {
+		const arg = args[i];
+		if (arg instanceof Error) {
+			errorString = arg.stack || `${arg.name}: ${arg.message}`;
+			break;
+		}
+	}
+
+	if (!errorString) {
+		errorString = args.map(arg => typeof arg === 'object' ? JSON.stringify(arg) : String(arg)).join(' ');
+	}
+
+	window.parent.postMessage({
+		type: 'horizons-console-error',
+		error: errorString
+	}, '*');
+};
+</script>
+  <script type="module">
+const originalFetch = window.fetch;
+
+window.fetch = function(...args) {
+	const url = args[0] instanceof Request ? args[0].url : args[0];
+
+	// Skip WebSocket URLs
+	if (url.startsWith('ws:') || url.startsWith('wss:')) {
+		return originalFetch.apply(this, args);
+	}
+
+	return originalFetch.apply(this, args)
+		.then(async response => {
+			const contentType = response.headers.get('Content-Type') || '';
+
+			// Exclude HTML document responses
+			const isDocumentResponse =
+				contentType.includes('text/html') ||
+				contentType.includes('application/xhtml+xml');
+
+			if (!response.ok && !isDocumentResponse) {
+					const responseClone = response.clone();
+					const errorFromRes = await responseClone.text();
+					const requestUrl = response.url;
+					console.error(`Fetch error from ${requestUrl}: ${errorFromRes}`);
+			}
+
+			return response;
+		})
+		.catch(error => {
+			if (!url.match(/.html?$/i)) {
+				console.error(error);
+			}
+
+			throw error;
+		});
+};
+</script>
+  <script type="module">
+if (window.navigation && window.self !== window.top) {
+	window.navigation.addEventListener('navigate', (event) => {
+		const url = event.destination.url;
+
+		try {
+			const destinationUrl = new URL(url);
+			const destinationOrigin = destinationUrl.origin;
+			const currentOrigin = window.location.origin;
+
+			if (destinationOrigin === currentOrigin) {
+				return;
+			}
+		} catch (error) {
+			return;
+		}
+
+		window.parent.postMessage({
+			type: 'horizons-navigation-error',
+			url,
+		}, '*');
+	});
+}
+</script>
+<link rel="manifest" href="./manifest.webmanifest"><script id="vite-plugin-pwa:register-sw" src="./registerSW.js"></script></head>
 
 <body>
-  <div id="root"></div>
-  <script type="module" src="/src/main.jsx"></script>
+	<div id="root"></div>
+	
 </body>
 
 </html>

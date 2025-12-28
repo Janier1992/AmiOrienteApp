@@ -7,7 +7,7 @@ import { useGroceryStore } from '@/stores/useGroceryStore';
 // Views
 import OverviewTab from '../OverviewTab';
 import SupermarketProductsView from '../views/SupermarketProductsView'; // Specialized View
-import OrdersTab from '../OrdersTab';
+import OrdersTab from '../OrdersManagementTab';
 import { BulkUploadTab } from '../BulkUploadTab';
 import FinancialsTab from '../FinancialsTab';
 import AdminTab from '../AdminTab';

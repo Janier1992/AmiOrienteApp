@@ -131,31 +131,34 @@ El sistema cuenta con un módulo de onboarding inteligente que guía a los difer
 
 ---
 
-## 🛠️ Guía de Desarrollo y Despliegue
+## 🛠️ Guía Rápida para Ejecutar el Proyecto
 
-### Requisitos Previos
-*   Node.js (v18+)
-*   NPM
+Si no eres programador, sigue estos 3 pasos sencillos para ver la aplicación funcionando en tu PC:
 
-### 1. Instalación Local
+### 1. Preparar el Entorno
+Necesitas tener instalado un programa llamado **Node.js** (es el motor que hace funcionar la app).
+*   Descárgalo e instálalo desde aquí: [Node.js Oficial](https://nodejs.org/) (Descarga la versión "LTS").
+
+### 2. Instalar las Dependencias
+Abre la carpeta del proyecto en una terminal (o Símbolo del Sistema) y escribe este comando:
 ```bash
-git clone https://github.com/Janier1992/AmiOrienteApp.git
-cd AmiOrienteApp
 npm install
 ```
+*Verás una barra de carga. Espera a que termine.*
 
-### 2. Ejecución en Desarrollo
+### 3. ¡Iniciar la App!
+Una vez termine de instalar, escribe este comando para encender el servidor:
 ```bash
 npm run dev
-# Abre http://localhost:5173
 ```
+Te aparecerá un enlace como `http://localhost:5173`. ¡Haz clic ahí o copialo en tu navegador para usar AmiOriente!
 
-### 3. Construcción (Build)
-Para generar la versión optimizada para producción:
+### Para Generar la Versión Final (Producción)
+Si quieres subir la app a internet, usa este comando:
 ```bash
 npm run build
-# Genera la carpeta 'dist' con archivos minificados y el Service Worker.
 ```
+Esto creará una carpeta llamada `dist` lista para subir a cualquier hosting.
 
 ### 4. Despliegue en GitHub Pages
 El proyecto está configurado para desplegarse en GitHub Pages usando rutas absolutas.

@@ -11,8 +11,14 @@ import { Helmet } from 'react-helmet';
 import AvailableOrdersTab from '@/components/delivery-dashboard/AvailableOrdersTab';
 import InProgressOrdersTab from '@/components/delivery-dashboard/InProgressOrdersTab';
 import HistoryOrdersTab from '@/components/delivery-dashboard/HistoryOrdersTab';
-import OrderDetailsModal from '@/components/delivery-dashboard/OrderDetailsModal';
-import deliveryService from '@/services/deliveryService';
+import EarningsTab from '@/components/delivery-dashboard/EarningsTab';
+
+// ... (existing imports)
+
+// ... inside DeliveryDashboard component ...
+
+
+
 
 // ... (DeliverySidebar component remains unchanged, assuming it is defined above or imported)
 const DeliverySidebar = ({ isOpen, onClose, activeTab, onTabChange, isConnected, onConnect, onLogout, user }) => {
@@ -297,7 +303,7 @@ const DeliveryDashboard = () => {
             <CardContent className="p-0 sm:p-6">
               {loading ? <div className="flex items-center justify-center p-8"><Loader2 className="animate-spin h-8 w-8 text-primary" /></div> : (
                 <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                  <TabsList className="grid w-full grid-cols-3 mb-6 bg-muted/50 p-1">
+                  <TabsList className="grid w-full grid-cols-4 mb-6 bg-muted/50 p-1">
                     <TabsTrigger id="tab-trigger-disponibles" value="disponibles" className="text-xs sm:text-sm">
                       <Package className="mr-1 sm:mr-2 h-4 w-4" />
                       <span className="hidden sm:inline">Disponibles</span> ({availableOrders.length})
@@ -309,6 +315,10 @@ const DeliveryDashboard = () => {
                     <TabsTrigger id="tab-trigger-historial" value="historial" className="text-xs sm:text-sm">
                       <History className="mr-1 sm:mr-2 h-4 w-4" />
                       <span className="hidden sm:inline">Historial</span> ({historyOrders.length})
+                    </TabsTrigger>
+                    <TabsTrigger id="tab-trigger-ganancias" value="ganancias" className="text-xs sm:text-sm">
+                      <DollarSign className="mr-1 sm:mr-2 h-4 w-4" />
+                      <span className="hidden sm:inline">Ganancias</span>
                     </TabsTrigger>
                   </TabsList>
 
@@ -331,6 +341,10 @@ const DeliveryDashboard = () => {
 
                     <TabsContent value="historial" className="mt-0">
                       <HistoryOrdersTab orders={historyOrders} />
+                    </TabsContent>
+
+                    <TabsContent value="ganancias" className="mt-0">
+                      <EarningsTab history={historyOrders} />
                     </TabsContent>
                   </div>
 

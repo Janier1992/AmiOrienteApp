@@ -1,0 +1,1 @@
+import{f as o,y as s,l as c}from"./index-bea51c07.js";const f=o.forwardRef(({className:e,children:r,...a},l)=>s.jsx("div",{ref:l,className:c("relative overflow-auto",e),...a,children:r}));f.displayName="ScrollArea";export{f as c};

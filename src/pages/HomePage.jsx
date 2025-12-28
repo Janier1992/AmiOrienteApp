@@ -53,9 +53,10 @@ const HomePage = () => {
                 transition={{ duration: 0.8 }}
                 className="text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-7xl drop-shadow-lg"
               >
-                <span className="block text-white mb-2">Conectando el</span>
+                <span className="block text-white mb-2">Conectando tu</span>
+                {/* TODO: Integrate RegionContext here for dynamic city name */}
                 <span className="block text-primary-foreground bg-clip-text text-transparent bg-gradient-to-r from-green-300 to-emerald-200">
-                  Oriente Antioqueño
+                  Región
                 </span>
               </motion.h1>
               <motion.p
@@ -64,7 +65,7 @@ const HomePage = () => {
                 transition={{ duration: 0.8, delay: 0.2 }}
                 className="mt-6 max-w-lg mx-auto text-xl md:text-2xl text-white/90 sm:max-w-3xl drop-shadow-md font-medium"
               >
-                Tu plataforma integral para domicilios, comercio, turismo y todos los servicios que nuestra hermosa región tiene para ofrecer.
+                Tu plataforma integral para domicilios, comercio, turismo y todos los servicios que nuestra comunidad tiene para ofrecer.
               </motion.p>
               <motion.div
                 initial={{ opacity: 0, y: 30 }}
@@ -99,8 +100,8 @@ const HomePage = () => {
               </p>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                <FeatureCard icon={<Store className="h-10 w-10 text-primary" />} title="Comercio Local" description="Apoya a los negocios y artesanos de Marinilla, Rionegro y alrededores." />
-                <FeatureCard icon={<Utensils className="h-10 w-10 text-primary" />} title="Gastronomía" description="Descubre los sabores únicos del Oriente en nuestros mejores restaurantes." />
+                <FeatureCard icon={<Store className="h-10 w-10 text-primary" />} title="Comercio Local" description="Apoya a los negocios y artesanos de tu ciudad y alrededores." />
+                <FeatureCard icon={<Utensils className="h-10 w-10 text-primary" />} title="Gastronomía" description="Descubre los sabores únicos de la región en nuestros mejores restaurantes." />
                 <FeatureCard icon={<Hotel className="h-10 w-10 text-primary" />} title="Turismo y Hoteles" description="Encuentra el lugar perfecto para tu próxima escapada de fin de semana." />
                 <FeatureCard icon={<Leaf className="h-10 w-10 text-primary" />} title="Del Campo a tu Mesa" description="Compra productos frescos directamente de nuestros campesinos locales." />
               </div>
@@ -118,7 +119,7 @@ const HomePage = () => {
               <RoleCard
                 icon={<Store className="h-10 w-10 text-primary" />}
                 title="Para Negocios"
-                description="Registra tu tienda, restaurante, hotel o servicio turístico y llega a más clientes en todo el Oriente."
+                description="Registra tu tienda, restaurante, hotel o servicio turístico y llega a más clientes en toda la región."
                 link="/servicios/registro"
                 buttonText="Comenzar ahora"
               />

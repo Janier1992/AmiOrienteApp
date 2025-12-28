@@ -6,7 +6,7 @@ import BaseStoreDashboard from './BaseStoreDashboard';
 // Views
 import OverviewTab from '../OverviewTab';
 import PharmacyProductsView from '../views/PharmacyProductsView'; // Specialized View
-import OrdersTab from '../OrdersTab';
+import OrdersTab from '../OrdersManagementTab';
 import GenericPOSView from '../views/GenericPOSView';
 import { BulkUploadTab } from '../BulkUploadTab';
 import FinancialsTab from '../FinancialsTab';

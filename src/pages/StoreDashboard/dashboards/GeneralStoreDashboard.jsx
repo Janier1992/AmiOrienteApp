@@ -15,7 +15,7 @@ import { useGeneralStore } from '@/stores/useGeneralStore';
 
 // Lazy Load Tabs
 const OverviewTab = lazy(() => import('../OverviewTab'));
-const OrdersTab = lazy(() => import('../OrdersTab'));
+const OrdersTab = lazy(() => import('../OrdersManagementTab'));
 // const ProductsTab = lazy(() => import('../ProductsTab')); // Replaced by QuickGrid
 const GenericPOSView = lazy(() => import('../views/GenericPOSView')); // POS
 const QuickGridProductView = lazy(() => import('../views/QuickGridProductView')); // Quick Grid

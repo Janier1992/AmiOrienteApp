@@ -376,6 +376,67 @@ export const customerService = {
     } catch (error) {
       manejarError(error, 'Error eliminando dirección');
     }
+  },
+
+  // ---------------------------------------------------------------------------
+  // OPERACIONES DE TIENDA (CATÁLOGO)
+  // ---------------------------------------------------------------------------
+
+  /**
+   * Obtiene la lista de tiendas con filtrado y paginación en servidor.
+   * Optimizado para escalabilidad (evita traer todas las tiendas a memoria).
+   * 
+   * @param {Object} params - Parámetros de búsqueda
+   * @param {number} [params.page=1] - Número de página
+   * @param {number} [params.limit=20] - Tiendas por página
+   * @param {string} [params.search=''] - Término de búsqueda (nombre, desc)
+   * @param {string} [params.category='Todos'] - Categoría a filtrar
+   * @param {string} [params.city] - Ciudad (Opcional, futuro soporte regional)
+   * @returns {Promise<{data: Array, count: number}>} Lista y total
+   */
+  async getStores({ page = 1, limit = 20, search = '', category = 'Todos', city = null }) {
+    try {
+      const from = (page - 1) * limit;
+      const to = from + limit - 1;
+
+      let query = supabase
+        .from('stores')
+        .select('*', { count: 'exact' });
+
+      // Filtrado por búsqueda de Texto
+      if (search) {
+        query = query.ilike('name', `%${search}%`);
+        // Nota: Para búsquedas más complejas en descripción/dirección, 
+        // se recomendaría crear un índice o función RPC, pero .or() funciona para escala media.
+        // query = query.or(`name.ilike.%${search}%,description.ilike.%${search}%`);
+      }
+
+      // Filtrado por Categoría
+      if (category && category !== 'Todos') {
+        query = query.eq('category', category);
+      }
+
+      // Filtrado por Ciudad (Preparado para escala)
+      if (city) {
+        // Asume campo 'city' o 'address' conteniendo la ciudad
+        query = query.ilike('address', `%${city}%`);
+      }
+
+      // Paginación
+      query = query
+        .order('is_open', { ascending: false }) // Tiendas abiertas primero (UX)
+        .order('created_at', { ascending: false })
+        .range(from, to);
+
+      const { data, error, count } = await query;
+
+      if (error) throw error;
+
+      return { data: data || [], count: count || 0 };
+    } catch (error) {
+      console.error('[customerService] Error buscando tiendas:', error);
+      return { data: [], count: 0 };
+    }
   }
 };
 

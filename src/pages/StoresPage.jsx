@@ -33,12 +33,12 @@ const StoreCard = ({ store }) => (
           </Badge>
         </div>
         <div className="absolute top-3 left-3">
-             <Badge variant="secondary" className="shadow-sm backdrop-blur-sm opacity-90">
-                {store.category}
-             </Badge>
+          <Badge variant="secondary" className="shadow-sm backdrop-blur-sm opacity-90">
+            {store.category}
+          </Badge>
         </div>
       </div>
-      
+
       <CardHeader className="p-4 pb-2">
         <div className="flex justify-between items-start">
           <h3 className="font-bold text-lg line-clamp-1 group-hover:text-primary transition-colors">
@@ -46,12 +46,12 @@ const StoreCard = ({ store }) => (
           </h3>
         </div>
       </CardHeader>
-      
+
       <CardContent className="p-4 pt-0 flex-grow">
         <p className="text-sm text-muted-foreground line-clamp-2 mb-3 h-10">
           {store.description}
         </p>
-        
+
         <div className="space-y-1.5 text-sm text-slate-600">
           <div className="flex items-center gap-2">
             <MapPin className="w-3.5 h-3.5 text-primary shrink-0" />
@@ -62,10 +62,10 @@ const StoreCard = ({ store }) => (
             <span className="truncate">{store.hours || '8:00 AM - 8:00 PM'}</span>
           </div>
           {store.phone && (
-             <div className="flex items-center gap-2">
-                <Phone className="w-3.5 h-3.5 text-primary shrink-0" />
-                <span className="truncate">{store.phone}</span>
-             </div>
+            <div className="flex items-center gap-2">
+              <Phone className="w-3.5 h-3.5 text-primary shrink-0" />
+              <span className="truncate">{store.phone}</span>
+            </div>
           )}
         </div>
 
@@ -79,7 +79,7 @@ const StoreCard = ({ store }) => (
           </div>
         )}
       </CardContent>
-      
+
       <CardFooter className="p-4 pt-0 mt-auto border-t border-slate-100 bg-slate-50/50">
         <Button className="w-full mt-3 bg-white text-primary border border-primary hover:bg-primary hover:text-white transition-colors">
           <ShoppingBag className="w-4 h-4 mr-2" />
@@ -95,49 +95,55 @@ const StoresPage = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('Todos');
+  const [page, setPage] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
 
+  // Debounce search
   useEffect(() => {
-    const fetchStores = async () => {
-      setLoading(true);
-      try {
-        // Try to fetch real data
-        const { data, error } = await supabase
-          .from('stores')
-          .select('*')
-          .order('created_at', { ascending: false });
+    const timer = setTimeout(() => {
+      fetchStores();
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [searchTerm, selectedCategory, page]);
 
-        if (error) throw error;
+  const fetchStores = async () => {
+    setLoading(true);
+    try {
+      const { data, count } = await customerService.getStores({
+        page,
+        limit: 12, // 12 items per page
+        search: searchTerm,
+        category: selectedCategory
+      });
 
-        // Combine real data with sample data to ensure the view is never empty
-        // In a real production app, you might want to only show real data
-        const combinedStores = [...(data || []), ...SAMPLE_STORES];
-        
-        // Remove duplicates if real data overlaps with sample ids
-        const uniqueStores = Array.from(new Map(combinedStores.map(item => [item.id, item])).values());
-        
-        setStores(uniqueStores);
-      } catch (error) {
-        console.error('Error fetching stores, using sample data:', error);
+      // If we have search/filter results, prioritize them. 
+      // Fallback to SAMPLE_STORES only if strictly necessary and in dev mode (skipping for prod scalability)
+      if (data.length === 0 && !searchTerm && selectedCategory === 'Todos') {
+        // Optional: Keep sample data logic if needed for demo
         setStores(SAMPLE_STORES);
-      } finally {
-        setLoading(false);
+      } else {
+        setStores(data);
       }
-    };
+      setTotalCount(count);
 
-    fetchStores();
-  }, []);
+    } catch (error) {
+      console.error('Error fetching stores:', error);
+      // Fallback
+      setStores(SAMPLE_STORES);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  const filteredStores = useMemo(() => {
-    return stores.filter(store => {
-      const matchesSearch = store.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          store.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          store.address?.toLowerCase().includes(searchTerm.toLowerCase());
-      
-      const matchesCategory = selectedCategory === 'Todos' || store.category === selectedCategory;
-      
-      return matchesSearch && matchesCategory;
-    });
-  }, [stores, searchTerm, selectedCategory]);
+  const handleCategoryChange = (cat) => {
+    setSelectedCategory(cat);
+    setPage(1); // Reset to page 1 on filter change
+  };
+
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+    setPage(1); // Reset to page 1
+  };
 
   return (
     <>
@@ -147,10 +153,10 @@ const StoresPage = () => {
       </Helmet>
 
       <div className="min-h-screen bg-slate-50 pb-20">
-        <PageHeader 
-            title="Directorio de Servicios" 
-            description="Lo que necesitas, cuando lo necesitas. Apoya el comercio local."
-            backgroundImage="https://images.unsplash.com/photo-1556742502-ec7c0e9f34b1?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80"
+        <PageHeader
+          title="Directorio de Servicios"
+          description="Lo que necesitas, cuando lo necesitas. Apoya el comercio local."
+          backgroundImage="https://images.unsplash.com/photo-1556742502-ec7c0e9f34b1?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80"
         />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8 relative z-10">
@@ -162,24 +168,24 @@ const StoresPage = () => {
                   placeholder="Buscar restaurantes, farmacias, tiendas..."
                   className="pl-9 bg-slate-50 border-slate-200"
                   value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onChange={handleSearchChange}
                 />
               </div>
               <div className="flex gap-2 w-full md:w-auto overflow-x-auto pb-2 md:pb-0 no-scrollbar">
-                <Button 
-                   variant={selectedCategory === 'Todos' ? 'default' : 'outline'}
-                   size="sm"
-                   onClick={() => setSelectedCategory('Todos')}
-                   className="whitespace-nowrap"
+                <Button
+                  variant={selectedCategory === 'Todos' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => handleCategoryChange('Todos')}
+                  className="whitespace-nowrap"
                 >
-                    Todos
+                  Todos
                 </Button>
                 {SERVICE_CATEGORIES_LIST.map(cat => (
                   <Button
                     key={cat}
                     variant={selectedCategory === cat ? 'default' : 'outline'}
                     size="sm"
-                    onClick={() => setSelectedCategory(cat)}
+                    onClick={() => handleCategoryChange(cat)}
                     className="whitespace-nowrap"
                   >
                     {cat}
@@ -192,45 +198,66 @@ const StoresPage = () => {
 
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
           {loading ? (
-             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                {[1,2,3,4].map(i => (
-                    <div key={i} className="h-80 bg-slate-200 rounded-xl animate-pulse"></div>
-                ))}
-             </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {[1, 2, 3, 4].map(i => (
+                <div key={i} className="h-80 bg-slate-200 rounded-xl animate-pulse"></div>
+              ))}
+            </div>
           ) : (
             <>
-                <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-xl font-bold text-slate-800">
-                        {filteredStores.length} Resultados
-                    </h2>
-                    <Button variant="ghost" size="sm" className="text-slate-500">
-                        <Filter className="w-4 h-4 mr-2" />
-                        Más Filtros
-                    </Button>
-                </div>
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-bold text-slate-800">
+                  {stores.length} Resultados {totalCount > 0 && `de ${totalCount}`}
+                </h2>
+                {/* Pagination Controls could go here */}
+                <Button variant="ghost" size="sm" className="text-slate-500">
+                  <Filter className="w-4 h-4 mr-2" />
+                  Más Filtros
+                </Button>
+              </div>
 
-                <AnimatePresence mode='popLayout'>
-                    {filteredStores.length > 0 ? (
-                        <motion.div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                        {filteredStores.map(store => (
-                            <StoreCard key={store.id} store={store} />
-                        ))}
-                        </motion.div>
-                    ) : (
-                        <div className="text-center py-20">
-                            <ShoppingBag className="h-16 w-16 text-slate-300 mx-auto mb-4" />
-                            <h3 className="text-lg font-medium text-slate-900">No encontramos lo que buscas</h3>
-                            <p className="text-slate-500">Intenta cambiar los términos de búsqueda o la categoría.</p>
-                            <Button 
-                                variant="link" 
-                                onClick={() => {setSearchTerm(''); setSelectedCategory('Todos')}}
-                                className="mt-2"
-                            >
-                                Limpiar filtros
-                            </Button>
-                        </div>
-                    )}
-                </AnimatePresence>
+              <AnimatePresence mode='popLayout'>
+                {stores.length > 0 ? (
+                  <div className="space-y-8">
+                    <motion.div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                      {stores.map(store => (
+                        <StoreCard key={store.id} store={store} />
+                      ))}
+                    </motion.div>
+
+                    {/* Simple Pagination */}
+                    <div className="flex justify-center gap-2 mt-8">
+                      <Button
+                        variant="outline"
+                        onClick={() => setPage(p => Math.max(1, p - 1))}
+                        disabled={page === 1}
+                      >
+                        Anterior
+                      </Button>
+                      <Button
+                        variant="outline"
+                        onClick={() => setPage(p => p + 1)}
+                        disabled={stores.length < 12}
+                      >
+                        Siguiente
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-center py-20">
+                    <ShoppingBag className="h-16 w-16 text-slate-300 mx-auto mb-4" />
+                    <h3 className="text-lg font-medium text-slate-900">No encontramos lo que buscas</h3>
+                    <p className="text-slate-500">Intenta cambiar los términos de búsqueda o la categoría.</p>
+                    <Button
+                      variant="link"
+                      onClick={() => { setSearchTerm(''); setSelectedCategory('Todos'); }}
+                      className="mt-2"
+                    >
+                      Limpiar filtros
+                    </Button>
+                  </div>
+                )}
+              </AnimatePresence>
             </>
           )}
         </main>

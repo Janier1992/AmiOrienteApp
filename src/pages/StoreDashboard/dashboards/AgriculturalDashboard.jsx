@@ -8,7 +8,7 @@ import AgroCropsView from '../views/AgroCropsView'; // Specialized View
 // import ProductsTab from '../ProductsTab'; // OLD
 import GenericPOSView from '../views/GenericPOSView';
 import AgroLogisticsView from '../views/AgroLogisticsView';
-import OrdersTab from '../OrdersTab';
+import OrdersTab from '../OrdersManagementTab';
 import { BulkUploadTab } from '../BulkUploadTab';
 import FinancialsTab from '../FinancialsTab';
 import AdminTab from '../AdminTab'; // Equipo / Trabajadores

@@ -5,7 +5,7 @@ import BaseStoreDashboard from './BaseStoreDashboard';
 // Views
 import OverviewTab from '../OverviewTab';
 import ClothingProductsView from '../views/ClothingProductsView'; // Specialized View
-import OrdersTab from '../OrdersTab';
+import OrdersTab from '../OrdersManagementTab';
 import FinancialsTab from '../FinancialsTab';
 import StoreSettingsTab from '../views/StoreSettingsTab'; // Standardized Base Component
 import StoreCustomersTab from '../views/StoreCustomersTab'; // Standardized Base Component

@@ -20,7 +20,7 @@ import StoreCustomersTab from '../views/StoreCustomersTab';
 
 // Lazy Load Tabs
 const OverviewTab = React.lazy(() => import('../OverviewTab'));
-const OrdersTab = React.lazy(() => import('../OrdersTab'));
+const OrdersTab = React.lazy(() => import('../OrdersManagementTab'));
 // ProfileTab replaced by StoreSettingsTab
 const AdminTab = React.lazy(() => import('../AdminTab'));
 const BulkUploadTab = React.lazy(() => import('../BulkUploadTab'));

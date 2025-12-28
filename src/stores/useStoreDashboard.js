@@ -61,6 +61,9 @@ export const useStoreDashboard = create((set, get) => ({
   /** Lista de clientes de la tienda (Base Model: Usuarios) */
   customers: [],
 
+  /** Mesas del restaurante (Recurso Específico) */
+  tables: [],
+
   // ---------------------------------------------------------------------------
   // ESTADOS DE CARGA (Granulares para mejor UX)
   // ---------------------------------------------------------------------------
@@ -148,6 +151,23 @@ export const useStoreDashboard = create((set, get) => ({
   },
 
   /**
+   * Carga las mesas (para restaurantes).
+   */
+  fetchTables: async (storeId) => {
+    try {
+      const tables = await storeService.getTables(storeId);
+      set({ tables });
+    } catch (e) {
+      console.error('[useStoreDashboard] Error loading tables', e);
+    }
+  },
+
+  /** Wrapper para transacción POS */
+  createPOSTransaction: async (payload) => {
+    return storeService.createPOSTransaction(payload);
+  },
+
+  /**
    * Limpia el error actual.
    */
   clearError: () => set({ error: null }),
@@ -156,35 +176,20 @@ export const useStoreDashboard = create((set, get) => ({
   // CARGA DE DATOS DE TIENDA
   // ---------------------------------------------------------------------------
 
-  /**
-   * Carga los datos de la tienda del usuario.
-   * Esta es la función principal que se llama al entrar al dashboard.
-   * 
-   * @param {string} userId - UUID del usuario propietario
-   * @returns {Promise<void>}
-   * 
-   * @example
-   * // Al montar el componente del dashboard
-   * useEffect(() => {
-   *   if (user?.id) fetchStoreData(user.id);
-   * }, [user]);
-   */
   fetchStoreData: async (userId) => {
-    // Validación
     if (!userId) {
       console.warn('[useStoreDashboard] fetchStoreData: userId requerido');
       return;
     }
 
-    // Evitar cargas duplicadas
     const currentStore = get().store;
-    if (currentStore && currentStore.owner_id === userId) {
-      return;
+    // Stale-While-Revalidate: If we have data, don't set loading to true immediately for "hard" loading
+    // We can use a separate "isRefetching" state if we wanted to show a small spinner, but for now we just keep data visible.
+
+    if (!currentStore || currentStore.owner_id !== userId) {
+      set({ isLoadingStore: true, error: null });
     }
 
-    set({ isLoadingStore: true, error: null });
-
-    // Timeout de seguridad para evitar pantallas de carga infinitas
     const timeoutId = setTimeout(() => {
       if (get().isLoadingStore) {
         set({
@@ -195,13 +200,11 @@ export const useStoreDashboard = create((set, get) => ({
     }, TIMEOUT_CARGA);
 
     try {
-      // Usar el servicio para obtener datos de tienda
       const datosTienda = await storeService.obtenerTiendaPorPropietario(userId);
 
       clearTimeout(timeoutId);
       set({ store: datosTienda });
 
-      // Cargar estadísticas en segundo plano si la tienda existe
       if (datosTienda) {
         get().fetchStats(datosTienda.id);
       }
@@ -218,29 +221,22 @@ export const useStoreDashboard = create((set, get) => ({
   // CARGA DE ESTADÍSTICAS
   // ---------------------------------------------------------------------------
 
-  /**
-   * Carga las estadísticas de la tienda.
-   * Implementa caché para evitar peticiones frecuentes.
-   * 
-   * @param {string} storeId - UUID de la tienda
-   * @param {boolean} [force=false] - Si true, ignora el caché
-   * @returns {Promise<void>}
-   */
   fetchStats: async (storeId, force = false) => {
     if (!storeId) return;
 
     const ahora = Date.now();
     const ultimaCarga = get().lastFetch.stats;
+    const hasData = !!get().stats;
 
-    // Usar caché si no ha expirado y no es forzado
-    if (!force && ahora - ultimaCarga < DURACION_CACHE && get().stats) {
+    // Cache hit: If fresh (< 2 min), do nothing
+    if (!force && ahora - ultimaCarga < DURACION_CACHE && hasData) {
       return;
     }
 
-    set({ isLoadingStats: true });
+    // Stale-While-Revalidate: Only show full loader if we have NO data
+    if (!hasData) set({ isLoadingStats: true });
 
     try {
-      // Cargar estadísticas e ingresos mensuales en paralelo
       const [estadisticas, ingresosMensuales] = await Promise.all([
         storeService.obtenerEstadisticasTienda(storeId).catch(() => ({})),
         storeService.obtenerIngresosMensuales(storeId).catch(() => [])
@@ -252,7 +248,6 @@ export const useStoreDashboard = create((set, get) => ({
       }));
     } catch (error) {
       console.error("[useStoreDashboard] Error cargando estadísticas:", error);
-      // No establecer error global para estadísticas (no es crítico)
     } finally {
       set({ isLoadingStats: false });
     }
@@ -262,26 +257,20 @@ export const useStoreDashboard = create((set, get) => ({
   // CARGA DE PEDIDOS
   // ---------------------------------------------------------------------------
 
-  /**
-   * Carga los pedidos de la tienda.
-   * Implementa caché para optimizar rendimiento.
-   * 
-   * @param {string} storeId - UUID de la tienda
-   * @param {boolean} [force=false] - Si true, ignora el caché
-   * @returns {Promise<void>}
-   */
   fetchOrders: async (storeId, force = false) => {
     if (!storeId) return;
 
     const ahora = Date.now();
     const ultimaCarga = get().lastFetch.orders;
+    const hasData = get().orders.length > 0;
 
-    // Usar caché si no ha expirado
-    if (!force && ahora - ultimaCarga < DURACION_CACHE && get().orders.length > 0) {
+    // Cache hit
+    if (!force && ahora - ultimaCarga < DURACION_CACHE && hasData) {
       return;
     }
 
-    set({ isLoadingOrders: true });
+    // SWR: Only loading if no data
+    if (!hasData) set({ isLoadingOrders: true });
 
     try {
       const listaPedidos = await storeService.obtenerPedidos(storeId);
@@ -301,26 +290,19 @@ export const useStoreDashboard = create((set, get) => ({
   // CARGA DE PRODUCTOS
   // ---------------------------------------------------------------------------
 
-  /**
-   * Carga los productos de la tienda.
-   * Implementa caché para optimizar rendimiento.
-   * 
-   * @param {string} storeId - UUID de la tienda
-   * @param {boolean} [force=false] - Si true, ignora el caché
-   * @returns {Promise<void>}
-   */
   fetchProducts: async (storeId, force = false) => {
     if (!storeId) return;
 
     const ahora = Date.now();
     const ultimaCarga = get().lastFetch.products;
+    const hasData = get().products.length > 0;
 
-    // Usar caché si no ha expirado
-    if (!force && ahora - ultimaCarga < DURACION_CACHE && get().products.length > 0) {
+    if (!force && ahora - ultimaCarga < DURACION_CACHE && hasData) {
       return;
     }
 
-    set({ isLoadingProducts: true });
+    // SWR
+    if (!hasData) set({ isLoadingProducts: true });
 
     try {
       const listaProductos = await storeService.obtenerProductos(storeId);
@@ -365,6 +347,23 @@ export const useStoreDashboard = create((set, get) => ({
       }));
     } catch (error) {
       console.error("[useStoreDashboard] Error actualizando pedido:", error);
+      throw error;
+    }
+  },
+
+  /**
+   * Elimina un pedido.
+   * @param {string} orderId
+   */
+  deleteOrder: async (orderId) => {
+    if (!orderId) throw new Error('ID requerido');
+    try {
+      await storeService.eliminarPedido(orderId);
+      set(state => ({
+        orders: state.orders.filter(o => o.id !== orderId)
+      }));
+    } catch (error) {
+      console.error("Error deleting order:", error);
       throw error;
     }
   },

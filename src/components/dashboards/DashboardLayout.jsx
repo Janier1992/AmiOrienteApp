@@ -1,47 +1,32 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Helmet } from 'react-helmet';
-import { DashboardSidebar } from './DashboardSidebar';
 import { Button } from '@/components/ui/button';
-import { Menu } from 'lucide-react';
-import { useLocation } from 'react-router-dom';
+import { Menu, Home, LogOut, ChevronRight, X } from 'lucide-react'; // Imports shifted to Sheet component mostly
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Link, useLocation } from 'react-router-dom';
+import { useAuth } from '@/contexts/SupabaseAuthContext';
+import { cn } from '@/lib/utils';
+
+// Redefining Sidebar Internal Content here or importing it?
+// To avoid circular deps or complex prop drilling, let's keep the Navigation Logic localized or passed pure.
+// Actually, `DashboardSidebar` in previous step handled BOTH desktop and mobile trigger. 
+// So DashboardLayout just needs to provide the Main Content area and let Sidebar handle itself.
+
+import { DashboardSidebar } from './DashboardSidebar';
 
 export const DashboardLayout = ({ title, navItems, children }) => {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const location = useLocation();
-
-  // Close sidebar on route change (mobile)
-  useEffect(() => {
-    setIsSidebarOpen(false);
-  }, [location.pathname]);
-
   return (
     <div className="min-h-screen bg-slate-50 flex">
       <Helmet>
         <title>{title || 'Dashboard'} | AmiOriente</title>
       </Helmet>
 
-      {/* Mobile Toggle Button - Fixed and Z-indexed to be above everything */}
-      <Button
-        variant="outline"
-        size="icon"
-        className="fixed top-4 left-4 z-[60] lg:hidden shadow-md bg-white border-slate-200 text-slate-700 hover:bg-slate-50"
-        onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-      >
-        <Menu className="h-5 w-5" />
-        <span className="sr-only">Abrir menú</span>
-      </Button>
+      {/* Sidebar (Handles its own Mobile Trigger/Drawer) */}
+      <DashboardSidebar title={title} navItems={navItems} />
 
-      {/* Sidebar Component */}
-      <DashboardSidebar
-        title={title}
-        navItems={navItems}
-        isOpen={isSidebarOpen}
-        toggleSidebar={setIsSidebarOpen}
-      />
-
-      {/* Main Content Area - Proper margin for desktop sidebar */}
-      <main className="flex-1 min-w-0 transition-all duration-300 ease-in-out lg:ml-64 w-full">
+      {/* Main Content Area */}
+      <main className="flex-1 min-w-0 transition-all duration-300 ease-in-out lg:ml-72 w-full">
         <div className="h-full p-4 sm:p-6 lg:p-8 mt-14 lg:mt-0 animate-in fade-in duration-500">
           {children}
         </div>

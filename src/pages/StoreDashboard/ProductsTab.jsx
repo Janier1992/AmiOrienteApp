@@ -13,13 +13,19 @@ import { toast } from '@/components/ui/use-toast';
 import LoadingSpinner from '@/components/shared/LoadingSpinner';
 import { supabase } from '@/lib/customSupabaseClient';
 
-const ProductsTab = ({ storeId }) => {
+const ProductsTab = ({ storeId, terminology = {} }) => {
   // Using granular loading state
   const { products, fetchProducts, addProduct, updateProduct, deleteProduct, isLoadingProducts } = useStoreDashboard();
   const [searchTerm, setSearchTerm] = useState('');
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [editingId, setEditingId] = useState(null);
+
+  // Terminology Defaults
+  const T = {
+    product: terminology.product || 'Producto',
+    inventory: terminology.inventory || 'Stock'
+  };
 
   // Form State
   const [formData, setFormData] = useState({
@@ -109,10 +115,10 @@ const ProductsTab = ({ storeId }) => {
 
       if (editingId) {
         await updateProduct(editingId, productPayload);
-        toast({ title: "Producto actualizado", description: "Los cambios se han guardado correctamente." });
+        toast({ title: `${T.product} actualizado`, description: "Los cambios se han guardado correctamente." });
       } else {
         await addProduct(productPayload);
-        toast({ title: "Producto creado", description: "El producto se ha añadido correctamente." });
+        toast({ title: `${T.product} creado`, description: `El ${T.product.toLowerCase()} se ha añadido correctamente.` });
       }
 
       setIsAddOpen(false);
@@ -127,39 +133,39 @@ const ProductsTab = ({ storeId }) => {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm("¿Estás seguro de eliminar este producto?")) return;
+    if (!window.confirm(`¿Estás seguro de eliminar este ${T.product.toLowerCase()}?`)) return;
     try {
       await deleteProduct(id);
-      toast({ title: "Producto eliminado" });
+      toast({ title: `${T.product} eliminado` });
     } catch (error) {
-      toast({ title: "Error", description: "No se pudo eliminar el producto.", variant: "destructive" });
+      toast({ title: "Error", description: `No se pudo eliminar el ${T.product.toLowerCase()}.`, variant: "destructive" });
     }
   };
 
   // Only show full spinner if we have absolutely no data
-  if (isLoadingProducts && products.length === 0) return <LoadingSpinner text="Cargando inventario..." />;
+  if (isLoadingProducts && products.length === 0) return <LoadingSpinner text={`Cargando ${T.product}s...`} />;
 
   return (
     <Card className="h-full border-none shadow-none sm:border sm:shadow-sm animate-in fade-in duration-300">
       <CardHeader className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 px-4 sm:px-6">
         <div>
-          <CardTitle>Inventario de Productos</CardTitle>
-          <CardDescription>Gestiona tus productos, precios y existencias.</CardDescription>
+          <CardTitle>Inventario de {T.product}s</CardTitle>
+          <CardDescription>Gestiona tus {T.product.toLowerCase()}s, precios y {T.inventory.toLowerCase()}.</CardDescription>
         </div>
         <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
           <DialogTrigger asChild>
             <Button className="w-full sm:w-auto bg-green-600 hover:bg-green-700" onClick={openAddModal}>
-              <Plus className="h-4 w-4 mr-2" /> Nuevo Producto
+              <Plus className="h-4 w-4 mr-2" /> Nuevo {T.product}
             </Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>{editingId ? "Editar Producto" : "Agregar Nuevo Producto"}</DialogTitle>
+              <DialogTitle>{editingId ? `Editar ${T.product}` : `Agregar Nuevo ${T.product}`}</DialogTitle>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4 py-4">
               <div className="space-y-2">
-                <Label htmlFor="name">Nombre del Producto</Label>
-                <Input id="name" name="name" required value={formData.name} onChange={handleInputChange} placeholder="Ej: Aguacates Hass" />
+                <Label htmlFor="name">Nombre del {T.product}</Label>
+                <Input id="name" name="name" required value={formData.name} onChange={handleInputChange} placeholder={`Ej: ${T.product} 1`} />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
@@ -167,7 +173,7 @@ const ProductsTab = ({ storeId }) => {
                   <Input id="price" name="price" type="number" required value={formData.price} onChange={handleInputChange} placeholder="0.00" />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="stock">Stock Disponible</Label>
+                  <Label htmlFor="stock">{T.inventory} Disponible</Label>
                   <Input id="stock" name="stock" type="number" required value={formData.stock} onChange={handleInputChange} />
                 </div>
               </div>
@@ -176,7 +182,7 @@ const ProductsTab = ({ storeId }) => {
                 <Input id="category" name="category" value={formData.category} onChange={handleInputChange} />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="image_upload">Imagen del Producto</Label>
+                <Label htmlFor="image_upload">Imagen</Label>
                 <div className="flex items-center gap-4">
                   {formData.image_url && (
                     <img src={formData.image_url} alt="Preview" className="h-10 w-10 object-cover rounded border" />
@@ -189,7 +195,7 @@ const ProductsTab = ({ storeId }) => {
                 <Textarea id="description" name="description" value={formData.description} onChange={handleInputChange} rows={3} />
               </div>
               <Button type="submit" className="w-full bg-green-600 hover:bg-green-700" disabled={isSubmitting}>
-                {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : (editingId ? "Actualizar Producto" : "Guardar Producto")}
+                {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : (editingId ? `Actualizar ${T.product}` : `Guardar ${T.product}`)}
               </Button>
             </form>
           </DialogContent>
@@ -200,7 +206,7 @@ const ProductsTab = ({ storeId }) => {
           <div className="relative w-full max-w-sm">
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Buscar productos..."
+              placeholder={`Buscar ${T.product.toLowerCase()}s...`}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-8"
@@ -208,14 +214,68 @@ const ProductsTab = ({ storeId }) => {
           </div>
         </div>
 
-        <div className="rounded-md border overflow-hidden">
+        {/* Mobile View: Cards */}
+        <div className="grid grid-cols-1 gap-4 md:hidden">
+          {filteredProducts.length === 0 ? (
+            <div className="h-24 text-center text-muted-foreground flex flex-col justify-center items-center">
+              <Package className="h-8 w-8 mb-2 opacity-50" />
+              <p>No se encontraron resultados.</p>
+            </div>
+          ) : (
+            filteredProducts.map((product) => (
+              <Card key={product.id} className="overflow-hidden">
+                <div className="flex p-4 gap-4">
+                  {/* Image */}
+                  <div className="flex-shrink-0">
+                    {product.image_url ? (
+                      <img src={product.image_url} alt={product.name} className="h-20 w-20 rounded-md object-cover" />
+                    ) : (
+                      <div className="h-20 w-20 rounded-md bg-slate-100 flex items-center justify-center text-slate-400">
+                        <ImageIcon className="h-8 w-8" />
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Content */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h3 className="font-semibold text-base truncate">{product.name}</h3>
+                        <p className="text-sm text-muted-foreground">{product.category}</p>
+                      </div>
+                      <span className="font-bold text-lg">${Number(product.price).toLocaleString()}</span>
+                    </div>
+
+                    <div className="flex justify-between items-center mt-3">
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${product.stock > 0 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                        {T.inventory}: {product.stock}
+                      </span>
+
+                      <div className="flex gap-1">
+                        <Button variant="outline" size="sm" onClick={() => handleEdit(product)} className="h-8 w-8 p-0 text-blue-600">
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+                        <Button variant="outline" size="sm" onClick={() => handleDelete(product.id)} className="h-8 w-8 p-0 text-red-600">
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </Card>
+            ))
+          )}
+        </div>
+
+        {/* Desktop View: Table */}
+        <div className="hidden md:block rounded-md border overflow-hidden">
           <Table>
             <TableHeader>
               <TableRow>
                 <TableHead className="w-[80px] hidden sm:table-cell">Imagen</TableHead>
                 <TableHead>Nombre</TableHead>
                 <TableHead className="text-right">Precio</TableHead>
-                <TableHead className="text-center">Stock</TableHead>
+                <TableHead className="text-center">{T.inventory}</TableHead>
                 <TableHead className="text-right">Acciones</TableHead>
               </TableRow>
             </TableHeader>
@@ -223,7 +283,7 @@ const ProductsTab = ({ storeId }) => {
               {filteredProducts.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={5} className="h-24 text-center text-muted-foreground">
-                    No se encontraron productos.
+                    No se encontraron {T.product.toLowerCase()}s.
                   </TableCell>
                 </TableRow>
               ) : (
