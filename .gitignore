@@ -116,6 +116,10 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
+# Build output (generado por `npm run build`)
+dist
+dev-dist
+
 # Vite
 dist-ssr
 *.local

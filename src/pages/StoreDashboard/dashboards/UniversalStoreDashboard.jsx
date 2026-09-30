@@ -13,7 +13,8 @@ import {
     BarChart3,
     Store,
     Calendar,
-    Hammer // For Maintenance
+    Hammer, // For Maintenance
+    Wheat
 } from 'lucide-react';
 import LoadingSpinner from '@/components/shared/LoadingSpinner';
 

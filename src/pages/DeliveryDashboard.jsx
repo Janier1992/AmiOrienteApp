@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Truck, LogOut, Package, History, Loader2, Menu, Home, X } from 'lucide-react';
+import { Truck, LogOut, Package, History, Loader2, Menu, Home, X, DollarSign } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
 import { useAuth } from '@/contexts/SupabaseAuthContext';
 import { supabase } from '@/lib/customSupabaseClient';
@@ -12,6 +12,8 @@ import AvailableOrdersTab from '@/components/delivery-dashboard/AvailableOrdersT
 import InProgressOrdersTab from '@/components/delivery-dashboard/InProgressOrdersTab';
 import HistoryOrdersTab from '@/components/delivery-dashboard/HistoryOrdersTab';
 import EarningsTab from '@/components/delivery-dashboard/EarningsTab';
+import OrderDetailsModal from '@/components/delivery-dashboard/OrderDetailsModal';
+import { deliveryService } from '@/services/deliveryService';
 
 // ... (existing imports)
 

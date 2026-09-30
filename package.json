@@ -7,7 +7,7 @@
     "dev": "vite --host :: --port 3000",
     "build": "vite build",
     "preview": "vite preview --host :: --port 3000",
-    "lint": "eslint src --ext js,jsx --report-unused-disable-directives --max-warnings 0",
+    "lint": "eslint src --ext js,jsx",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage"
@@ -42,7 +42,7 @@
     "react-hook-form": "^7.54.2",
     "react-leaflet": "^4.2.1",
     "react-router-dom": "^6.16.0",
-    "stripe": "^15.8.0",
+    "recharts": "^2.15.4",
     "tailwind-merge": "^1.14.0",
     "tailwindcss-animate": "^1.0.7",
     "zustand": "^4.4.6"

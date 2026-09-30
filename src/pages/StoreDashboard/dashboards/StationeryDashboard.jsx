@@ -17,6 +17,7 @@ import StationeryPOSView from '../views/StationeryPOSView';
 // Base Model Components
 import StoreSettingsTab from '../views/StoreSettingsTab';
 import StoreCustomersTab from '../views/StoreCustomersTab';
+import { withStoreCategory } from '@/components/shared/withStoreCategory';
 
 // Lazy Load Tabs
 const OverviewTab = React.lazy(() => import('../OverviewTab'));
@@ -25,8 +26,6 @@ const OrdersTab = React.lazy(() => import('../OrdersManagementTab'));
 const AdminTab = React.lazy(() => import('../AdminTab'));
 const BulkUploadTab = React.lazy(() => import('../BulkUploadTab'));
 const FinancialsTab = React.lazy(() => import('../FinancialsTab'));
-
-import { withStoreCategory } from '@/components/shared/withStoreCategory';
 
 const StationeryDashboard = ({ store }) => {
     const tabs = [

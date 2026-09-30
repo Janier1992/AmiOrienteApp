@@ -125,7 +125,7 @@ const SupermarketProductsView = () => {
     };
 
     const handleDelete = async (id) => {
-        if (confirm("¿Eliminar producto?")) await deleteProduct(id);
+        if (window.confirm("¿Eliminar producto?")) await deleteProduct(id);
     };
 
     return (

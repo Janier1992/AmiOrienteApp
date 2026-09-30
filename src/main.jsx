@@ -5,11 +5,7 @@ import App from './App';
 import { ThemeProvider } from '@/contexts/ThemeContext';
 import './index.css';
 
-import { checkManifest, registerServiceWorker } from '@/lib/pwaUtils';
-
-// --- PWA Debugging & Registration Suite ---
-checkManifest();
-registerServiceWorker();
+// El registro del Service Worker lo inyecta vite-plugin-pwa (injectRegister: 'auto').
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <>

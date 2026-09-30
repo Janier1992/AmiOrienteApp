@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { supabase } from '@/lib/customSupabaseClient';
+import { customerService } from '@/services/customerService';
 import { SAMPLE_STORES, SERVICE_CATEGORIES_LIST } from '@/data/sample-data';
 import { motion, AnimatePresence } from 'framer-motion';
 import PageHeader from '@/components/shared/PageHeader';

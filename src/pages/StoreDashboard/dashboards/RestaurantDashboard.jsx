@@ -3,19 +3,18 @@ import { LayoutDashboard, UtensilsCrossed, ChefHat, LayoutGrid, DollarSign, Sett
 import { BulkUploadTab } from '../BulkUploadTab';
 import BaseStoreDashboard from './BaseStoreDashboard';
 import TableManagementTab from '../views/TableManagementTab';
+import RestaurantMenuView from '../views/RestaurantMenuView';
+import GenericPOSView from '../views/GenericPOSView';
+import KitchenMaintenanceView from '../views/KitchenMaintenanceView';
+import { useRestaurantStore } from '@/stores/useRestaurantStore';
 
 // Lazy Load Tabs
 const OverviewTab = React.lazy(() => import('../OverviewTab'));
 // const ProductsTab = React.lazy(() => import('../ProductsTab')); // Replaced by Menu View
-import RestaurantMenuView from '../views/RestaurantMenuView';
-import GenericPOSView from '../views/GenericPOSView';
-import KitchenMaintenanceView from '../views/KitchenMaintenanceView';
 const OrdersTab = React.lazy(() => import('../OrdersManagementTab'));
 const ProfileTab = React.lazy(() => import('../ProfileTab'));
 const AdminTab = React.lazy(() => import('../AdminTab'));
 const FinancialsTab = React.lazy(() => import('../FinancialsTab'));
-
-import { useRestaurantStore } from '@/stores/useRestaurantStore';
 
 const RestaurantDashboard = ({ store }) => {
   const tabs = [

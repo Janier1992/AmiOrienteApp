@@ -64,7 +64,7 @@ const KitchenMaintenanceView = ({ storeId }) => {
     };
 
     const handleDeleteEquipment = async (id) => {
-        if (!confirm("¿Estás seguro de eliminar este equipo? Se borrará su historial.")) return;
+        if (!window.confirm("¿Estás seguro de eliminar este equipo? Se borrará su historial.")) return;
         try {
             await storeService.deleteEquipment(id);
             toast({ title: "Eliminado", description: "Equipo eliminado del sistema." });
