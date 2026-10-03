@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { DollarSign, CreditCard, TrendingUp, AlertCircle } from 'lucide-react';
 import { useStoreDashboard } from '@/stores/useStoreDashboard';
 import LoadingSpinner from '@/components/shared/LoadingSpinner';
+import { DeliveryPayoutsSection } from '@/components/shared/DeliveryPayoutsSection';
 
 const FinancialsTab = ({ storeId }) => {
     // Using granular loading state for stats
@@ -47,6 +48,8 @@ const FinancialsTab = ({ storeId }) => {
                     </CardContent>
                 </Card>
             </div>
+
+            <DeliveryPayoutsSection storeId={storeId} />
 
             <Card>
                 <CardHeader>

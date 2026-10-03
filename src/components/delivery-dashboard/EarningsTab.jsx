@@ -1,38 +1,47 @@
 import React, { useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { DollarSign, TrendingUp, Calendar, Package } from 'lucide-react';
+import { DollarSign, TrendingUp, Package, Clock } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
+const getPayout = (delivery) => {
+    const payout = Array.isArray(delivery.delivery_payouts) ? delivery.delivery_payouts[0] : delivery.delivery_payouts;
+    return payout || null;
+};
+
 const EarningsTab = ({ history }) => {
-    // Calculate earnings
+    // Calculate earnings from the real delivery_payouts records
+    // (70% del delivery_fee de cada pedido, ver database_updates/20261003_delivery_payouts.sql)
     const stats = useMemo(() => {
         let totalEarnings = 0;
+        let pendingEarnings = 0;
+        let paidEarnings = 0;
         let completedDeliveries = 0;
         const today = new Date().toDateString();
         let todayEarnings = 0;
 
-        // Mock earnings calculation (assuming fixed rate per delivery or data from order)
-        // In a real app, this should come from the DB 'delivery_fee' or similar
-        // For now, let's assume a standard fee + order value percentage or just a flat mock fee per delivery for visualization
-        // We'll use a mock "delivery_commission" of $5000 COP per delivery if not present
-
-        // Group by day for chart
         const earningsByDay = {};
 
-        history.forEach(order => {
-            if (order.status === 'Entregado') {
-                completedDeliveries++;
-                // Mock fee logic: 
-                const fee = 5000;
-                totalEarnings += fee;
+        history.forEach(delivery => {
+            const payout = getPayout(delivery);
+            if (!payout) return; // aún no se ha generado la liquidación (o entrega no completada)
 
-                if (new Date(order.created_at).toDateString() === today) {
-                    todayEarnings += fee;
-                }
+            const amount = Number(payout.amount) || 0;
+            completedDeliveries++;
+            totalEarnings += amount;
 
-                const dayName = new Date(order.created_at).toLocaleDateString('es-CO', { weekday: 'short' });
-                earningsByDay[dayName] = (earningsByDay[dayName] || 0) + fee;
+            if (payout.status === 'paid') {
+                paidEarnings += amount;
+            } else {
+                pendingEarnings += amount;
             }
+
+            const referenceDate = delivery.delivered_at || delivery.created_at;
+            if (new Date(referenceDate).toDateString() === today) {
+                todayEarnings += amount;
+            }
+
+            const dayName = new Date(referenceDate).toLocaleDateString('es-CO', { weekday: 'short' });
+            earningsByDay[dayName] = (earningsByDay[dayName] || 0) + amount;
         });
 
         const chartData = Object.keys(earningsByDay).map(day => ({
@@ -40,12 +49,12 @@ const EarningsTab = ({ history }) => {
             total: earningsByDay[day]
         }));
 
-        return { totalEarnings, completedDeliveries, todayEarnings, chartData };
+        return { totalEarnings, pendingEarnings, paidEarnings, completedDeliveries, todayEarnings, chartData };
     }, [history]);
 
     return (
         <div className="space-y-6">
-            <div className="grid gap-4 md:grid-cols-3">
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">Ganancias Totales</CardTitle>
@@ -55,6 +64,18 @@ const EarningsTab = ({ history }) => {
                         <div className="text-2xl font-bold text-green-600">${stats.totalEarnings.toLocaleString()}</div>
                         <p className="text-xs text-muted-foreground">
                             +${stats.todayEarnings.toLocaleString()} hoy
+                        </p>
+                    </CardContent>
+                </Card>
+                <Card>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium">Pendiente de Pago</CardTitle>
+                        <Clock className="h-4 w-4 text-amber-500" />
+                    </CardHeader>
+                    <CardContent>
+                        <div className="text-2xl font-bold text-amber-600">${stats.pendingEarnings.toLocaleString()}</div>
+                        <p className="text-xs text-muted-foreground">
+                            Ya pagado: ${stats.paidEarnings.toLocaleString()}
                         </p>
                     </CardContent>
                 </Card>
@@ -77,7 +98,7 @@ const EarningsTab = ({ history }) => {
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">
-                            ${stats.completedDeliveries > 0 ? (stats.totalEarnings / stats.completedDeliveries).toLocaleString() : 0}
+                            ${stats.completedDeliveries > 0 ? Math.round(stats.totalEarnings / stats.completedDeliveries).toLocaleString() : 0}
                         </div>
                     </CardContent>
                 </Card>

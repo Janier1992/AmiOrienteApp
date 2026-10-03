@@ -428,33 +428,48 @@ export const deliveryService = {
     validarId(idDomiciliario, 'ID del domiciliario');
 
     try {
-      // Obtener entregas completadas
+      // Obtener entregas completadas junto con su liquidación real
+      // (70% del delivery_fee de la orden, calculado por el trigger
+      // handle_delivery_completed al marcar la entrega como 'Entregado').
       const { data: entregas, error } = await supabase
         .from('deliveries')
-        .select('id, created_at, delivered_at, orders(total)')
+        .select('id, created_at, delivered_at, delivery_payouts(amount, status)')
         .eq('delivery_person_id', idDomiciliario)
         .eq('status', ESTADOS_ENTREGA.ENTREGADO);
 
       if (error) {
         console.error('[deliveryService] Error obteniendo estadísticas:', error);
-        return { totalEntregas: 0, gananciaTotal: 0 };
+        return { totalEntregas: 0, gananciaTotal: 0, gananciaPendiente: 0, gananciaPagada: 0 };
       }
 
       const totalEntregas = entregas?.length || 0;
 
-      // Calcular ganancias (ejemplo: 10% del total del pedido)
-      const gananciaTotal = entregas?.reduce((sum, e) => {
-        const totalPedido = Number(e.orders?.total) || 0;
-        return sum + (totalPedido * 0.10); // 10% comisión
-      }, 0) || 0;
+      let gananciaTotal = 0;
+      let gananciaPendiente = 0;
+      let gananciaPagada = 0;
+
+      for (const entrega of entregas || []) {
+        const payout = Array.isArray(entrega.delivery_payouts)
+          ? entrega.delivery_payouts[0]
+          : entrega.delivery_payouts;
+        const amount = Number(payout?.amount) || 0;
+        gananciaTotal += amount;
+        if (payout?.status === 'paid') {
+          gananciaPagada += amount;
+        } else {
+          gananciaPendiente += amount;
+        }
+      }
 
       return {
         totalEntregas,
-        gananciaTotal: Math.round(gananciaTotal)
+        gananciaTotal: Math.round(gananciaTotal),
+        gananciaPendiente: Math.round(gananciaPendiente),
+        gananciaPagada: Math.round(gananciaPagada)
       };
     } catch (error) {
       console.error('[deliveryService] Error:', error);
-      return { totalEntregas: 0, gananciaTotal: 0 };
+      return { totalEntregas: 0, gananciaTotal: 0, gananciaPendiente: 0, gananciaPagada: 0 };
     }
   },
 
@@ -474,9 +489,15 @@ export const deliveryService = {
         .select(`
           *,
           orders (
-            total, 
+            total,
+            delivery_fee,
             delivery_address,
             stores (name)
+          ),
+          delivery_payouts (
+            amount,
+            status,
+            paid_at
           )
         `)
         .eq('delivery_person_id', idDomiciliario)
@@ -493,6 +514,74 @@ export const deliveryService = {
     } catch (error) {
       console.error('[deliveryService] Error:', error);
       return [];
+    }
+  },
+
+  /**
+   * Obtiene las liquidaciones de domicilio (pagadas y pendientes) de los
+   * pedidos de una tienda, para que el dueño pueda ver cuánto le debe
+   * a cada domiciliario y marcar lo que ya pagó.
+   *
+   * @param {string} storeId - UUID de la tienda
+   * @returns {Promise<Array>} Liquidaciones con datos del domiciliario y el pedido
+   */
+  async obtenerLiquidacionesPorTienda(storeId) {
+    validarId(storeId, 'ID de la tienda');
+
+    try {
+      const { data, error } = await supabase
+        .from('delivery_payouts')
+        .select(`
+          id,
+          amount,
+          status,
+          paid_at,
+          created_at,
+          deliveries (
+            delivery_person_id,
+            delivered_at,
+            profiles:delivery_person_id (full_name, phone),
+            orders (id, store_id, delivery_fee)
+          )
+        `)
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('[deliveryService] Error obteniendo liquidaciones:', error);
+        return [];
+      }
+
+      // Filtrar en cliente por tienda (el join anidado no permite filtrar
+      // directamente por orders.store_id en este nivel de la consulta)
+      return (data || []).filter(p => p.deliveries?.orders?.store_id === storeId);
+    } catch (error) {
+      console.error('[deliveryService] Error:', error);
+      return [];
+    }
+  },
+
+  /**
+   * Marca una liquidación de domicilio como pagada.
+   *
+   * @param {string} payoutId - UUID del registro en delivery_payouts
+   * @returns {Promise<Object>} Registro actualizado
+   */
+  async marcarLiquidacionPagada(payoutId) {
+    validarId(payoutId, 'ID de la liquidación');
+
+    try {
+      const { data, error } = await supabase
+        .from('delivery_payouts')
+        .update({ status: 'paid', paid_at: new Date().toISOString() })
+        .eq('id', payoutId)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      console.error('[deliveryService] Error marcando liquidación como pagada:', error);
+      throw error;
     }
   }
 };
