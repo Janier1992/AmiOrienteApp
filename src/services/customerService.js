@@ -401,7 +401,8 @@ export const customerService = {
 
       let query = supabase
         .from('stores')
-        .select('*', { count: 'exact' });
+        .select('*', { count: 'exact' })
+        .eq('status', 'active');
 
       // Filtrado por búsqueda de Texto
       if (search) {

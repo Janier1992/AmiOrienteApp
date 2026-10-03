@@ -14,6 +14,7 @@ import PageSkeleton from '@/components/shared/PageSkeleton';
 import { PWAInstallPrompt } from '@/components/pwa/PWAInstallPrompt';
 import { OnboardingController } from '@/components/onboarding/OnboardingController';
 import { OfflineBanner } from '@/components/shared/OfflineBanner';
+import { AdminRoute } from '@/components/shared/AdminRoute';
 
 // Optimized Lazy Loading with Prefetch Capabilities
 const HomePage = lazyWithPrefetch('home', () => import('@/pages/HomePage'));
@@ -33,6 +34,7 @@ const DeliveryRegister = lazyWithPrefetch('auth-delivery-reg', () => import('@/p
 const StoreDashboard = lazyWithPrefetch('dash-store', () => import('@/pages/StoreDashboard/index.jsx'));
 const CustomerDashboard = lazyWithPrefetch('dash-customer', () => import('@/pages/CustomerDashboard'));
 const DeliveryDashboard = lazyWithPrefetch('dash-delivery', () => import('@/pages/DeliveryDashboard'));
+const AdminDashboard = lazyWithPrefetch('dash-admin', () => import('@/pages/AdminDashboard'));
 
 // Secondary Pages
 const HelpCenter = lazyWithPrefetch('help', () => import('@/pages/HelpCenter'));
@@ -157,6 +159,7 @@ const AppContent = () => {
             <Route path="/tienda/dashboard/*" element={<StoreDashboard />} />
             <Route path="/cliente/dashboard/*" element={<CustomerDashboard />} />
             <Route path="/domiciliario/dashboard/*" element={<DeliveryDashboard />} />
+            <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
 
             {/* Utility Pages */}
             <Route path="/centro-de-ayuda" element={<HelpCenter />} />
