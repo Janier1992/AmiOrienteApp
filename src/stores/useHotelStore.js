@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { supabase } from '@/lib/customSupabaseClient';
+import { createCartSlice } from './createCartSlice';
 
 /**
  * STORE ESPECÍFICO PARA MÓDULO HOTEL
@@ -8,14 +9,17 @@ import { supabase } from '@/lib/customSupabaseClient';
 export const useHotelStore = create((set, get) => ({
     rooms: [],
     products: [], // Added for POS
-    cart: [], // Added for POS
     reservations: [],
     guests: [],
     isLoadingRooms: false,
     isLoadingProducts: false,
-    isLoadingCheckout: false,
     isLoadingReservations: false,
     error: null,
+
+    ...createCartSlice(set, get, {
+        defaultStatus: 'Entregado',
+        onCheckoutComplete: (get, storeId) => get().fetchProducts(storeId),
+    }),
 
     // --- ACCIONES DE HABITACIONES ---
     fetchRooms: async (storeId) => {
@@ -56,70 +60,6 @@ export const useHotelStore = create((set, get) => ({
         }
     },
 
-    addToCart: (product) => {
-        const currentCart = get().cart;
-        const existing = currentCart.find(p => p.id === product.id);
-        if (existing) {
-            if (product.stock !== undefined && existing.qty >= product.stock) return false;
-            set({ cart: currentCart.map(p => p.id === product.id ? { ...p, qty: p.qty + 1 } : p) });
-        } else {
-            set({ cart: [...currentCart, { ...product, qty: 1 }] });
-        }
-        return true;
-    },
-
-    removeFromCart: (pid) => set(s => ({ cart: s.cart.filter(p => p.id !== pid) })),
-
-    updateCartQty: (pid, delta) => set(s => ({
-        cart: s.cart.map(i => {
-            if (i.id === pid) {
-                const newQty = Math.max(1, i.qty + delta);
-                if (delta > 0 && i.stock !== undefined && newQty > i.stock) return i;
-                return { ...i, qty: newQty };
-            }
-            return i;
-        })
-    })),
-
-    clearCart: () => set({ cart: [] }),
-
-    processCheckout: async (storeId, customerData, paymentMethod, total) => {
-        const cart = get().cart;
-        if (cart.length === 0) return;
-
-        const guestInfo = typeof customerData === 'object' ? { ...customerData, method: paymentMethod, type: 'POS' } : { name: customerData, method: paymentMethod, type: 'POS' };
-
-        set({ isLoadingCheckout: true });
-        try {
-            // 1. Create Order
-            const { data: order, error: orderError } = await supabase
-                .from('orders')
-                .insert({
-                    store_id: storeId,
-                    customer_id: null,
-                    status: 'Entregado',
-                    total: total,
-                    delivery_address: JSON.stringify({ guest: guestInfo, items: cart.map(i => ({ id: i.id, name: i.name, qty: i.qty, price: i.price })) })
-                })
-                .select()
-                .single();
-
-            if (orderError) throw orderError;
-
-            // 2. Items
-            const items = cart.map(i => ({ order_id: order.id, product_id: i.id, quantity: i.qty, price: i.price }));
-            const { error: itemsError } = await supabase.from('order_items').insert(items);
-            if (itemsError) throw itemsError;
-
-            get().clearCart();
-            return true;
-        } catch (e) {
-            throw e;
-        } finally {
-            set({ isLoadingCheckout: false });
-        }
-    },
-
     toggleRoomStatus: async (roomId, currentStatus) => {
         const states = ['available', 'occupied', 'cleaning', 'maintenance'];
         const nextIdx = (states.indexOf(currentStatus) + 1) % states.length;
@@ -135,7 +75,7 @@ export const useHotelStore = create((set, get) => ({
 
             // Optimistic update
             set(state => ({
-                rooms: state.rooms.map(r => r.id === roomId ? { ...r, status: nextStatus } : r)
+                rooms: state.rooms.map(r => r.id === roomId ? { ...r, status: nextStatus } : r),
             }));
         } catch (err) {
             console.error('Error toggling room status:', err);
@@ -164,5 +104,5 @@ export const useHotelStore = create((set, get) => ({
     // (Simplificado por ahora, se puede expandir)
     fetchReservations: async (storeId) => {
         // Implementación futura o migración de lógica existente
-    }
+    },
 }));
