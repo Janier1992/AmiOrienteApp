@@ -13,6 +13,7 @@ import { useRouteTransitionTimer } from '@/lib/performance-monitoring';
 import PageSkeleton from '@/components/shared/PageSkeleton';
 import { PWAInstallPrompt } from '@/components/pwa/PWAInstallPrompt';
 import { OnboardingController } from '@/components/onboarding/OnboardingController';
+import { OfflineBanner } from '@/components/shared/OfflineBanner';
 
 // Optimized Lazy Loading with Prefetch Capabilities
 const HomePage = lazyWithPrefetch('home', () => import('@/pages/HomePage'));
@@ -181,6 +182,7 @@ const App = () => (
       <CartProvider>
         <CartSidebarProvider>
           <ScrollToTop />
+          <OfflineBanner />
           <OnboardingController />
           <AppContent />
         </CartSidebarProvider>
