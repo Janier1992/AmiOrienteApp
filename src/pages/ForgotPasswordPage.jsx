@@ -26,7 +26,9 @@ import React, { useState } from 'react';
 
         setLoading(true);
         const { error } = await supabase.auth.resetPasswordForEmail(email, {
-          redirectTo: `${window.location.origin}/actualizar-contrasena`,
+          // The app uses HashRouter, so the route must live after the '#'
+          // (Supabase appends the recovery token to this same hash).
+          redirectTo: `${window.location.origin}/#/actualizar-contrasena`,
         });
         setLoading(false);
 

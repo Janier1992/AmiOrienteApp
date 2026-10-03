@@ -59,6 +59,13 @@ export const AuthProvider = ({ children }) => {
           handleSession(session);
         } else if (event === 'SIGNED_IN') {
           handleSession(session);
+        } else if (event === 'PASSWORD_RECOVERY') {
+          // The recovery link lands on a real path (e.g. /actualizar-contrasena)
+          // with the token appended as a URL hash, which HashRouter doesn't
+          // parse as that route. Force-navigate once Supabase confirms this
+          // is a recovery session, regardless of whatever route we landed on.
+          handleSession(session);
+          navigate('/actualizar-contrasena', { replace: true });
         } else {
           // For INITIAL_SESSION and any other events
           handleSession(session);
@@ -67,7 +74,7 @@ export const AuthProvider = ({ children }) => {
     );
 
     return () => subscription.unsubscribe();
-  }, [handleSession]);
+  }, [handleSession, navigate]);
 
   // Helper to translate Auth errors to Spanish
   const getFriendlyErrorMessage = (error) => {
