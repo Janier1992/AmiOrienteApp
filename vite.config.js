@@ -254,24 +254,24 @@ export default defineConfig({
 				background_color: '#ffffff',
 				display: 'standalone',
 				orientation: 'portrait',
-				scope: '/AmiOrienteApp/', // Absolute scope
-				start_url: '/AmiOrienteApp/', // Absolute start URL
+				scope: '/',
+				start_url: '/',
 				categories: ['shopping', 'food', 'travel', 'lifestyle'],
 				icons: [
 					{
-						src: '/AmiOrienteApp/logo.png', // Absolute path
-						sizes: '192x192', // Scalable
+						src: '/logo.png',
+						sizes: '192x192',
 						type: 'image/png',
 						purpose: 'any'
 					},
 					{
-						src: '/AmiOrienteApp/logo.png',
+						src: '/logo.png',
 						sizes: '512x512',
 						type: 'image/png',
 						purpose: 'any maskable'
 					},
 					{
-						src: '/AmiOrienteApp/logo.png',
+						src: '/logo.png',
 						sizes: '180x180',
 						type: 'image/png',
 						purpose: 'any'
