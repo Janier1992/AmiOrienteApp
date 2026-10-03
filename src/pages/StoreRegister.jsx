@@ -77,7 +77,6 @@ const StoreRegister = () => {
           role: 'tienda',
           store_name: storeName,
           address: address,
-          address: address,
           category: serviceType, // Display Category (e.g. 'Cultivador')
           service_category: CATEGORY_DB_MAP[serviceType] || 'Domicilios', // FK Lookup Name (e.g. 'Cultivadores')
         },
