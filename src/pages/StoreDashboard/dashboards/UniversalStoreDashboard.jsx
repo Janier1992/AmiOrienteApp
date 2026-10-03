@@ -13,7 +13,8 @@ import {
     BarChart3,
     Store,
     Calendar,
-    Hammer // For Maintenance
+    Hammer, // For Maintenance
+    Wheat
 } from 'lucide-react';
 import LoadingSpinner from '@/components/shared/LoadingSpinner';
 
@@ -25,6 +26,8 @@ const GenericPOSView = lazy(() => import('../views/GenericPOSView')); // Generic
 const StoreConfigTab = lazy(() => import('../StoreConfigTab'));
 // Feature specific views
 const KitchenMaintenanceView = lazy(() => import('../views/KitchenMaintenanceView'));
+const AgroCropsView = lazy(() => import('../views/AgroCropsView'));
+const QuickGridProductView = lazy(() => import('../views/QuickGridProductView')); // Inventario Rápido
 
 /**
  * Tab Registry
@@ -67,16 +70,16 @@ const FEATURE_TABS = {
     },
     'inventory': {
         path: 'inventario',
-        label: 'Inventario',
+        label: 'Inventario Rápido',
         icon: BarChart3,
-        component: ProductsTab // Reusing Products View for pure inventory for now, or could vary
+        component: QuickGridProductView
     },
     // New Business Type Mappings
     'harvests': {
         path: 'cosechas',
         label: 'Cosechas',
         icon: Wheat, // Ensure Wheat is imported or use fallback
-        component: ProductsTab // Maps to Products but with "Cosecha" terminology
+        component: AgroCropsView // Maps to Products but with "Cosecha" terminology
     },
     'volume_orders': {
         path: 'pedidos-mayorista',

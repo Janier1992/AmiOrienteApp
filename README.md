@@ -228,5 +228,5 @@ Para lograr la máxima visibilidad en el Oriente Antioqueño, se ejecutará la s
 *   **Gamificación**: Badges y niveles para usuarios frecuentes ("Explorador del Oriente").
 
 ---
-**Desarrollado con ❤️ por el Equipo de Tecnología de SinFlow**
-*Última actualización: Diciembre 2025*
+**Desarrollado con ❤️ por el Equipo de Tecnología de SynFlowIA**
+*Última actualización: Octubre 2026*

@@ -36,6 +36,7 @@ export const useGeneralStore = create((set, get) => ({
         const currentCart = get().cart;
         const existing = currentCart.find(p => p.id === product.id);
         if (existing) {
+            if (product.stock !== undefined && existing.qty >= product.stock) return false;
             set({ cart: currentCart.map(p => p.id === product.id ? { ...p, qty: p.qty + 1 } : p) });
         } else {
             set({ cart: [...currentCart, { ...product, qty: 1 }] });
@@ -46,7 +47,14 @@ export const useGeneralStore = create((set, get) => ({
     removeFromCart: (pid) => set(s => ({ cart: s.cart.filter(p => p.id !== pid) })),
 
     updateCartQty: (pid, delta) => set(s => ({
-        cart: s.cart.map(i => i.id === pid ? { ...i, qty: Math.max(1, i.qty + delta) } : i)
+        cart: s.cart.map(i => {
+            if (i.id === pid) {
+                const newQty = Math.max(1, i.qty + delta);
+                if (delta > 0 && i.stock !== undefined && newQty > i.stock) return i;
+                return { ...i, qty: newQty };
+            }
+            return i;
+        })
     })),
 
     clearCart: () => set({ cart: [] }),

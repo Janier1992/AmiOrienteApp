@@ -316,8 +316,8 @@ const GenericPOSView = ({ useStore, title = "Punto de Venta" }) => {
 
             {/* Mobile Cart Overlay (Slide Up/Over) */}
             {showMobileCart && (
-                <div className="fixed inset-0 z-50 bg-black/50 lg:hidden flex justify-end">
-                    <div className="w-full sm:w-96 bg-white h-full shadow-2xl animate-in slide-in-from-right duration-300">
+                <div className="fixed inset-0 z-50 bg-black/50 xl:hidden flex flex-col justify-end">
+                    <div className="w-full bg-white h-[85vh] rounded-t-2xl shadow-2xl animate-in slide-in-from-bottom duration-300 flex flex-col">
                         <CartPanel
                             cart={cart}
                             updateCartQty={updateCartQty}

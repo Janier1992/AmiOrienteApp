@@ -130,6 +130,7 @@ export const getStoreTypeConfig = (type) => {
     // Simple mapping for likely variations
     if (normalizedType === 'restaurantes') return STORE_TYPES['restaurante'];
     if (normalizedType === 'farmacias') return STORE_TYPES['farmacia'];
+    if (['finca', 'agro', 'cultivador', 'agricultura'].includes(normalizedType)) return STORE_TYPES['cultivos'];
 
     return STORE_TYPES[normalizedType] || STORE_TYPES['general'];
 };
