@@ -76,6 +76,7 @@ const CheckoutPage = () => {
 
     try {
       const stores = Object.values(groupedItems);
+      const createdOrders = [];
 
       // Procesar una orden por cada tienda
       for (const storeGroup of stores) {
@@ -94,19 +95,26 @@ const CheckoutPage = () => {
           price: item.price
         }));
 
-        await orderService.crearPedido(orderPayload, orderItems);
+        const newOrder = await orderService.crearPedido(orderPayload, orderItems);
+        createdOrders.push(newOrder);
       }
 
       // Simular pequeño delay para UX
       await new Promise(resolve => setTimeout(resolve, 1000));
 
-      toast({
-        title: "¡Pedido Realizado!",
-        description: `Se han creado ${stores.length} orden(es) exitosamente.`,
-      });
-
       clearCart();
-      navigate('/cliente/dashboard?tab=pedidos'); // Redirigir a mis pedidos en lugar de confirmación genérica
+
+      // Con un solo pedido mostramos la pantalla de confirmación con el
+      // detalle; con varios (carrito multi-tienda) vamos directo al listado.
+      if (createdOrders.length === 1 && createdOrders[0]?.id) {
+        navigate(`/confirmacion-pedido?order_id=${createdOrders[0].id}`);
+      } else {
+        toast({
+          title: "¡Pedido Realizado!",
+          description: `Se han creado ${stores.length} orden(es) exitosamente.`,
+        });
+        navigate('/cliente/dashboard?tab=pedidos');
+      }
 
     } catch (error) {
       console.error("Checkout error:", error);
