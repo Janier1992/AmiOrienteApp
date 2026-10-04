@@ -20,7 +20,8 @@ import {
     LayoutGrid,
     UtensilsCrossed,
     ClipboardCheck,
-    Users
+    Users,
+    Percent
 } from 'lucide-react';
 import LoadingSpinner from '@/components/shared/LoadingSpinner';
 
@@ -42,6 +43,7 @@ const HotelReservationsTab = lazy(() => import('../HotelReservationsTab'));
 const HotelReceptionTab = lazy(() => import('../HotelReceptionTab'));
 const HotelGuestsTab = lazy(() => import('../HotelGuestsTab'));
 const StoreCustomersTab = lazy(() => import('../views/StoreCustomersTab'));
+const DiscountsTab = lazy(() => import('../DiscountsTab'));
 
 /**
  * Tab Registry
@@ -154,6 +156,12 @@ const COMMON_TABS = [
         label: 'Clientes',
         icon: Users,
         component: StoreCustomersTab,
+    },
+    {
+        path: 'descuentos',
+        label: 'Descuentos',
+        icon: Percent,
+        component: DiscountsTab,
     },
     {
         path: 'configuracion',

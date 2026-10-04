@@ -6,7 +6,7 @@ import { useAuth } from '@/contexts/SupabaseAuthContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from '@/components/ui/use-toast';
-import { Loader2, ArrowLeft, CreditCard, AlertTriangle, MapPin } from 'lucide-react';
+import { Loader2, ArrowLeft, CreditCard, AlertTriangle, MapPin, Tag, X } from 'lucide-react';
 import orderService from '@/services/orderService';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -21,6 +21,9 @@ const CheckoutPage = () => {
   const [processing, setProcessing] = useState(false);
   const [deliveryAddress, setDeliveryAddress] = useState('');
   const [deliveryNotes, setDeliveryNotes] = useState('');
+  const [couponInput, setCouponInput] = useState('');
+  const [applyingCoupon, setApplyingCoupon] = useState(false);
+  const [appliedCoupon, setAppliedCoupon] = useState(null);
 
   const total = getCartTotal();
 
@@ -62,6 +65,52 @@ const CheckoutPage = () => {
 
   }, [user, items.length, navigate]);
 
+  const handleApplyCoupon = async () => {
+    const code = couponInput.trim().toUpperCase();
+    if (!code) return;
+
+    setApplyingCoupon(true);
+    try {
+      const storeIds = Object.keys(groupedItems);
+      const { data, error } = await supabase
+        .from('discounts')
+        .select('*')
+        .eq('code', code)
+        .in('store_id', storeIds)
+        .gt('expires_at', new Date().toISOString())
+        .maybeSingle();
+
+      if (error || !data) {
+        toast({ title: "Código inválido", description: "Ese código no existe, no aplica a estos productos o ya expiró.", variant: "destructive" });
+        return;
+      }
+      if (data.usage_limit && data.usage_count >= data.usage_limit) {
+        toast({ title: "Código agotado", description: "Este código alcanzó su límite de usos.", variant: "destructive" });
+        return;
+      }
+
+      const group = groupedItems[data.store_id];
+      const amount = data.discount_type === 'percentage'
+        ? Math.round(group.total * (Number(data.value) / 100))
+        : Math.min(Number(data.value), group.total);
+
+      setAppliedCoupon({
+        code: data.code,
+        store_id: data.store_id,
+        store_name: group.store_name,
+        amount,
+      });
+      toast({ title: "Cupón aplicado", description: `Descuento de $${amount.toLocaleString()} en ${group.store_name}.` });
+    } finally {
+      setApplyingCoupon(false);
+    }
+  };
+
+  const handleRemoveCoupon = () => {
+    setAppliedCoupon(null);
+    setCouponInput('');
+  };
+
   const handleProcessOrder = async () => {
     if (!deliveryAddress.trim()) {
       toast({
@@ -75,18 +124,40 @@ const CheckoutPage = () => {
     setProcessing(true);
 
     try {
+      // Redimir el cupón de forma atómica (valida vigencia/límite y suma el
+      // uso en una sola operación) antes de crear ningún pedido, para evitar
+      // aplicar un descuento que ya no sea válido por una condición de carrera.
+      if (appliedCoupon) {
+        const { data: redeemed, error: redeemError } = await supabase.rpc('redeem_discount', {
+          p_code: appliedCoupon.code,
+          p_store_id: appliedCoupon.store_id,
+        });
+        if (redeemError || !redeemed || redeemed.length === 0) {
+          toast({
+            title: "Cupón no disponible",
+            description: "El código de descuento ya no está disponible. Quítalo e intenta de nuevo.",
+            variant: "destructive"
+          });
+          setProcessing(false);
+          return;
+        }
+      }
+
       const stores = Object.values(groupedItems);
       const createdOrders = [];
 
       // Procesar una orden por cada tienda
       for (const storeGroup of stores) {
+        const isDiscountedStore = appliedCoupon && storeGroup.store_id === appliedCoupon.store_id;
         const orderPayload = {
           customer_id: user.id,
           store_id: storeGroup.store_id,
           delivery_address: deliveryAddress,
           payment_method: 'efectivo', // Por ahora simulación asume efectivo/contraentrega
           notes: deliveryNotes,
-          total: storeGroup.total // El servicio recalculará fees
+          total: storeGroup.total, // El servicio recalculará fees
+          discount_code: isDiscountedStore ? appliedCoupon.code : null,
+          discount_amount: isDiscountedStore ? appliedCoupon.amount : 0,
         };
 
         const orderItems = storeGroup.items.map(item => ({
@@ -200,6 +271,38 @@ const CheckoutPage = () => {
                 ))}
               </CardContent>
             </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Tag className="h-5 w-5" /> Código de Descuento
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {appliedCoupon ? (
+                  <div className="flex items-center justify-between p-3 border border-green-200 bg-green-50 rounded-md">
+                    <div>
+                      <p className="font-semibold text-green-800">{appliedCoupon.code}</p>
+                      <p className="text-xs text-green-700">-${appliedCoupon.amount.toLocaleString()} en {appliedCoupon.store_name}</p>
+                    </div>
+                    <Button variant="ghost" size="icon" onClick={handleRemoveCoupon}>
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="flex gap-2">
+                    <Input
+                      placeholder="Ingresa tu código"
+                      value={couponInput}
+                      onChange={(e) => setCouponInput(e.target.value)}
+                    />
+                    <Button variant="outline" onClick={handleApplyCoupon} disabled={applyingCoupon || !couponInput.trim()}>
+                      {applyingCoupon ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Aplicar'}
+                    </Button>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
           </div>
 
           {/* Columna Derecha: Resumen y Pago */}
@@ -231,9 +334,15 @@ const CheckoutPage = () => {
                     <span className="text-muted-foreground">Domicilio Base (Est.)</span>
                     <span>$3,500</span>
                   </div>
+                  {appliedCoupon && (
+                    <div className="flex justify-between text-green-600">
+                      <span>Descuento ({appliedCoupon.code})</span>
+                      <span>-${appliedCoupon.amount.toLocaleString()}</span>
+                    </div>
+                  )}
                   <div className="border-t pt-2 flex justify-between font-bold text-lg">
                     <span>Total Estimado</span>
-                    <span>${(total + 5500).toLocaleString()}</span>
+                    <span>${Math.max(0, total + 5500 - (appliedCoupon?.amount || 0)).toLocaleString()}</span>
                   </div>
                 </div>
 

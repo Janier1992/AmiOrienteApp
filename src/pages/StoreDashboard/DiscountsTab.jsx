@@ -10,11 +10,18 @@ import { supabase } from '@/lib/customSupabaseClient';
 
 const DiscountsTab = ({ storeId }) => {
   const [discounts, setDiscounts] = useState([]);
+  const defaultExpiry = () => {
+    const d = new Date();
+    d.setDate(d.getDate() + 30);
+    return d.toISOString().split('T')[0];
+  };
+
   const [newDiscount, setNewDiscount] = useState({
     code: '',
     discount_type: 'percentage',
     value: '',
     usage_limit: '',
+    expires_at: defaultExpiry(),
   });
   const [loading, setLoading] = useState(true);
 
@@ -39,11 +46,18 @@ const DiscountsTab = ({ storeId }) => {
   };
 
   const handleAddDiscount = async () => {
+    if (!newDiscount.code.trim() || !newDiscount.value) {
+      toast({ title: "Datos incompletos", description: "El código y el valor son obligatorios.", variant: "destructive" });
+      return;
+    }
+
     const { data, error } = await supabase.from('discounts').insert({
       ...newDiscount,
+      code: newDiscount.code.trim().toUpperCase(),
       store_id: storeId,
       value: parseFloat(newDiscount.value),
       usage_limit: newDiscount.usage_limit ? parseInt(newDiscount.usage_limit) : null,
+      expires_at: new Date(newDiscount.expires_at).toISOString(),
     }).select().single();
 
     if (error) {
@@ -51,7 +65,7 @@ const DiscountsTab = ({ storeId }) => {
     } else {
       toast({ title: "Éxito", description: "Descuento agregado." });
       setDiscounts([...discounts, data]);
-      setNewDiscount({ code: '', discount_type: 'percentage', value: '', usage_limit: '' });
+      setNewDiscount({ code: '', discount_type: 'percentage', value: '', usage_limit: '', expires_at: defaultExpiry() });
     }
   };
 
@@ -72,7 +86,7 @@ const DiscountsTab = ({ storeId }) => {
         <CardDescription>Crea y gestiona códigos de descuento para tus clientes.</CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-2 mb-4 p-4 border rounded-lg">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-2 mb-4 p-4 border rounded-lg">
           <Input name="code" placeholder="Código (ej. VERANO20)" value={newDiscount.code} onChange={handleInputChange} />
           <Select name="discount_type" value={newDiscount.discount_type} onValueChange={(v) => setNewDiscount({...newDiscount, discount_type: v})}>
             <SelectTrigger><SelectValue /></SelectTrigger>
@@ -82,6 +96,7 @@ const DiscountsTab = ({ storeId }) => {
             </SelectContent>
           </Select>
           <Input name="value" type="number" placeholder="Valor" value={newDiscount.value} onChange={handleInputChange} />
+          <Input name="expires_at" type="date" value={newDiscount.expires_at} onChange={handleInputChange} />
           <Button onClick={handleAddDiscount}><Plus className="mr-2 h-4 w-4" /> Crear Descuento</Button>
         </div>
         <div className="border rounded-lg overflow-hidden">

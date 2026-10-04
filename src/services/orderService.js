@@ -126,6 +126,8 @@ export const orderService = {
      * @param {number} [datosPedido.delivery_lng] - Longitud de entrega
      * @param {string} [datosPedido.payment_method] - Método de pago
      * @param {string} [datosPedido.notes] - Notas adicionales
+     * @param {string} [datosPedido.discount_code] - Código de descuento aplicado
+     * @param {number} [datosPedido.discount_amount] - Monto del descuento aplicado
      * @param {Array} items - Array de items del pedido
      * @param {string} items[].product_id - UUID del producto
      * @param {number} items[].quantity - Cantidad
@@ -162,7 +164,8 @@ export const orderService = {
 
             const tarifaServicio = SERVICE_FEE;
             const tarifaEnvio = DELIVERY_BASE_FEE;
-            const total = subtotal + tarifaServicio + tarifaEnvio;
+            const descuento = Number(datosPedido.discount_amount) || 0;
+            const total = Math.max(0, subtotal + tarifaServicio + tarifaEnvio - descuento);
 
             // Determinar estado inicial según método de pago
             const estadoInicial = datosPedido.payment_method === 'efectivo'
@@ -183,6 +186,8 @@ export const orderService = {
                     subtotal,
                     service_fee: tarifaServicio,
                     delivery_fee: tarifaEnvio,
+                    discount_code: datosPedido.discount_code || null,
+                    discount_amount: descuento,
                     total,
                     status: estadoInicial
                 })
