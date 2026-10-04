@@ -29,7 +29,7 @@ export const STORE_TYPES = {
         label: 'Restaurante',
         icon: Utensils,
         color: 'orange',
-        features: ['products', 'orders', 'pos', 'tables', 'kitchen', 'maintenance', 'menu'], // 'tables', 'kitchen' specific to restaurant
+        features: ['products', 'orders', 'pos', 'tables', 'maintenance', 'menu'],
         cartStore: useRestaurantStore,
         terminology: {
             product: 'Plato',
@@ -41,7 +41,7 @@ export const STORE_TYPES = {
         label: 'Farmacia',
         icon: Pill,
         color: 'blue',
-        features: ['products', 'orders', 'pos', 'inventory', 'prescriptions'],
+        features: ['products', 'orders', 'pos', 'inventory'],
         cartStore: usePharmacyStore,
         terminology: {
             product: 'Medicamento',
@@ -63,7 +63,7 @@ export const STORE_TYPES = {
         label: 'Tienda de Ropa',
         icon: Shirt,
         color: 'purple',
-        features: ['products', 'orders', 'pos', 'inventory', 'collections'],
+        features: ['products', 'orders', 'pos', 'inventory'],
         cartStore: useClothingStore,
         terminology: {
             product: 'Prenda',
@@ -96,7 +96,7 @@ export const STORE_TYPES = {
         label: 'Papelería',
         icon: BookOpen,
         color: 'yellow',
-        features: ['products', 'orders', 'pos', 'inventory', 'printing'],
+        features: ['products', 'orders', 'pos', 'inventory'],
         cartStore: useStationeryStore,
         terminology: {
             product: 'Artículo'
@@ -116,7 +116,7 @@ export const STORE_TYPES = {
         label: 'Veterinaria',
         icon: Scissors, // Or Paw if available
         color: 'cyan',
-        features: ['products', 'services', 'appointments', 'pos'],
+        features: ['products', 'orders', 'pos'],
         cartStore: useGeneralStore,
         terminology: {
             product: 'Producto/Servicio',
