@@ -20,6 +20,7 @@ import { AdminFloatingButton } from '@/components/shared/AdminFloatingButton';
 // Optimized Lazy Loading with Prefetch Capabilities
 const HomePage = lazyWithPrefetch('home', () => import('@/pages/HomePage'));
 const ProductsPage = lazyWithPrefetch('products', () => import('@/pages/ProductsPage'));
+const ProductDetailPage = lazyWithPrefetch('product-detail', () => import('@/pages/ProductDetailPage'));
 const StoresPage = lazyWithPrefetch('stores', () => import('@/pages/StoresPage'));
 const TourismPage = lazyWithPrefetch('tourism', () => import('@/pages/TourismPage'));
 
@@ -137,6 +138,7 @@ const AppContent = () => {
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/productos" element={<ProductsPage />} />
+            <Route path="/productos/:id" element={<ProductDetailPage />} />
             <Route path="/servicios" element={<StoresPage />} />
             <Route path="/turismo" element={<TourismPage />} />
 

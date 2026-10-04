@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, Link } from 'react-router-dom';
 import { useCartStore, useCartActions } from '@/contexts/CartContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -27,7 +27,7 @@ const ProductCard = ({ product }) => {
 
   return (
     <Card className="overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 group border border-border flex flex-col bg-card text-card-foreground">
-      <div className="relative">
+      <Link to={`/productos/${product.id}`} className="relative block">
         <img
           alt={product.name}
           className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
@@ -38,10 +38,12 @@ const ProductCard = ({ product }) => {
             Soy Del Campo
           </div>
         )}
-      </div>
+      </Link>
       <CardContent className="p-4 flex-grow flex flex-col">
         <p className="text-xs text-muted-foreground mb-1">{product.stores?.name || 'Proveedor'}</p>
-        <h3 className="text-md font-semibold text-foreground truncate flex-grow">{product.name}</h3>
+        <Link to={`/productos/${product.id}`}>
+          <h3 className="text-md font-semibold text-foreground truncate flex-grow hover:text-primary">{product.name}</h3>
+        </Link>
         <p className="text-lg font-bold text-foreground mt-2">
           ${price.toLocaleString()}
         </p>
