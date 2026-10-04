@@ -6,9 +6,10 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Store, Building2, Ban, CheckCircle2 } from 'lucide-react';
+import { Store, Building2, Ban, CheckCircle2, LogOut } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
 import { adminService } from '@/services/adminService';
+import { useAuth } from '@/contexts/SupabaseAuthContext';
 import LoadingSpinner from '@/components/shared/LoadingSpinner';
 import { SupportTicketsPanel } from '@/components/admin/SupportTicketsPanel';
 
@@ -19,6 +20,7 @@ const STATUS_LABEL = {
 };
 
 const AdminDashboard = () => {
+    const { signOut } = useAuth();
     const [stores, setStores] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [search, setSearch] = useState('');
@@ -77,11 +79,16 @@ const AdminDashboard = () => {
                 <title>Panel de Administración - AmiOriente</title>
             </Helmet>
             <div className="container mx-auto px-4 py-8 space-y-6">
-                <div>
-                    <h1 className="text-3xl font-bold flex items-center gap-2">
-                        <Building2 className="h-7 w-7" /> Panel de Administración
-                    </h1>
-                    <p className="text-muted-foreground">Gestiona todos los negocios registrados en la plataforma.</p>
+                <div className="flex items-start justify-between gap-4">
+                    <div>
+                        <h1 className="text-3xl font-bold flex items-center gap-2">
+                            <Building2 className="h-7 w-7" /> Panel de Administración
+                        </h1>
+                        <p className="text-muted-foreground">Gestiona todos los negocios registrados en la plataforma.</p>
+                    </div>
+                    <Button variant="outline" onClick={signOut}>
+                        <LogOut className="h-4 w-4 mr-2" /> Cerrar Sesión
+                    </Button>
                 </div>
 
                 <div className="grid gap-4 md:grid-cols-3">
