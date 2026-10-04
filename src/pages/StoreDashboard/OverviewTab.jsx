@@ -38,7 +38,7 @@ const OverviewTab = ({ storeId }) => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">${Number(total_sales).toLocaleString()}</div>
-            <p className="text-xs text-muted-foreground">+20.1% desde el mes pasado</p>
+            <p className="text-xs text-muted-foreground">Ventas históricas entregadas</p>
           </CardContent>
         </Card>
         <Card>
@@ -68,7 +68,7 @@ const OverviewTab = ({ storeId }) => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-red-500">-${Number(platform_commission).toLocaleString()}</div>
-            <p className="text-xs text-muted-foreground">Soy del Campo (0% comisión)</p>
+            <p className="text-xs text-muted-foreground">Plan Gratuito (0% comisión)</p>
           </CardContent>
         </Card>
       </div>
@@ -81,8 +81,8 @@ const OverviewTab = ({ storeId }) => {
           </CardHeader>
           <CardContent className="pl-2">
             <LineChart
-              data={monthlyIncome.length > 0 ? monthlyIncome : [{ month: 'Hoy', total: 0 }]}
-              index="month"
+              data={monthlyIncome.length > 0 ? monthlyIncome : [{ mes: 'Hoy', total: 0 }]}
+              index="mes"
               categories={["total"]}
               valueFormatter={(number) => `$${Number(number).toLocaleString()}`}
             />
