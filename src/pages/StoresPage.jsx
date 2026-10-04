@@ -83,12 +83,18 @@ const StoreCard = ({ store }) => (
       </CardContent>
 
       <CardFooter className="p-4 pt-0 mt-auto border-t border-slate-100 bg-slate-50/50">
-        <Link to={`/productos?tienda=${store.id}`} className="w-full">
-          <Button className="w-full mt-3 bg-white text-primary border border-primary hover:bg-primary hover:text-white transition-colors">
-            <ShoppingBag className="w-4 h-4 mr-2" />
-            Ver Productos
+        {store._isSample ? (
+          <Button disabled className="w-full mt-3 cursor-not-allowed opacity-60">
+            Próximamente en la plataforma
           </Button>
-        </Link>
+        ) : (
+          <Link to={`/productos?tienda=${store.id}`} className="w-full">
+            <Button className="w-full mt-3 bg-white text-primary border border-primary hover:bg-primary hover:text-white transition-colors">
+              <ShoppingBag className="w-4 h-4 mr-2" />
+              Ver Productos
+            </Button>
+          </Link>
+        )}
       </CardFooter>
     </Card>
   </motion.div>
@@ -120,11 +126,13 @@ const StoresPage = () => {
         category: selectedCategory
       });
 
-      // If we have search/filter results, prioritize them. 
-      // Fallback to SAMPLE_STORES only if strictly necessary and in dev mode (skipping for prod scalability)
+      // If we have search/filter results, prioritize them.
+      // Only fall back to the curated sample list for the default, unfiltered
+      // browse view when the platform has no real stores registered yet —
+      // and mark them as such, since they aren't real platform listings and
+      // "Ver Productos" has nowhere real to send a customer for them.
       if (data.length === 0 && !searchTerm && selectedCategory === 'Todos') {
-        // Optional: Keep sample data logic if needed for demo
-        setStores(SAMPLE_STORES);
+        setStores(SAMPLE_STORES.map(s => ({ ...s, _isSample: true })));
       } else {
         setStores(data);
       }
@@ -133,7 +141,7 @@ const StoresPage = () => {
     } catch (error) {
       console.error('Error fetching stores:', error);
       // Fallback
-      setStores(SAMPLE_STORES);
+      setStores(SAMPLE_STORES.map(s => ({ ...s, _isSample: true })));
     } finally {
       setLoading(false);
     }
