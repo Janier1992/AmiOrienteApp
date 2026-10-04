@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { supabase } from '@/lib/customSupabaseClient';
 import { Bell, Check, Info, Package, Tag } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { toast } from '@/components/ui/use-toast';
 
 const NotificationsTab = ({ userId }) => {
   const [notifications, setNotifications] = useState([]);
@@ -37,12 +38,20 @@ const NotificationsTab = ({ userId }) => {
   };
 
   const markAsRead = async (id) => {
-    await supabase.from('user_notifications').update({ read: true }).eq('id', id);
+    const { error } = await supabase.from('user_notifications').update({ read: true }).eq('id', id);
+    if (error) {
+      toast({ title: 'Error', description: 'No se pudo marcar como leída.', variant: 'destructive' });
+      return;
+    }
     setNotifications(notifications.map(n => n.id === id ? { ...n, read: true } : n));
   };
 
   const markAllRead = async () => {
-    await supabase.from('user_notifications').update({ read: true }).eq('user_id', userId);
+    const { error } = await supabase.from('user_notifications').update({ read: true }).eq('user_id', userId);
+    if (error) {
+      toast({ title: 'Error', description: 'No se pudo marcar todo como leído.', variant: 'destructive' });
+      return;
+    }
     setNotifications(notifications.map(n => ({ ...n, read: true })));
   };
 
