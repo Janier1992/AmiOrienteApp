@@ -15,10 +15,20 @@ import {
 import { Button } from '@/components/ui/button';
 import { RocketIcon, CheckCircle2 } from 'lucide-react';
 
+// Mapear rol a guía
+const getGuideId = (role) => {
+    switch (role) {
+        case 'tienda': return 'store_dashboard';
+        case 'domiciliario': return 'delivery_dashboard';
+        default: return 'client_home'; // Invitado ve home
+    }
+};
+
 export function OnboardingWelcome() {
     const {
         isWelcomeVisible,
         hideWelcome,
+        skipGuideById,
         startGuide
     } = useOnboardingStore();
     const { user } = useAuth();
@@ -28,23 +38,20 @@ export function OnboardingWelcome() {
     if (!isWelcomeVisible) return null;
 
     const info = ROLE_WELCOME_MESSAGES[role] || ROLE_WELCOME_MESSAGES['cliente']; // Fallback a cliente para invitado
-
-    // Mapear rol a guía
-    const getGuideId = (role) => {
-        switch (role) {
-            case 'tienda': return 'store_dashboard';
-            case 'domiciliario': return 'delivery_dashboard';
-            default: return 'client_home'; // Invitado ve home
-        }
-    };
+    const guideId = getGuideId(role);
 
     const handleStart = () => {
         hideWelcome();
-        startGuide(getGuideId(role));
+        startGuide(guideId);
     };
 
+    // Saltar (o cerrar el modal con Escape/click afuera) se guarda como
+    // "guía saltada" para esa persona — así no vuelve a aparecer solo en
+    // cada visita. Para volver a verlo, está el botón "?" del header.
+    const handleDismiss = () => skipGuideById(guideId);
+
     return (
-        <Dialog open={isWelcomeVisible} onOpenChange={(open) => !open && hideWelcome()}>
+        <Dialog open={isWelcomeVisible} onOpenChange={(open) => !open && handleDismiss()}>
             <DialogContent className="sm:max-w-md">
                 <DialogHeader>
                     <div className="mx-auto bg-primary/10 p-4 rounded-full mb-4">
@@ -68,7 +75,7 @@ export function OnboardingWelcome() {
                     </div>
                 </div>
                 <DialogFooter className="sm:justify-center">
-                    <Button variant="outline" onClick={hideWelcome} className="w-full sm:w-auto">
+                    <Button variant="outline" onClick={handleDismiss} className="w-full sm:w-auto">
                         Saltar
                     </Button>
                     <Button onClick={handleStart} className="w-full sm:w-auto bg-primary text-white">
@@ -90,6 +97,7 @@ export function OnboardingController() {
     const role = user?.user_metadata?.role || 'invitado';
     const {
         completedGuides,
+        skippedGuides,
         showWelcome,
         startGuide
     } = useOnboardingStore();
@@ -107,7 +115,7 @@ export function OnboardingController() {
     useEffect(() => {
         // Lógica para lanzar guías automáticamente según la ruta
         const checkAndTrigger = (guideId, triggersWelcome = false) => {
-            if (!completedGuides.includes(guideId)) {
+            if (!completedGuides.includes(guideId) && !skippedGuides.includes(guideId)) {
                 console.log(`[Onboarding] Triggering ${guideId} for role ${role}`);
                 // Pequeño delay para asegurar carga de UI
                 setTimeout(() => {
@@ -135,7 +143,7 @@ export function OnboardingController() {
             checkAndTrigger('delivery_dashboard', true);
         }
 
-    }, [pathname, user, role, completedGuides]);
+    }, [pathname, user, role, completedGuides, skippedGuides]);
 
     return (
         <>

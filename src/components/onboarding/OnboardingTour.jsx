@@ -27,8 +27,7 @@ export function OnboardingTour() {
         currentStepIndex,
         nextStep,
         prevStep,
-        stopGuide,
-        skipGuide
+        stopGuide
     } = useOnboardingStore();
 
     const [targetRect, setTargetRect] = useState(null);

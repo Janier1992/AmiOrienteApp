@@ -19,10 +19,10 @@ export const useOnboardingStore = create(
             skippedGuides: [],         // Lista de IDs de guías saltadas
 
             // Acciones
+            // Si ya completó o saltó la guía, el controlador decide si la vuelve
+            // a iniciar (ver OnboardingController.checkAndTrigger) — esta acción
+            // siempre inicia cuando se le llama.
             startGuide: (guideId) => {
-                const { completedGuides, skippedGuides } = get();
-                // Si ya completó o saltó, no iniciar automáticamente (salvo forzado)
-                // Pero aquí asumimos que el componente controlador decide eso.
                 set({
                     isActive: true,
                     currentGuideId: guideId,
@@ -31,30 +31,38 @@ export const useOnboardingStore = create(
                 });
             },
 
+            // completed=false (closed early via the X, or never finished) still
+            // records the guide as skipped — otherwise it has nowhere to persist
+            // that dismissal and re-triggers on every future visit.
             stopGuide: (completed = false) => {
-                const { currentGuideId, completedGuides } = get();
+                const { currentGuideId, completedGuides, skippedGuides } = get();
                 const updates = {
                     isActive: false,
                     currentGuideId: null,
                     currentStepIndex: 0
                 };
 
-                if (completed && currentGuideId) {
-                    updates.completedGuides = [...new Set([...completedGuides, currentGuideId])];
+                if (currentGuideId) {
+                    if (completed) {
+                        updates.completedGuides = [...new Set([...completedGuides, currentGuideId])];
+                    } else {
+                        updates.skippedGuides = [...new Set([...skippedGuides, currentGuideId])];
+                    }
                 }
 
                 set(updates);
             },
 
-            skipGuide: () => {
-                const { currentGuideId, skippedGuides } = get();
-                if (currentGuideId) {
-                    set({
-                        isActive: false,
-                        currentGuideId: null,
-                        skippedGuides: [...new Set([...skippedGuides, currentGuideId])]
-                    });
-                }
+            // Para "Saltar" en el modal de bienvenida: el tour aún no inició
+            // (currentGuideId sigue null), así que recibe el guideId directamente
+            // en vez de leerlo del estado.
+            skipGuideById: (guideId) => {
+                if (!guideId) return;
+                const { skippedGuides } = get();
+                set({
+                    isWelcomeVisible: false,
+                    skippedGuides: [...new Set([...skippedGuides, guideId])]
+                });
             },
 
             nextStep: () => {
