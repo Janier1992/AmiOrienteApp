@@ -16,7 +16,9 @@ import {
     Calendar,
     Hammer, // For Maintenance
     Wheat,
-    DollarSign
+    DollarSign,
+    LayoutGrid,
+    UtensilsCrossed
 } from 'lucide-react';
 import LoadingSpinner from '@/components/shared/LoadingSpinner';
 
@@ -31,6 +33,8 @@ const FinancialsTab = lazy(() => import('../FinancialsTab'));
 const KitchenMaintenanceView = lazy(() => import('../views/KitchenMaintenanceView'));
 const AgroCropsView = lazy(() => import('../views/AgroCropsView'));
 const QuickGridProductView = lazy(() => import('../views/QuickGridProductView')); // Inventario Rápido
+const TableManagementTab = lazy(() => import('../views/TableManagementTab'));
+const RestaurantMenuView = lazy(() => import('../views/RestaurantMenuView'));
 
 /**
  * Tab Registry
@@ -64,6 +68,18 @@ const FEATURE_TABS = {
         label: 'Punto de Venta',
         icon: CreditCard,
         component: GenericPOSView
+    },
+    'tables': {
+        path: 'mesas',
+        label: 'Mesas',
+        icon: LayoutGrid,
+        component: TableManagementTab
+    },
+    'menu': {
+        path: 'menu',
+        label: 'Menú Digital',
+        icon: UtensilsCrossed,
+        component: RestaurantMenuView
     },
     'maintenance': {
         path: 'mantenimiento',
