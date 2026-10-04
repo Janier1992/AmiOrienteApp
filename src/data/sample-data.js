@@ -208,6 +208,10 @@ export const SAMPLE_TOURISM_SPOTS = [
   }
 ];
 
+// Debe coincidir EXACTAMENTE con los valores de stores.category que el
+// registro realmente guarda (ver ServiceSelectionPage.jsx services[] y
+// StoreRegister.jsx) — StoresPage filtra con .eq('category', valor), así
+// que un nombre que no coincida nunca devuelve resultados.
 export const SERVICE_CATEGORIES_LIST = [
-  "Restaurante", "Farmacia", "Ropa", "Panadería", "Mercado", "Mascotas", "Tecnología", "Hotel", "Servicios", "Papelería"
+  "Restaurante", "Hotel", "Ropa", "Farmacia", "Papelería", "Panadería", "Supermercado", "Cultivador", "Veterinaria", "General"
 ];

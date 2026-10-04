@@ -62,6 +62,7 @@ const StoreRegister = () => {
     'Panadería': 'Panadería / Repostería',
     'Supermercado': 'Supermercado / Abarrotes',
     'Cultivador': 'Cultivadores',
+    'Veterinaria': 'Veterinaria / Mascotas',
     'General': 'Otro Comercio'
   };
 

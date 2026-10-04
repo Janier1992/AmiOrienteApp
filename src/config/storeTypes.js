@@ -12,7 +12,8 @@ import {
     Store,
     BookOpen,
     Truck,
-    Palette
+    Palette,
+    Croissant
 } from 'lucide-react';
 import { useRestaurantStore } from '@/stores/useRestaurantStore';
 import { usePharmacyStore } from '@/stores/usePharmacyStore';
@@ -116,6 +117,17 @@ export const STORE_TYPES = {
             product: 'Artículo'
         }
     },
+    'panaderia': {
+        label: 'Panadería',
+        icon: Croissant,
+        color: 'amber',
+        features: ['products', 'orders', 'pos', 'inventory'],
+        cartStore: useGeneralStore,
+        terminology: {
+            product: 'Producto',
+            inventory: 'Stock'
+        }
+    },
     'variedades': {
         label: 'Variedades',
         icon: Store,
@@ -151,11 +163,45 @@ export const STORE_TYPES = {
 };
 
 /**
+ * service_categories.name (the real, verbose rows in the DB — see
+ * handle_new_user trigger, which resolves StoreRegister's CATEGORY_DB_MAP
+ * values against this table) never matched STORE_TYPES' short keys, so
+ * getStoreTypeConfig() silently fell back to 'general' for every vertical
+ * except Restaurante/Hotel (whose names happen to be short already).
+ * Mapping confirmed directly against the live `service_categories` table.
+ */
+const SERVICE_CATEGORY_NAME_TO_TYPE = {
+    'Restaurante': 'restaurante',
+    'Restaurante / Gastronomía': 'restaurante',
+    'Farmacia / Droguería': 'farmacia',
+    'Supermercado / Abarrotes': 'mercado',
+    'Tienda de Ropa / Moda': 'ropa',
+    'Cultivadores': 'cultivos',
+    'Hotel': 'hotel',
+    'Hotel / Hospedaje': 'hotel',
+    'Papelería / Miscelánea': 'papeleria',
+    'Panadería / Repostería': 'panaderia',
+    'Veterinaria / Mascotas': 'veterinaria',
+    'Ferretería / Construcción': 'variedades',
+    'Tecnología / Electrodomésticos': 'variedades',
+    'Tienda': 'variedades',
+    'Otro Comercio': 'general',
+    'Domicilios': 'general',
+};
+
+/**
  * Returns configuration for a specific store type normalized.
  */
 export const getStoreTypeConfig = (type) => {
-    const normalizedType = type?.toLowerCase()?.trim();
-    // Simple mapping for likely variations
+    if (!type) return STORE_TYPES['general'];
+    const trimmed = type.trim();
+
+    if (SERVICE_CATEGORY_NAME_TO_TYPE[trimmed]) {
+        return STORE_TYPES[SERVICE_CATEGORY_NAME_TO_TYPE[trimmed]];
+    }
+
+    // Fallback for short keys passed directly (tests, manual data, etc).
+    const normalizedType = trimmed.toLowerCase();
     if (normalizedType === 'restaurantes') return STORE_TYPES['restaurante'];
     if (normalizedType === 'farmacias') return STORE_TYPES['farmacia'];
     if (['finca', 'agro', 'cultivador', 'agricultura'].includes(normalizedType)) return STORE_TYPES['cultivos'];
