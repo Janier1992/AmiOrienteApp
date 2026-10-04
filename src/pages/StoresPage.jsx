@@ -11,6 +11,7 @@ import { supabase } from '@/lib/customSupabaseClient';
 import { customerService } from '@/services/customerService';
 import { SAMPLE_STORES, SERVICE_CATEGORIES_LIST } from '@/data/sample-data';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import PageHeader from '@/components/shared/PageHeader';
 
 const StoreCard = ({ store }) => (
@@ -82,10 +83,12 @@ const StoreCard = ({ store }) => (
       </CardContent>
 
       <CardFooter className="p-4 pt-0 mt-auto border-t border-slate-100 bg-slate-50/50">
-        <Button className="w-full mt-3 bg-white text-primary border border-primary hover:bg-primary hover:text-white transition-colors">
-          <ShoppingBag className="w-4 h-4 mr-2" />
-          Ver Productos
-        </Button>
+        <Link to={`/productos?tienda=${store.id}`} className="w-full">
+          <Button className="w-full mt-3 bg-white text-primary border border-primary hover:bg-primary hover:text-white transition-colors">
+            <ShoppingBag className="w-4 h-4 mr-2" />
+            Ver Productos
+          </Button>
+        </Link>
       </CardFooter>
     </Card>
   </motion.div>
