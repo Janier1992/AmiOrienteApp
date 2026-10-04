@@ -1,4 +1,5 @@
 
+import { lazy } from 'react';
 import {
     Utensils,
     ShoppingBag,
@@ -19,6 +20,15 @@ import { useGroceryStore } from '@/stores/useGroceryStore';
 import { useClothingStore } from '@/stores/useClothingStore';
 import { useStationeryStore } from '@/stores/useStationeryStore';
 import { useGeneralStore } from '@/stores/useGeneralStore';
+
+// Specialized product-management views that replace the generic ProductsTab
+// for verticals that need more than a plain name/price/stock/description
+// form (clothing variants, pharmacy, etc). Lazy-loaded like every other
+// dashboard view.
+const ClothingProductsView = lazy(() => import('@/pages/StoreDashboard/views/ClothingProductsView'));
+const PharmacyProductsView = lazy(() => import('@/pages/StoreDashboard/views/PharmacyProductsView'));
+const StationeryProductsView = lazy(() => import('@/pages/StoreDashboard/views/StationeryProductsView'));
+const SupermarketProductsView = lazy(() => import('@/pages/StoreDashboard/views/SupermarketProductsView'));
 
 /**
  * Configuration for Store Types (Verticals)
@@ -43,6 +53,7 @@ export const STORE_TYPES = {
         color: 'blue',
         features: ['products', 'orders', 'pos', 'inventory'],
         cartStore: usePharmacyStore,
+        productsComponent: PharmacyProductsView,
         terminology: {
             product: 'Medicamento',
             inventory: 'Stock'
@@ -54,6 +65,7 @@ export const STORE_TYPES = {
         color: 'green',
         features: ['products', 'orders', 'pos', 'inventory'],
         cartStore: useGroceryStore,
+        productsComponent: SupermarketProductsView,
         terminology: {
             product: 'Producto',
             inventory: 'Stock'
@@ -65,6 +77,7 @@ export const STORE_TYPES = {
         color: 'purple',
         features: ['products', 'orders', 'pos', 'inventory'],
         cartStore: useClothingStore,
+        productsComponent: ClothingProductsView,
         terminology: {
             product: 'Prenda',
             inventory: 'Existencias'
@@ -98,6 +111,7 @@ export const STORE_TYPES = {
         color: 'yellow',
         features: ['products', 'orders', 'pos', 'inventory'],
         cartStore: useStationeryStore,
+        productsComponent: StationeryProductsView,
         terminology: {
             product: 'Artículo'
         }

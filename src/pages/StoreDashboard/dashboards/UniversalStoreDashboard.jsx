@@ -41,6 +41,7 @@ const HotelRoomsTab = lazy(() => import('../HotelRoomsTab'));
 const HotelReservationsTab = lazy(() => import('../HotelReservationsTab'));
 const HotelReceptionTab = lazy(() => import('../HotelReceptionTab'));
 const HotelGuestsTab = lazy(() => import('../HotelGuestsTab'));
+const StoreCustomersTab = lazy(() => import('../views/StoreCustomersTab'));
 
 /**
  * Tab Registry
@@ -149,6 +150,12 @@ const COMMON_TABS = [
         component: FinancialsTab,
     },
     {
+        path: 'clientes',
+        label: 'Clientes',
+        icon: Users,
+        component: StoreCustomersTab,
+    },
+    {
         path: 'configuracion',
         label: 'Configuración',
         icon: Settings,
@@ -172,7 +179,7 @@ const UniversalStoreDashboard = () => {
     const tabs = useMemo(() => {
         if (!dashboardConfig || !store) return [];
 
-        const { features, terminology, cartStore } = dashboardConfig;
+        const { features, terminology, cartStore, productsComponent } = dashboardConfig;
 
         // Map enabled features to Tab definitions
         const featureTabs = features.map(featureKey => {
@@ -186,7 +193,13 @@ const UniversalStoreDashboard = () => {
             if (featureKey === 'inventory' && terminology?.inventory) label = terminology.inventory;
 
             // Instantiate Component with Props
-            const Element = tabDef.component;
+            // 'products' uses a vertical-specific view (variants, prescriptions-style
+            // fields, etc) when the vertical declares one, instead of the plain
+            // generic form — both are self-contained via useStoreDashboard(), so no
+            // extra props are needed either way.
+            const Element = featureKey === 'products' && productsComponent
+                ? productsComponent
+                : tabDef.component;
             // GenericPOSView needs the vertical's own cart store (useRestaurantStore,
             // useGroceryStore, etc), not storeId/terminology — it reads the store
             // itself via useStoreDashboard() and only needs to know which cart to use.
