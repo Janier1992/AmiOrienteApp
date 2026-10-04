@@ -6,12 +6,14 @@ import { useAuth } from '@/contexts/SupabaseAuthContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from '@/components/ui/use-toast';
-import { Loader2, ArrowLeft, CreditCard, AlertTriangle, MapPin, Tag, X } from 'lucide-react';
+import { Loader2, ArrowLeft, CreditCard, AlertTriangle, MapPin, Tag, X, Truck } from 'lucide-react';
 import orderService from '@/services/orderService';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { supabase } from '@/lib/customSupabaseClient';
+import { SERVICE_FEE, DELIVERY_BASE_FEE } from '@/lib/constants';
 
 const CheckoutPage = () => {
   const { user } = useAuth();
@@ -24,6 +26,9 @@ const CheckoutPage = () => {
   const [couponInput, setCouponInput] = useState('');
   const [applyingCoupon, setApplyingCoupon] = useState(false);
   const [appliedCoupon, setAppliedCoupon] = useState(null);
+  const [shippingZones, setShippingZones] = useState({}); // { [store_id]: [{ id, name, shipping_rates: [...] }] }
+  const [taxRates, setTaxRates] = useState({}); // { [store_id]: combined rate, e.g. 0.19 }
+  const [selectedShipping, setSelectedShipping] = useState({}); // { [store_id]: { zoneId, rateId, price } }
 
   const total = getCartTotal();
 
@@ -64,6 +69,74 @@ const CheckoutPage = () => {
     loadProfileAddress();
 
   }, [user, items.length, navigate]);
+
+  useEffect(() => {
+    const storeIds = Object.keys(groupedItems);
+    if (storeIds.length === 0) return;
+
+    const loadShippingAndTaxes = async () => {
+      const { data: zonesData } = await supabase
+        .from('shipping_zones')
+        .select('id, store_id, name, shipping_rates(id, name, price)')
+        .in('store_id', storeIds);
+
+      const zonesByStore = {};
+      (zonesData || []).forEach(zone => {
+        if (!zonesByStore[zone.store_id]) zonesByStore[zone.store_id] = [];
+        zonesByStore[zone.store_id].push(zone);
+      });
+      setShippingZones(zonesByStore);
+
+      const { data: taxesData } = await supabase
+        .from('taxes')
+        .select('store_id, rate')
+        .in('store_id', storeIds);
+
+      const taxByStore = {};
+      (taxesData || []).forEach(t => {
+        taxByStore[t.store_id] = (taxByStore[t.store_id] || 0) + Number(t.rate);
+      });
+      setTaxRates(taxByStore);
+    };
+    loadShippingAndTaxes();
+  }, [groupedItems]);
+
+  const handleSelectZone = (storeId, zoneId) => {
+    setSelectedShipping(prev => ({ ...prev, [storeId]: { zoneId, rateId: null, price: null } }));
+  };
+
+  const handleSelectRate = (storeId, zoneId, rateId, price) => {
+    setSelectedShipping(prev => ({ ...prev, [storeId]: { zoneId, rateId, price } }));
+  };
+
+  // null = store has no configured zones, use the flat platform default fee
+  const getShippingFee = (storeId) => {
+    const zones = shippingZones[storeId];
+    if (!zones || zones.length === 0) return null;
+    return selectedShipping[storeId]?.price ?? undefined;
+  };
+
+  const getTaxAmount = (storeId, subtotal) => {
+    const rate = taxRates[storeId] || 0;
+    return subtotal * rate;
+  };
+
+  const totals = useMemo(() => {
+    const stores = Object.values(groupedItems);
+    let serviceFeeTotal = 0;
+    let shippingTotal = 0;
+    let taxTotal = 0;
+    stores.forEach(group => {
+      serviceFeeTotal += SERVICE_FEE;
+      const fee = getShippingFee(group.store_id);
+      shippingTotal += (fee === null || fee === undefined) ? DELIVERY_BASE_FEE : fee;
+      taxTotal += getTaxAmount(group.store_id, group.total);
+    });
+    const discount = appliedCoupon?.amount || 0;
+    const grandTotal = Math.max(0, total + serviceFeeTotal + shippingTotal + taxTotal - discount);
+    return { serviceFeeTotal, shippingTotal, taxTotal, discount, grandTotal };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [groupedItems, selectedShipping, shippingZones, taxRates, appliedCoupon, total]);
 
   const handleApplyCoupon = async () => {
     const code = couponInput.trim().toUpperCase();
@@ -121,6 +194,18 @@ const CheckoutPage = () => {
       return;
     }
 
+    for (const [storeId, group] of Object.entries(groupedItems)) {
+      const zones = shippingZones[storeId];
+      if (zones && zones.length > 0 && !selectedShipping[storeId]?.rateId) {
+        toast({
+          title: "Falta zona de entrega",
+          description: `Selecciona tu zona de entrega para ${group.store_name}.`,
+          variant: "destructive"
+        });
+        return;
+      }
+    }
+
     setProcessing(true);
 
     try {
@@ -149,6 +234,7 @@ const CheckoutPage = () => {
       // Procesar una orden por cada tienda
       for (const storeGroup of stores) {
         const isDiscountedStore = appliedCoupon && storeGroup.store_id === appliedCoupon.store_id;
+        const shippingSelection = selectedShipping[storeGroup.store_id];
         const orderPayload = {
           customer_id: user.id,
           store_id: storeGroup.store_id,
@@ -158,6 +244,9 @@ const CheckoutPage = () => {
           total: storeGroup.total, // El servicio recalculará fees
           discount_code: isDiscountedStore ? appliedCoupon.code : null,
           discount_amount: isDiscountedStore ? appliedCoupon.amount : 0,
+          shipping_fee: shippingSelection?.price ?? null,
+          shipping_rate_id: shippingSelection?.rateId || null,
+          tax_amount: getTaxAmount(storeGroup.store_id, storeGroup.total),
         };
 
         const orderItems = storeGroup.items.map(item => ({
@@ -253,6 +342,41 @@ const CheckoutPage = () => {
                       <span>{group.store_name}</span>
                       <span className="text-sm font-normal text-muted-foreground">Subtotal: ${group.total.toLocaleString()}</span>
                     </h3>
+                    {shippingZones[group.store_id]?.length > 0 && (
+                      <div className="mb-3 flex flex-col sm:flex-row gap-2 bg-white p-3 rounded border">
+                        <div className="flex items-center gap-1 text-xs text-muted-foreground shrink-0">
+                          <Truck className="h-4 w-4" /> Envío:
+                        </div>
+                        <Select
+                          value={selectedShipping[group.store_id]?.zoneId || ''}
+                          onValueChange={(zoneId) => handleSelectZone(group.store_id, zoneId)}
+                        >
+                          <SelectTrigger className="sm:w-48 h-8 text-xs"><SelectValue placeholder="Zona de entrega" /></SelectTrigger>
+                          <SelectContent>
+                            {shippingZones[group.store_id].map(zone => (
+                              <SelectItem key={zone.id} value={zone.id}>{zone.name}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        {selectedShipping[group.store_id]?.zoneId && (
+                          <Select
+                            value={selectedShipping[group.store_id]?.rateId || ''}
+                            onValueChange={(rateId) => {
+                              const zone = shippingZones[group.store_id].find(z => z.id === selectedShipping[group.store_id].zoneId);
+                              const rate = zone?.shipping_rates?.find(r => r.id === rateId);
+                              handleSelectRate(group.store_id, zone.id, rateId, rate ? Number(rate.price) : null);
+                            }}
+                          >
+                            <SelectTrigger className="sm:w-48 h-8 text-xs"><SelectValue placeholder="Tarifa" /></SelectTrigger>
+                            <SelectContent>
+                              {(shippingZones[group.store_id].find(z => z.id === selectedShipping[group.store_id].zoneId)?.shipping_rates || []).map(rate => (
+                                <SelectItem key={rate.id} value={rate.id}>{rate.name} - ${Number(rate.price).toLocaleString()}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        )}
+                      </div>
+                    )}
                     <div className="space-y-2">
                       {group.items.map(item => (
                         <div key={item.id} className="flex justify-between items-center text-sm bg-white p-2 rounded border-b last:border-0 border-slate-100">
@@ -325,15 +449,20 @@ const CheckoutPage = () => {
                     <span className="text-muted-foreground">Subtotal Productos</span>
                     <span>${total.toLocaleString()}</span>
                   </div>
-                  {/* Nota: Los fees reales se calculan al crear la orden, aquí mostramos estimados o base */}
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Servicio (Est.)</span>
-                    <span>$2,000</span>
+                    <span className="text-muted-foreground">Servicio</span>
+                    <span>${totals.serviceFeeTotal.toLocaleString()}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Domicilio Base (Est.)</span>
-                    <span>$3,500</span>
+                    <span className="text-muted-foreground">Domicilio</span>
+                    <span>${totals.shippingTotal.toLocaleString()}</span>
                   </div>
+                  {totals.taxTotal > 0 && (
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Impuestos</span>
+                      <span>${Math.round(totals.taxTotal).toLocaleString()}</span>
+                    </div>
+                  )}
                   {appliedCoupon && (
                     <div className="flex justify-between text-green-600">
                       <span>Descuento ({appliedCoupon.code})</span>
@@ -342,7 +471,7 @@ const CheckoutPage = () => {
                   )}
                   <div className="border-t pt-2 flex justify-between font-bold text-lg">
                     <span>Total Estimado</span>
-                    <span>${Math.max(0, total + 5500 - (appliedCoupon?.amount || 0)).toLocaleString()}</span>
+                    <span>${Math.round(totals.grandTotal).toLocaleString()}</span>
                   </div>
                 </div>
 

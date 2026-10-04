@@ -128,6 +128,9 @@ export const orderService = {
      * @param {string} [datosPedido.notes] - Notas adicionales
      * @param {string} [datosPedido.discount_code] - Código de descuento aplicado
      * @param {number} [datosPedido.discount_amount] - Monto del descuento aplicado
+     * @param {number} [datosPedido.shipping_fee] - Tarifa de envío (sobreescribe el valor por defecto)
+     * @param {string} [datosPedido.shipping_rate_id] - UUID de la tarifa de envío seleccionada
+     * @param {number} [datosPedido.tax_amount] - Monto de impuestos a aplicar
      * @param {Array} items - Array de items del pedido
      * @param {string} items[].product_id - UUID del producto
      * @param {number} items[].quantity - Cantidad
@@ -163,9 +166,12 @@ export const orderService = {
             }, 0);
 
             const tarifaServicio = SERVICE_FEE;
-            const tarifaEnvio = DELIVERY_BASE_FEE;
+            const tarifaEnvio = datosPedido.shipping_fee !== undefined && datosPedido.shipping_fee !== null
+                ? Number(datosPedido.shipping_fee)
+                : DELIVERY_BASE_FEE;
+            const impuestos = Number(datosPedido.tax_amount) || 0;
             const descuento = Number(datosPedido.discount_amount) || 0;
-            const total = Math.max(0, subtotal + tarifaServicio + tarifaEnvio - descuento);
+            const total = Math.max(0, subtotal + tarifaServicio + tarifaEnvio + impuestos - descuento);
 
             // Determinar estado inicial según método de pago
             const estadoInicial = datosPedido.payment_method === 'efectivo'
@@ -188,6 +194,8 @@ export const orderService = {
                     delivery_fee: tarifaEnvio,
                     discount_code: datosPedido.discount_code || null,
                     discount_amount: descuento,
+                    tax_amount: impuestos,
+                    shipping_rate_id: datosPedido.shipping_rate_id || null,
                     total,
                     status: estadoInicial
                 })
