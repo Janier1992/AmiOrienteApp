@@ -32,6 +32,8 @@ export const adminService = {
                 status,
                 created_at,
                 owner_id,
+                disabled_modules,
+                service_categories ( name ),
                 profiles:owner_id ( full_name, email, phone )
             `)
             .order('created_at', { ascending: false });
@@ -47,6 +49,23 @@ export const adminService = {
         const { data, error } = await supabase
             .from('stores')
             .update({ status })
+            .eq('id', storeId)
+            .select()
+            .single();
+
+        if (error) throw error;
+        return data;
+    },
+
+    /**
+     * Oculta/muestra módulos del dashboard de una tienda (ver Panel de
+     * Administración > Módulos). disabledModules es la lista completa de
+     * claves ocultas (reemplaza la anterior, no la mezcla).
+     */
+    async actualizarModulosTienda(storeId, disabledModules) {
+        const { data, error } = await supabase
+            .from('stores')
+            .update({ disabled_modules: disabledModules })
             .eq('id', storeId)
             .select()
             .single();

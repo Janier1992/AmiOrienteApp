@@ -5,13 +5,24 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Store, Building2, Ban, CheckCircle2, LogOut } from 'lucide-react';
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogDescription,
+    DialogFooter,
+} from '@/components/ui/dialog';
+import { Store, Building2, Ban, CheckCircle2, LogOut, SlidersHorizontal, Loader2 } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
 import { adminService } from '@/services/adminService';
 import { useAuth } from '@/contexts/SupabaseAuthContext';
 import LoadingSpinner from '@/components/shared/LoadingSpinner';
 import { SupportTicketsPanel } from '@/components/admin/SupportTicketsPanel';
+import { getStoreTypeConfig } from '@/config/storeTypes';
+import { FEATURE_MODULE_LABELS, COMMON_MODULE_LABELS } from '@/config/dashboardModules';
 
 const STATUS_LABEL = {
     active: { label: 'Activa', variant: 'default' },
@@ -25,6 +36,9 @@ const AdminDashboard = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [search, setSearch] = useState('');
     const [updatingId, setUpdatingId] = useState(null);
+    const [moduleEditingStore, setModuleEditingStore] = useState(null);
+    const [pendingDisabled, setPendingDisabled] = useState([]);
+    const [savingModules, setSavingModules] = useState(false);
 
     const fetchStores = useCallback(async () => {
         setIsLoading(true);
@@ -51,6 +65,32 @@ const AdminDashboard = () => {
             toast({ title: 'Error', description: 'No se pudo actualizar el estado.', variant: 'destructive' });
         } finally {
             setUpdatingId(null);
+        }
+    };
+
+    const handleOpenModules = (store) => {
+        setModuleEditingStore(store);
+        setPendingDisabled(store.disabled_modules || []);
+    };
+
+    const handleToggleModule = (moduleKey) => {
+        setPendingDisabled(prev =>
+            prev.includes(moduleKey) ? prev.filter(m => m !== moduleKey) : [...prev, moduleKey]
+        );
+    };
+
+    const handleSaveModules = async () => {
+        if (!moduleEditingStore) return;
+        setSavingModules(true);
+        try {
+            await adminService.actualizarModulosTienda(moduleEditingStore.id, pendingDisabled);
+            toast({ title: 'Módulos actualizados', description: moduleEditingStore.name });
+            setModuleEditingStore(null);
+            fetchStores();
+        } catch (error) {
+            toast({ title: 'Error', description: 'No se pudieron guardar los módulos.', variant: 'destructive' });
+        } finally {
+            setSavingModules(false);
         }
     };
 
@@ -162,7 +202,14 @@ const AdminDashboard = () => {
                                                 <TableCell>
                                                     <Badge variant={statusInfo.variant}>{statusInfo.label}</Badge>
                                                 </TableCell>
-                                                <TableCell className="text-right">
+                                                <TableCell className="text-right space-x-2">
+                                                    <Button
+                                                        size="sm"
+                                                        variant="outline"
+                                                        onClick={() => handleOpenModules(store)}
+                                                    >
+                                                        <SlidersHorizontal className="h-4 w-4 mr-1" /> Módulos
+                                                    </Button>
                                                     <Button
                                                         size="sm"
                                                         variant={store.status === 'suspended' ? 'outline' : 'destructive'}
@@ -187,6 +234,63 @@ const AdminDashboard = () => {
 
                 <SupportTicketsPanel />
             </div>
+
+            <Dialog open={!!moduleEditingStore} onOpenChange={(open) => !open && setModuleEditingStore(null)}>
+                <DialogContent className="sm:max-w-lg">
+                    <DialogHeader>
+                        <DialogTitle>Módulos visibles — {moduleEditingStore?.name}</DialogTitle>
+                        <DialogDescription>
+                            Desmarca los módulos que no quieras que aparezcan en el dashboard de este negocio.
+                        </DialogDescription>
+                    </DialogHeader>
+                    {moduleEditingStore && (() => {
+                        const typeConfig = getStoreTypeConfig(
+                            moduleEditingStore.service_categories?.name || moduleEditingStore.category
+                        );
+                        const featureKeys = (typeConfig?.features || []).filter(k => FEATURE_MODULE_LABELS[k]);
+                        const commonKeys = Object.keys(COMMON_MODULE_LABELS);
+
+                        const renderCheckbox = (key, label) => (
+                            <label key={key} className="flex items-center gap-2 py-1.5 text-sm cursor-pointer">
+                                <Checkbox
+                                    checked={!pendingDisabled.includes(key)}
+                                    onCheckedChange={() => handleToggleModule(key)}
+                                />
+                                {label}
+                            </label>
+                        );
+
+                        return (
+                            <div className="space-y-4 max-h-[50vh] overflow-y-auto pr-1">
+                                {featureKeys.length > 0 && (
+                                    <div>
+                                        <p className="text-xs font-semibold text-muted-foreground uppercase mb-1">
+                                            Específicos de {typeConfig.label}
+                                        </p>
+                                        {featureKeys.map(k => renderCheckbox(k, FEATURE_MODULE_LABELS[k]))}
+                                    </div>
+                                )}
+                                <div>
+                                    <p className="text-xs font-semibold text-muted-foreground uppercase mb-1">
+                                        Comunes a toda tienda
+                                    </p>
+                                    {commonKeys.map(k => renderCheckbox(k, COMMON_MODULE_LABELS[k]))}
+                                </div>
+                                <p className="text-xs text-muted-foreground italic">
+                                    Resumen, Configuración y Soporte siempre están visibles.
+                                </p>
+                            </div>
+                        );
+                    })()}
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setModuleEditingStore(null)}>Cancelar</Button>
+                        <Button onClick={handleSaveModules} disabled={savingModules}>
+                            {savingModules && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                            Guardar
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </>
     );
 };

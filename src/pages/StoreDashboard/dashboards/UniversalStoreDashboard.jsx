@@ -220,9 +220,13 @@ const UniversalStoreDashboard = () => {
         if (!dashboardConfig || !store) return [];
 
         const { features, terminology, cartStore, productsComponent } = dashboardConfig;
+        // Admin-controlled per-store module visibility (see Panel de
+        // Administración > Módulos). Overview, Configuración and Soporte
+        // are never hideable.
+        const disabledModules = store.disabled_modules || [];
 
         // Map enabled features to Tab definitions
-        const featureTabs = features.map(featureKey => {
+        const featureTabs = features.filter(featureKey => !disabledModules.includes(featureKey)).map(featureKey => {
             const tabDef = FEATURE_TABS[featureKey];
             if (!tabDef) return null;
 
@@ -257,13 +261,15 @@ const UniversalStoreDashboard = () => {
         // Process Common Tabs
         // StoreConfigTab needs the full store object + setStore + user (not just
         // storeId) to pre-fill the form and actually be able to save changes.
-        const commonTabs = COMMON_TABS.map(tab => {
-            const Element = tab.component;
-            return {
-                ...tab,
-                element: <Element storeId={store.id} store={store} setStore={setStore} user={user} />
-            };
-        });
+        const commonTabs = COMMON_TABS
+            .filter(tab => tab.path === 'configuracion' || !disabledModules.includes(tab.path))
+            .map(tab => {
+                const Element = tab.component;
+                return {
+                    ...tab,
+                    element: <Element storeId={store.id} store={store} setStore={setStore} user={user} />
+                };
+            });
 
         // Always add Overview at start and Settings at end
         // Instantiate Overview manually to match pattern
