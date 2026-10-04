@@ -15,6 +15,7 @@ const SiteHeader = () => {
 
   const getDashboardLink = () => {
     if (!user) return '/cliente/login';
+    if (isAdmin) return '/admin';
     switch (user.user_metadata?.role) {
       case 'tienda':
         return '/tienda/dashboard';
@@ -75,19 +76,11 @@ const SiteHeader = () => {
             </Button>
 
             <Link to={getDashboardLink()}>
-              <Button variant="ghost" size="sm">
-                <User className="mr-2 h-4 w-4" />
-                {user ? 'Mi Cuenta' : 'Ingresar'}
+              <Button variant={isAdmin ? 'outline' : 'ghost'} size="sm">
+                {isAdmin ? <ShieldCheck className="mr-2 h-4 w-4" /> : <User className="mr-2 h-4 w-4" />}
+                {!user ? 'Ingresar' : isAdmin ? 'Admin' : 'Mi Cuenta'}
               </Button>
             </Link>
-            {isAdmin && (
-              <Link to="/admin">
-                <Button variant="outline" size="sm">
-                  <ShieldCheck className="mr-2 h-4 w-4" />
-                  Admin
-                </Button>
-              </Link>
-            )}
             <Link to="/servicios/registro">
               <Button size="sm">
                 <Store className="mr-2 h-4 w-4" />

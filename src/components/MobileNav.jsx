@@ -19,6 +19,7 @@ const MobileNav = () => {
 
   const getDashboardLink = () => {
     if (!user) return '/cliente/login';
+    if (isAdmin) return '/admin';
     switch (user.user_metadata?.role) {
       case 'tienda':
         return '/tienda/dashboard';
@@ -62,15 +63,9 @@ const MobileNav = () => {
         </nav>
         <div className="mt-auto flex flex-col space-y-2 pb-4">
           <Button onClick={() => closeSheetAndNavigate(getDashboardLink())} variant="outline" className="w-full">
-            <User className="mr-2 h-4 w-4" />
-            {user ? 'Mi Cuenta' : 'Ingresar'}
+            {isAdmin ? <ShieldCheck className="mr-2 h-4 w-4" /> : <User className="mr-2 h-4 w-4" />}
+            {!user ? 'Ingresar' : isAdmin ? 'Admin' : 'Mi Cuenta'}
           </Button>
-          {isAdmin && (
-            <Button onClick={() => closeSheetAndNavigate('/admin')} variant="outline" className="w-full">
-              <ShieldCheck className="mr-2 h-4 w-4" />
-              Admin
-            </Button>
-          )}
           <Button onClick={() => closeSheetAndNavigate('/servicios/registro')} className="w-full">
             <Store className="mr-2 h-4 w-4" />
             Para Negocios
