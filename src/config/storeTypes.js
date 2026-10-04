@@ -87,7 +87,7 @@ export const STORE_TYPES = {
         label: 'Agro / Cultivos',
         icon: Wheat,
         color: 'emerald',
-        features: ['products', 'orders', 'harvests', 'inventory', 'volume_orders'],
+        features: ['products', 'orders', 'harvests', 'inventory', 'volume_orders', 'automation'],
         terminology: {
             product: 'Cosecha/Producto',
             inventory: 'Insumos/Semillas',

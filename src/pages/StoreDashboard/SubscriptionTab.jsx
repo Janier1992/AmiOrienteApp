@@ -23,17 +23,14 @@ const SubscriptionTab = ({ store }) => {
                   <Badge className="bg-green-600 hover:bg-green-700">Activo</Badge>
                 </div>
                 <p className="text-green-800 mt-2">
-                  Como parte de la iniciativa <strong>Soy del Campo</strong>, tienes acceso ilimitado a todas las herramientas de la plataforma sin costo alguno.
+                  Mientras MiOriente esté en lanzamiento, tienes acceso ilimitado a todas las herramientas de la plataforma sin costo alguno.
                 </p>
                 <ul className="mt-4 space-y-2 text-sm text-green-700">
                     <li className="flex items-center gap-2">
                         <CheckCircle className="h-4 w-4" /> Gestión de productos ilimitada
                     </li>
                     <li className="flex items-center gap-2">
-                        <CheckCircle className="h-4 w-4" /> Administración de equipos
-                    </li>
-                    <li className="flex items-center gap-2">
-                        <CheckCircle className="h-4 w-4" /> Herramientas de automatización e IA
+                        <CheckCircle className="h-4 w-4" /> Analíticas de ventas en tiempo real
                     </li>
                     <li className="flex items-center gap-2">
                         <CheckCircle className="h-4 w-4" /> 0% comisión por uso de plataforma

@@ -21,7 +21,11 @@ import {
     UtensilsCrossed,
     ClipboardCheck,
     Users,
-    Percent
+    Percent,
+    LineChart,
+    Bot,
+    Gem,
+    CreditCard as PaymentsIcon
 } from 'lucide-react';
 import LoadingSpinner from '@/components/shared/LoadingSpinner';
 
@@ -44,6 +48,10 @@ const HotelReceptionTab = lazy(() => import('../HotelReceptionTab'));
 const HotelGuestsTab = lazy(() => import('../HotelGuestsTab'));
 const StoreCustomersTab = lazy(() => import('../views/StoreCustomersTab'));
 const DiscountsTab = lazy(() => import('../DiscountsTab'));
+const AnalyticsTab = lazy(() => import('../AnalyticsTab'));
+const SubscriptionTab = lazy(() => import('../SubscriptionTab'));
+const PaymentsTab = lazy(() => import('../PaymentsTab'));
+const AutomationTab = lazy(() => import('../AutomationTab'));
 
 /**
  * Tab Registry
@@ -138,6 +146,12 @@ const FEATURE_TABS = {
         label: 'Huéspedes',
         icon: Users,
         component: HotelGuestsTab
+    },
+    'automation': {
+        path: 'automatizacion',
+        label: 'Entrenador Virtual',
+        icon: Bot,
+        component: AutomationTab
     }
 };
 
@@ -162,6 +176,24 @@ const COMMON_TABS = [
         label: 'Descuentos',
         icon: Percent,
         component: DiscountsTab,
+    },
+    {
+        path: 'analiticas',
+        label: 'Analíticas',
+        icon: LineChart,
+        component: AnalyticsTab,
+    },
+    {
+        path: 'pagos',
+        label: 'Pagos',
+        icon: PaymentsIcon,
+        component: PaymentsTab,
+    },
+    {
+        path: 'suscripcion',
+        label: 'Mi Plan',
+        icon: Gem,
+        component: SubscriptionTab,
     },
     {
         path: 'configuracion',

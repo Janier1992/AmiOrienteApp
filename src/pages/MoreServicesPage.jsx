@@ -11,7 +11,7 @@ const MoreServicesPage = () => {
 
   const handleCardClick = (path) => {
     // If a business-related card is clicked, redirect to dashboard if logged in as store, else to login.
-    const businessPaths = ['/tienda/dashboard?tab=inventario', '/tienda/dashboard?tab=automatizacion', '/tienda/dashboard?tab=admin'];
+    const businessPaths = ['/tienda/dashboard/inventario', '/tienda/dashboard/automatizacion', '/tienda/dashboard/analiticas'];
     if (businessPaths.includes(path)) {
       if (user && user.user_metadata?.role === 'tienda') {
         navigate(path);
@@ -26,10 +26,10 @@ const MoreServicesPage = () => {
   const menuItems = [
     { icon: UserPlus, label: "Registro de Tiendas", description: "Inscribe tu negocio en nuestra plataforma.", path: "/tienda/registro" },
     { icon: DollarSign, label: "Planes y Precios", description: "Elige el plan que mejor se adapte a tu negocio.", path: "/precios" },
-    { icon: Package, label: "Control de Inventarios", description: "Gestiona tu stock de forma inteligente.", path: "/tienda/dashboard?tab=inventario" },
-    { icon: Settings, label: "Automatización de Procesos", description: "Optimiza tareas repetitivas con IA.", path: "/tienda/dashboard?tab=automatizacion" },
-    { icon: BarChart, label: "Administración de Negocios", description: "Analíticas y gestión de tu equipo.", path: "/tienda/dashboard?tab=admin" },
-    { icon: MessageCircle, label: "Atención al Cliente (IA)", description: "Un bot 24/7 para atender a tus clientes.", path: "/tienda/dashboard?tab=automatizacion" },
+    { icon: Package, label: "Control de Inventarios", description: "Gestiona tu stock de forma inteligente.", path: "/tienda/dashboard/inventario" },
+    { icon: Settings, label: "Automatización de Procesos", description: "Entrenador virtual con consejos de negocio con IA.", path: "/tienda/dashboard/automatizacion" },
+    { icon: BarChart, label: "Administración de Negocios", description: "Analíticas de ventas en tiempo real.", path: "/tienda/dashboard/analiticas" },
+    { icon: MessageCircle, label: "Atención al Cliente (IA)", description: "Entrenador virtual con consejos de negocio con IA.", path: "/tienda/dashboard/automatizacion" },
   ];
 
   const ServiceCard = ({ item }) => (

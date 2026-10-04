@@ -34,7 +34,7 @@ const plans = [
       'Soporte prioritario',
     ],
     cta: 'Elegir Profesional',
-    path: '/tienda/dashboard?tab=suscripcion',
+    path: '/tienda/dashboard/suscripcion',
     isFeatured: true,
   },
   {
