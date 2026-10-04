@@ -1,6 +1,7 @@
 
 import React, { lazy, useMemo } from 'react';
 import { useStoreDashboard } from '@/stores/useStoreDashboard';
+import { useAuth } from '@/contexts/SupabaseAuthContext';
 import BaseStoreDashboard from './BaseStoreDashboard';
 import { getStoreTypeConfig } from '@/config/storeTypes';
 import {
@@ -115,7 +116,8 @@ const COMMON_TABS = [
 ];
 
 const UniversalStoreDashboard = () => {
-    const { store, isLoading } = useStoreDashboard();
+    const { store, isLoading, setStore } = useStoreDashboard();
+    const { user } = useAuth();
 
     // Derive Configuration
     const dashboardConfig = useMemo(() => {
@@ -158,11 +160,13 @@ const UniversalStoreDashboard = () => {
         }).filter(Boolean);
 
         // Process Common Tabs
+        // StoreConfigTab needs the full store object + setStore + user (not just
+        // storeId) to pre-fill the form and actually be able to save changes.
         const commonTabs = COMMON_TABS.map(tab => {
             const Element = tab.component;
             return {
                 ...tab,
-                element: <Element storeId={store.id} />
+                element: <Element storeId={store.id} store={store} setStore={setStore} user={user} />
             };
         });
 
@@ -179,7 +183,7 @@ const UniversalStoreDashboard = () => {
             ...featureTabs,
             ...commonTabs
         ];
-    }, [dashboardConfig, store]);
+    }, [dashboardConfig, store, setStore, user]);
 
     if (isLoading) return <LoadingSpinner />;
     if (!store) return <div>No se encontró la tienda.</div>;
