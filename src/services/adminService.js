@@ -12,14 +12,13 @@ export const adminService = {
         const { data, error } = await supabase
             .from('profiles')
             .select('role')
-            .eq('id', userId)
-            .single();
+            .eq('id', userId);
 
         if (error) {
             console.error('[adminService] Error verificando rol de admin:', error);
             return false;
         }
-        return data?.role === 'admin';
+        return data?.[0]?.role === 'admin';
     },
 
     async obtenerTodasLasTiendas() {
@@ -46,15 +45,20 @@ export const adminService = {
     },
 
     async actualizarEstadoTienda(storeId, status) {
+        // .select() (sin .single()) en vez de .select().single(): si RLS
+        // bloquea el UPDATE, PostgREST devuelve 200 con data=[] en vez de
+        // forzar un 406 "se esperaba exactamente 1 fila" que oculta la causa.
         const { data, error } = await supabase
             .from('stores')
             .update({ status })
             .eq('id', storeId)
-            .select()
-            .single();
+            .select();
 
         if (error) throw error;
-        return data;
+        if (!data || data.length === 0) {
+            throw new Error('La actualización no tuvo efecto (sesión de administrador inválida o expirada). Cierra sesión y vuelve a entrar.');
+        }
+        return data[0];
     },
 
     /**
@@ -67,11 +71,13 @@ export const adminService = {
             .from('stores')
             .update({ disabled_modules: disabledModules })
             .eq('id', storeId)
-            .select()
-            .single();
+            .select();
 
         if (error) throw error;
-        return data;
+        if (!data || data.length === 0) {
+            throw new Error('La actualización no tuvo efecto (sesión de administrador inválida o expirada). Cierra sesión y vuelve a entrar.');
+        }
+        return data[0];
     },
 };
 
