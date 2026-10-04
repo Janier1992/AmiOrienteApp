@@ -13,6 +13,12 @@ import {
     Truck,
     Palette
 } from 'lucide-react';
+import { useRestaurantStore } from '@/stores/useRestaurantStore';
+import { usePharmacyStore } from '@/stores/usePharmacyStore';
+import { useGroceryStore } from '@/stores/useGroceryStore';
+import { useClothingStore } from '@/stores/useClothingStore';
+import { useStationeryStore } from '@/stores/useStationeryStore';
+import { useGeneralStore } from '@/stores/useGeneralStore';
 
 /**
  * Configuration for Store Types (Verticals)
@@ -24,6 +30,7 @@ export const STORE_TYPES = {
         icon: Utensils,
         color: 'orange',
         features: ['products', 'orders', 'pos', 'tables', 'kitchen', 'maintenance', 'menu'], // 'tables', 'kitchen' specific to restaurant
+        cartStore: useRestaurantStore,
         terminology: {
             product: 'Plato',
             inventory: 'Ingredientes',
@@ -35,6 +42,7 @@ export const STORE_TYPES = {
         icon: Pill,
         color: 'blue',
         features: ['products', 'orders', 'pos', 'inventory', 'prescriptions'],
+        cartStore: usePharmacyStore,
         terminology: {
             product: 'Medicamento',
             inventory: 'Stock'
@@ -45,6 +53,7 @@ export const STORE_TYPES = {
         icon: ShoppingBag,
         color: 'green',
         features: ['products', 'orders', 'pos', 'inventory'],
+        cartStore: useGroceryStore,
         terminology: {
             product: 'Producto',
             inventory: 'Stock'
@@ -55,6 +64,7 @@ export const STORE_TYPES = {
         icon: Shirt,
         color: 'purple',
         features: ['products', 'orders', 'pos', 'inventory', 'collections'],
+        cartStore: useClothingStore,
         terminology: {
             product: 'Prenda',
             inventory: 'Existencias'
@@ -87,6 +97,7 @@ export const STORE_TYPES = {
         icon: BookOpen,
         color: 'yellow',
         features: ['products', 'orders', 'pos', 'inventory', 'printing'],
+        cartStore: useStationeryStore,
         terminology: {
             product: 'Artículo'
         }
@@ -96,6 +107,7 @@ export const STORE_TYPES = {
         icon: Store,
         color: 'pink',
         features: ['products', 'orders', 'pos', 'inventory'],
+        cartStore: useGeneralStore,
         terminology: {
             product: 'Artículo'
         }
@@ -105,6 +117,7 @@ export const STORE_TYPES = {
         icon: Scissors, // Or Paw if available
         color: 'cyan',
         features: ['products', 'services', 'appointments', 'pos'],
+        cartStore: useGeneralStore,
         terminology: {
             product: 'Producto/Servicio',
             order: 'Cita/Venta'
@@ -116,6 +129,7 @@ export const STORE_TYPES = {
         icon: Store,
         color: 'slate',
         features: ['products', 'orders', 'pos', 'inventory'],
+        cartStore: useGeneralStore,
         terminology: {
             product: 'Producto'
         }

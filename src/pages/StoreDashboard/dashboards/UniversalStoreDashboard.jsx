@@ -128,7 +128,7 @@ const UniversalStoreDashboard = () => {
     const tabs = useMemo(() => {
         if (!dashboardConfig || !store) return [];
 
-        const { features, terminology } = dashboardConfig;
+        const { features, terminology, cartStore } = dashboardConfig;
 
         // Map enabled features to Tab definitions
         const featureTabs = features.map(featureKey => {
@@ -143,11 +143,17 @@ const UniversalStoreDashboard = () => {
 
             // Instantiate Component with Props
             const Element = tabDef.component;
+            // GenericPOSView needs the vertical's own cart store (useRestaurantStore,
+            // useGroceryStore, etc), not storeId/terminology — it reads the store
+            // itself via useStoreDashboard() and only needs to know which cart to use.
+            const element = featureKey === 'pos'
+                ? <Element useStore={cartStore} title={terminology?.product ? `${terminology.product} - Punto de Venta` : 'Punto de Venta'} />
+                : <Element storeId={store.id} terminology={terminology} />;
+
             return {
                 ...tabDef,
                 label,
-                // Pass configuration down to the view
-                element: <Element storeId={store.id} terminology={terminology} />
+                element,
             };
         }).filter(Boolean);
 

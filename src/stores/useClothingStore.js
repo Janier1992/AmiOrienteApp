@@ -1,10 +1,16 @@
 import { create } from 'zustand';
 import { clothingService } from '@/services/clothingService';
+import { createCartSlice } from './createCartSlice';
 
 export const useClothingStore = create((set, get) => ({
     products: [], // clothing products with parsed variants
     isLoading: false,
     error: null,
+
+    ...createCartSlice(set, get, {
+        defaultStatus: 'Entregado',
+        onCheckoutComplete: (get, storeId) => get().fetchProducts(storeId),
+    }),
 
     fetchProducts: async (storeId) => {
         set({ isLoading: true, error: null });
