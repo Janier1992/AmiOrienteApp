@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { supabase } from '@/lib/customSupabaseClient';
 import { useToast } from '@/components/ui/use-toast';
+import { adminService } from '@/services/adminService';
 
 const AuthContext = createContext(undefined);
 
@@ -130,7 +131,9 @@ export const AuthProvider = ({ children }) => {
       });
     }
 
-    return { user: data?.user, session: data?.session, error };
+    const isAdmin = data?.user ? await adminService.esAdmin(data.user.id) : false;
+
+    return { user: data?.user, session: data?.session, error, isAdmin };
   }, [toast]);
 
   const signOut = useCallback(async () => {

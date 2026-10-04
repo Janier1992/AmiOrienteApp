@@ -20,10 +20,10 @@ import React, { useState } from 'react';
       const handleLogin = async (e) => {
         e.preventDefault();
         setLoading(true);
-        const { error } = await signIn(formData.email, formData.password);
+        const { error, isAdmin } = await signIn(formData.email, formData.password);
         setLoading(false);
         if (!error) {
-          navigate('/cliente/dashboard');
+          navigate(isAdmin ? '/admin' : '/cliente/dashboard');
         }
       };
 
