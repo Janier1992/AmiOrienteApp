@@ -96,6 +96,27 @@ const CustomerDashboard = () => {
     setSearchParams({ tab: tabId });
   };
 
+  const handleProfileInputChange = (e) => {
+    const { name, value } = e.target;
+    setProfile(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleProfileUpdate = async (e) => {
+    e.preventDefault();
+    try {
+      const { full_name, phone, address } = profile;
+      const { error } = await supabase
+        .from('profiles')
+        .update({ full_name, phone, address })
+        .eq('id', user.id);
+
+      if (error) throw error;
+      toast({ title: 'Perfil actualizado', description: 'Tus datos se guardaron correctamente.' });
+    } catch (error) {
+      toast({ title: 'Error', description: 'No se pudo actualizar tu perfil.', variant: 'destructive' });
+    }
+  };
+
   if (authLoading || loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -136,7 +157,11 @@ const CustomerDashboard = () => {
         <div className="max-w-5xl mx-auto space-y-6">
           {activeTab === 'pedidos' && <OrdersTab orders={orders} />}
           {activeTab === 'perfil' && profile && (
-            <ProfileTab profile={{ ...profile, email: user.email }} />
+            <ProfileTab
+              profile={{ ...profile, email: user.email }}
+              onInputChange={handleProfileInputChange}
+              onProfileUpdate={handleProfileUpdate}
+            />
           )}
           {activeTab === 'deseos' && <WishlistTab userId={user.id} />}
           {activeTab === 'direcciones' && <AddressesTab userId={user.id} />}
