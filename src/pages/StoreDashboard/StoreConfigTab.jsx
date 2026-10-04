@@ -7,7 +7,7 @@ import { Settings } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
 import { supabase } from '@/lib/customSupabaseClient';
 
-export const StoreConfigTab = ({ store: initialStore, setStore, user, onStoreCreated }) => {
+const StoreConfigTab = ({ store: initialStore, setStore, user, onStoreCreated }) => {
   const [storeConfig, setStoreConfig] = useState({
     name: '',
     description: '',
@@ -97,3 +97,5 @@ export const StoreConfigTab = ({ store: initialStore, setStore, user, onStoreCre
     </Card>
   );
 };
+
+export default StoreConfigTab;

@@ -15,7 +15,8 @@ import {
     Store,
     Calendar,
     Hammer, // For Maintenance
-    Wheat
+    Wheat,
+    DollarSign
 } from 'lucide-react';
 import LoadingSpinner from '@/components/shared/LoadingSpinner';
 
@@ -25,6 +26,7 @@ const ProductsTab = lazy(() => import('../ProductsTab')); // Generic Product Tab
 const OrdersManagementTab = lazy(() => import('../OrdersManagementTab')); // Generic Orders Tab
 const GenericPOSView = lazy(() => import('../views/GenericPOSView')); // Generic POS
 const StoreConfigTab = lazy(() => import('../StoreConfigTab'));
+const FinancialsTab = lazy(() => import('../FinancialsTab'));
 // Feature specific views
 const KitchenMaintenanceView = lazy(() => import('../views/KitchenMaintenanceView'));
 const AgroCropsView = lazy(() => import('../views/AgroCropsView'));
@@ -106,6 +108,12 @@ const FEATURE_TABS = {
  * Common Tabs that all stores get
  */
 const COMMON_TABS = [
+    {
+        path: 'finanzas',
+        label: 'Finanzas',
+        icon: DollarSign,
+        component: FinancialsTab,
+    },
     {
         path: 'configuracion',
         label: 'Configuración',
