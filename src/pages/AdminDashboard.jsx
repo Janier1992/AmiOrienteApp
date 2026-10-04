@@ -10,6 +10,7 @@ import { Store, Building2, Ban, CheckCircle2 } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
 import { adminService } from '@/services/adminService';
 import LoadingSpinner from '@/components/shared/LoadingSpinner';
+import { SupportTicketsPanel } from '@/components/admin/SupportTicketsPanel';
 
 const STATUS_LABEL = {
     active: { label: 'Activa', variant: 'default' },
@@ -176,6 +177,8 @@ const AdminDashboard = () => {
                         )}
                     </CardContent>
                 </Card>
+
+                <SupportTicketsPanel />
             </div>
         </>
     );

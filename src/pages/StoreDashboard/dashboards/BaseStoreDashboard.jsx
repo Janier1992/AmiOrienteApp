@@ -1,7 +1,10 @@
-import React, { Suspense } from 'react';
+import React, { Suspense, lazy } from 'react';
 import { Routes, Route } from 'react-router-dom';
+import { LifeBuoy } from 'lucide-react';
 import { DashboardLayout } from '@/components/dashboards/DashboardLayout';
 import LoadingSpinner from '@/components/shared/LoadingSpinner';
+
+const SupportTab = lazy(() => import('../views/SupportTab'));
 
 /**
  * @typedef {Object} DashboardTabConfig
@@ -23,8 +26,21 @@ import LoadingSpinner from '@/components/shared/LoadingSpinner';
  * @param {string} [props.title] - Título opcional (por defecto usa store.name)
  */
 const BaseStoreDashboard = ({ store, tabs, title }) => {
+    // Every vertical gets a "Soporte" tab automatically, so stores can
+    // report a problem straight to the platform admin without each
+    // dashboard having to wire it in individually.
+    const allTabs = [
+        ...tabs,
+        {
+            path: 'soporte',
+            label: 'Soporte',
+            icon: LifeBuoy,
+            element: <SupportTab storeId={store?.id} />,
+        },
+    ];
+
     // Generate Nav Items for Sidebar
-    const navItems = tabs
+    const navItems = allTabs
         .filter(tab => !tab.hidden)
         .map(tab => ({
             label: tab.label,
@@ -40,7 +56,7 @@ const BaseStoreDashboard = ({ store, tabs, title }) => {
         >
             <Suspense fallback={<div className="h-full flex items-center justify-center"><LoadingSpinner /></div>}>
                 <Routes>
-                    {tabs.map((tab) => (
+                    {allTabs.map((tab) => (
                         <Route
                             key={tab.path}
                             path={tab.path}
