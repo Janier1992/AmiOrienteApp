@@ -1,14 +1,26 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
-import { Menu, Home, ShoppingBag, Store, Map, User, LogIn, MoreHorizontal } from 'lucide-react';
+import { Menu, Home, ShoppingBag, Store, Map, User, LogIn, MoreHorizontal, ShieldCheck } from 'lucide-react';
 import { useAuth } from '@/contexts/SupabaseAuthContext';
+import { adminService } from '@/services/adminService';
 
 const MobileNav = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    if (user) {
+      adminService.esAdmin(user.id).then(result => { if (active) setIsAdmin(result); });
+    } else {
+      setIsAdmin(false);
+    }
+    return () => { active = false; };
+  }, [user]);
 
   const closeSheetAndNavigate = (path) => {
     setIsOpen(false);
@@ -46,7 +58,7 @@ const MobileNav = () => {
           className="mb-8 flex items-center"
           onClick={() => closeSheetAndNavigate('/')}
         >
-          <img src="/AmiOrienteApp/logo.png" alt="Logo" className="mr-2 h-6 w-6 object-contain" />
+          <img src="/logo.png" alt="Logo" className="mr-2 h-6 w-6 object-contain" />
           <span className="font-bold text-lg">AmiOriente</span>
         </Link>
         <nav className="flex flex-col space-y-4">
@@ -63,6 +75,12 @@ const MobileNav = () => {
             <User className="mr-2 h-4 w-4" />
             {user ? 'Mi Cuenta' : 'Ingresar'}
           </Button>
+          {isAdmin && (
+            <Button onClick={() => closeSheetAndNavigate('/admin')} variant="outline" className="w-full">
+              <ShieldCheck className="mr-2 h-4 w-4" />
+              Admin
+            </Button>
+          )}
           <Button onClick={() => closeSheetAndNavigate('/servicios/registro')} className="w-full">
             <Store className="mr-2 h-4 w-4" />
             Para Negocios

@@ -70,7 +70,7 @@ export const PWAInstallPrompt = () => {
               <div className="flex gap-3">
                 <div className="h-12 w-12 bg-green-100 dark:bg-green-900/30 rounded-xl flex items-center justify-center shrink-0">
                   <img
-                    src="/AmiOrienteApp/logo.png"
+                    src="/logo.png"
                     alt="App Icon"
                     className="h-8 w-8 object-contain"
                   />

@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { ShoppingBag, User, Store } from 'lucide-react';
+import { ShoppingBag, User, Store, ShieldCheck } from 'lucide-react';
 import { useAuth } from '@/contexts/SupabaseAuthContext';
+import { adminService } from '@/services/adminService';
 import ThemeSwitcher from './ThemeSwitcher';
 import MobileNav from './MobileNav';
 import CartSidebar from './CartSidebar';
@@ -10,6 +11,17 @@ import CartSidebar from './CartSidebar';
 const SiteHeader = () => {
   const { user } = useAuth();
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    if (user) {
+      adminService.esAdmin(user.id).then(result => { if (active) setIsAdmin(result); });
+    } else {
+      setIsAdmin(false);
+    }
+    return () => { active = false; };
+  }, [user]);
 
   const getDashboardLink = () => {
     if (!user) return '/cliente/login';
@@ -33,7 +45,7 @@ const SiteHeader = () => {
       <div className="container flex h-14 items-center">
         <div className="mr-4 hidden md:flex">
           <Link id="site-header-logo" to="/" className="mr-6 flex items-center space-x-2">
-            <img src="/AmiOrienteApp/logo.png" alt="Logo" className="h-8 w-8 object-contain" />
+            <img src="/logo.png" alt="Logo" className="h-8 w-8 object-contain" />
             <span className="hidden font-bold sm:inline-block">AmiOriente</span>
           </Link>
           <nav className="flex items-center space-x-6 text-sm font-medium">
@@ -78,6 +90,14 @@ const SiteHeader = () => {
                 {user ? 'Mi Cuenta' : 'Ingresar'}
               </Button>
             </Link>
+            {isAdmin && (
+              <Link to="/admin">
+                <Button variant="outline" size="sm">
+                  <ShieldCheck className="mr-2 h-4 w-4" />
+                  Admin
+                </Button>
+              </Link>
+            )}
             <Link to="/servicios/registro">
               <Button size="sm">
                 <Store className="mr-2 h-4 w-4" />
