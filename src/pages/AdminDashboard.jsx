@@ -192,7 +192,15 @@ const AdminDashboard = () => {
                                         const statusInfo = STATUS_LABEL[store.status] || STATUS_LABEL.active;
                                         return (
                                             <TableRow key={store.id}>
-                                                <TableCell className="font-medium">{store.name}</TableCell>
+                                                <TableCell className="font-medium">
+                                                    <button
+                                                        onClick={() => handleOpenModules(store)}
+                                                        className="hover:underline hover:text-primary text-left"
+                                                        title="Ver y editar módulos de este negocio"
+                                                    >
+                                                        {store.name}
+                                                    </button>
+                                                </TableCell>
                                                 <TableCell>{store.category || '—'}</TableCell>
                                                 <TableCell>
                                                     <div>{store.profiles?.full_name || '—'}</div>
