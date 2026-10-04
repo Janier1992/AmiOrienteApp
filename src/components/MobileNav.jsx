@@ -1,26 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { Menu, Home, ShoppingBag, Store, Map, User, LogIn, MoreHorizontal, ShieldCheck } from 'lucide-react';
 import { useAuth } from '@/contexts/SupabaseAuthContext';
-import { adminService } from '@/services/adminService';
+import { useIsAdmin } from '@/hooks/use-is-admin';
 
 const MobileNav = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [isAdmin, setIsAdmin] = useState(false);
-
-  useEffect(() => {
-    let active = true;
-    if (user) {
-      adminService.esAdmin(user.id).then(result => { if (active) setIsAdmin(result); });
-    } else {
-      setIsAdmin(false);
-    }
-    return () => { active = false; };
-  }, [user]);
+  const isAdmin = useIsAdmin();
 
   const closeSheetAndNavigate = (path) => {
     setIsOpen(false);

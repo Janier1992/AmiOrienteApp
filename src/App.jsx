@@ -15,6 +15,7 @@ import { PWAInstallPrompt } from '@/components/pwa/PWAInstallPrompt';
 import { OnboardingController } from '@/components/onboarding/OnboardingController';
 import { OfflineBanner } from '@/components/shared/OfflineBanner';
 import { AdminRoute } from '@/components/shared/AdminRoute';
+import { AdminFloatingButton } from '@/components/shared/AdminFloatingButton';
 
 // Optimized Lazy Loading with Prefetch Capabilities
 const HomePage = lazyWithPrefetch('home', () => import('@/pages/HomePage'));
@@ -186,6 +187,7 @@ const App = () => (
         <CartSidebarProvider>
           <ScrollToTop />
           <OfflineBanner />
+          <AdminFloatingButton />
           <OnboardingController />
           <AppContent />
         </CartSidebarProvider>

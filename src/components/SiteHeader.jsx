@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ShoppingBag, User, Store, ShieldCheck } from 'lucide-react';
 import { useAuth } from '@/contexts/SupabaseAuthContext';
-import { adminService } from '@/services/adminService';
+import { useIsAdmin } from '@/hooks/use-is-admin';
 import ThemeSwitcher from './ThemeSwitcher';
 import MobileNav from './MobileNav';
 import CartSidebar from './CartSidebar';
@@ -11,17 +11,7 @@ import CartSidebar from './CartSidebar';
 const SiteHeader = () => {
   const { user } = useAuth();
   const [isCartOpen, setIsCartOpen] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
-
-  useEffect(() => {
-    let active = true;
-    if (user) {
-      adminService.esAdmin(user.id).then(result => { if (active) setIsAdmin(result); });
-    } else {
-      setIsAdmin(false);
-    }
-    return () => { active = false; };
-  }, [user]);
+  const isAdmin = useIsAdmin();
 
   const getDashboardLink = () => {
     if (!user) return '/cliente/login';
