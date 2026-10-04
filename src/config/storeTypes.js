@@ -85,7 +85,7 @@ export const STORE_TYPES = {
         label: 'Hotel / Turismo',
         icon: Hotel,
         color: 'indigo',
-        features: ['rooms', 'bookings', 'services', 'calendar'],
+        features: ['rooms', 'bookings', 'reception', 'guests'],
         terminology: {
             product: 'Habitación',
             inventory: 'Disponibilidad',

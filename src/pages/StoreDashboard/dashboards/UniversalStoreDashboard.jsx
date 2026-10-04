@@ -18,7 +18,9 @@ import {
     Wheat,
     DollarSign,
     LayoutGrid,
-    UtensilsCrossed
+    UtensilsCrossed,
+    ClipboardCheck,
+    Users
 } from 'lucide-react';
 import LoadingSpinner from '@/components/shared/LoadingSpinner';
 
@@ -35,6 +37,10 @@ const AgroCropsView = lazy(() => import('../views/AgroCropsView'));
 const QuickGridProductView = lazy(() => import('../views/QuickGridProductView')); // Inventario Rápido
 const TableManagementTab = lazy(() => import('../views/TableManagementTab'));
 const RestaurantMenuView = lazy(() => import('../views/RestaurantMenuView'));
+const HotelRoomsTab = lazy(() => import('../HotelRoomsTab'));
+const HotelReservationsTab = lazy(() => import('../HotelReservationsTab'));
+const HotelReceptionTab = lazy(() => import('../HotelReceptionTab'));
+const HotelGuestsTab = lazy(() => import('../HotelGuestsTab'));
 
 /**
  * Tab Registry
@@ -110,13 +116,25 @@ const FEATURE_TABS = {
         path: 'habitaciones',
         label: 'Habitaciones',
         icon: Store, // Or Bed icon if available
-        component: ProductsTab
+        component: HotelRoomsTab
     },
     'bookings': {
         path: 'reservas',
         label: 'Reservas',
         icon: Calendar,
-        component: OrdersManagementTab
+        component: HotelReservationsTab
+    },
+    'reception': {
+        path: 'recepcion',
+        label: 'Recepción',
+        icon: ClipboardCheck,
+        component: HotelReceptionTab
+    },
+    'guests': {
+        path: 'huespedes',
+        label: 'Huéspedes',
+        icon: Users,
+        component: HotelGuestsTab
     }
 };
 
