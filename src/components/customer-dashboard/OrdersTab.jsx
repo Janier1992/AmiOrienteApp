@@ -27,12 +27,6 @@ export const OrdersTab = ({ orders }) => {
     }
   };
 
-  const calculateETA = (created_at) => {
-    const start = new Date(created_at);
-    const eta = new Date(start.getTime() + 45 * 60000); // +45 mins mock
-    return eta.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-  };
-
   const OrderCard = ({ order, isActive }) => {
     const status = getStatusInfo(order.status);
     return (
@@ -54,8 +48,8 @@ export const OrdersTab = ({ orders }) => {
                 
                 {isActive && order.status === 'En curso' && (
                     <div className="text-right flex flex-col justify-center">
-                        <span className="text-xs text-muted-foreground uppercase tracking-wide">Entrega Estimada</span>
-                        <span className="text-2xl font-bold text-blue-600">{calculateETA(order.created_at)}</span>
+                        <span className="text-xs text-muted-foreground uppercase tracking-wide">Estado</span>
+                        <span className="text-lg font-bold text-blue-600">Tu pedido va en camino</span>
                     </div>
                 )}
             </div>
