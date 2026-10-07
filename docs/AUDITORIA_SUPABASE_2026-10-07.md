@@ -55,7 +55,7 @@ Recomendado: lo más simple y consistente (p. ej. agregar los 3 timestamps de `d
 usar `contact_phone`/`logo_url` en el código; coordenadas de la tienda solo si se va a mostrar mapa).
 
 ## C. Plan sugerido (en este orden)
-1. **Seguridad crítica** (A1–A4): una migración transaccional y probada contra una réplica local con roles `anon`/`authenticated` (funciona bien con PostgreSQL 16 + el esquema de esta auditoría).
+1. **Seguridad crítica** (A1–A4) — ✅ CORREGIDA EN MIGRACIÓN `database_updates/20261008_security_critical_fixes.sql` (pendiente de aplicar en Supabase tras backup; verificada con `bash tools/db-test/run.sh`: antes 4 ataques funcionan, después todos bloqueados, flujos legítimos intactos): una migración transaccional y probada contra una réplica local con roles `anon`/`authenticated` (funciona bien con PostgreSQL 16 + el esquema de esta auditoría).
 2. **Flujo del domiciliario** (B + RLS): columnas/código + políticas + funciones `SECURITY DEFINER` con validación para aceptar/entregar.
 3. **Directorio de negocios** (`getStores`) y detalle/cancelación de pedidos.
 4. Resto de la sección A (5–15) y `create_order` en el servidor.
