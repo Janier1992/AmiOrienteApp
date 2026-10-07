@@ -131,3 +131,7 @@ dist-ssr
 
 # Service worker de desarrollo (vite-plugin-pwa devOptions)
 dev-dist
+
+# Python
+__pycache__/
+*.pyc
