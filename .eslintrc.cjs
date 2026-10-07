@@ -10,5 +10,5 @@ module.exports = {
         es2021: true,
         node: true,
     },
-    ignorePatterns: ['dist', 'dev-dist', 'node_modules', 'plugins'],
+    ignorePatterns: ['dist', 'dev-dist', 'node_modules'],
 };
