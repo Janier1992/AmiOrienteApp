@@ -43,24 +43,6 @@ const PaymentMethodsTab = ({ userId }) => {
     }
   };
 
-  // Mock addition since real integration requires Stripe Elements/Tokenization
-  const handleMockAdd = async () => {
-    const mockCard = {
-      user_id: userId,
-      last_four: Math.floor(1000 + Math.random() * 9000).toString(),
-      brand: Math.random() > 0.5 ? 'Visa' : 'Mastercard',
-      exp_month: 12,
-      exp_year: 2028,
-      is_default: methods.length === 0
-    };
-
-    const { data, error } = await supabase.from('user_payment_methods').insert([mockCard]).select();
-    if (!error && data) {
-      setMethods([...methods, data[0]]);
-      toast({ title: "Tarjeta Agregada", description: "Método de pago guardado exitosamente." });
-    }
-  };
-
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
@@ -68,8 +50,9 @@ const PaymentMethodsTab = ({ userId }) => {
           <CardTitle>Métodos de Pago</CardTitle>
           <CardDescription>Gestiona tus tarjetas para compras rápidas.</CardDescription>
         </div>
-        <Button size="sm" onClick={handleMockAdd}>
-          <Plus className="h-4 w-4 mr-2" /> Agregar Tarjeta
+        {/* Guardar tarjetas exige una pasarela de pagos con tokenización (no se guardan datos de tarjeta propios). */}
+        <Button size="sm" disabled title="Disponible cuando se active el pago en línea">
+          <Plus className="h-4 w-4 mr-2" /> Agregar Tarjeta (próximamente)
         </Button>
       </CardHeader>
       <CardContent>
@@ -97,7 +80,7 @@ const PaymentMethodsTab = ({ userId }) => {
              <div className="text-center py-8 text-muted-foreground border-2 border-dashed rounded-lg">
                 <ShieldCheck className="h-10 w-10 mx-auto mb-2 opacity-20" />
                 <p>No tienes métodos de pago guardados.</p>
-                <p className="text-xs mt-1">Tus datos están protegidos con encriptación SSL.</p>
+                <p className="text-xs mt-1">Por ahora los pedidos se pagan en efectivo o por transferencia. El pago con tarjeta llegará pronto.</p>
              </div>
           )}
         </div>

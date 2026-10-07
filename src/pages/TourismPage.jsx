@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { Helmet } from 'react-helmet';
-import { Map, Hotel, Utensils, Landmark, Mountain, Star, Search, Loader2, MapPin } from 'lucide-react';
+import { Map as MapIcon, Hotel, Utensils, Landmark, Mountain, Star, Search, Loader2, MapPin } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -217,7 +217,7 @@ const TourismPage = () => {
                 Todos
               </Button>
               {categories.map((cat, idx) => {
-                const Icon = categoryIcons[cat.name] || Map;
+                const Icon = categoryIcons[cat.name] || MapIcon;
                 return (
                   <Button 
                     key={cat.id || idx} 
@@ -254,7 +254,7 @@ const TourismPage = () => {
                     initial={{opacity: 0}} animate={{opacity: 1}} 
                     className="text-center py-20 bg-white rounded-2xl border border-dashed border-slate-300"
                  >
-                    <Map className="h-20 w-20 text-slate-200 mx-auto mb-4" />
+                    <MapIcon className="h-20 w-20 text-slate-200 mx-auto mb-4" />
                     <h2 className="text-2xl font-bold text-slate-700 mb-2">No encontramos resultados</h2>
                     <p className="text-slate-500 max-w-md mx-auto">
                         Intenta con otra categoría o busca algo diferente en Marinilla.

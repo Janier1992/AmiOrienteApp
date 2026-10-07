@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
-import { X, Phone, Globe, Star, BedDouble, UtensilsCrossed, MapPin, Navigation } from 'lucide-react';
+import { X, Phone, Globe, Star, BedDouble, UtensilsCrossed, MapPin, Navigation, MessageCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import HotelBookingForm from './HotelBookingForm';
-import FoodOrderingForm from './FoodOrderingForm';
+import { buildWhatsAppUrl } from '@/lib/contact';
 
 const TourismSpotModal = ({ spot, isOpen, onClose }) => {
-  const [actionMode, setActionMode] = useState(null); // 'booking' | 'ordering' | null
+  const [actionMode, setActionMode] = useState(null); // 'booking' | null
 
   useEffect(() => {
     setActionMode(null);
@@ -19,16 +19,22 @@ const TourismSpotModal = ({ spot, isOpen, onClose }) => {
   const position = [spot.latitude || 6.17, spot.longitude || -75.33];
   const isHotel = spot.category_name === 'Hoteles';
   const isRestaurant = spot.category_name === 'Restaurantes';
+  const whatsappUrl = buildWhatsAppUrl(spot.contact_phone, `Hola ${spot.name}, quiero hacer un pedido. Enviado desde AmiOriente.`);
 
   const handleGoogleMaps = () => {
     // Opens Google Maps Directions in a new tab
-    const url = `https://www.google.com/maps/dir/?api=1&destination=${spot.latitude},${spot.longitude}`;
-    window.open(url, '_blank');
+    const destination = spot.latitude && spot.longitude
+      ? `${spot.latitude},${spot.longitude}`
+      : encodeURIComponent(`${spot.name} ${spot.address || ''}`.trim());
+    window.open(`https://www.google.com/maps/dir/?api=1&destination=${destination}`, '_blank', 'noopener,noreferrer');
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="max-w-4xl p-0 overflow-hidden max-h-[90vh] flex flex-col md:flex-row bg-white">
+        {/* Requerido por accesibilidad (lectores de pantalla); el título visible está en la imagen */}
+        <DialogTitle className="sr-only">{spot.name}</DialogTitle>
+        <DialogDescription className="sr-only">{spot.description || `Información de ${spot.name}`}</DialogDescription>
         
         {/* Left Side: Image & Title */}
         <div className="w-full md:w-5/12 relative h-48 md:h-auto shrink-0">
@@ -96,10 +102,12 @@ const TourismSpotModal = ({ spot, isOpen, onClose }) => {
                   Reservar Ahora
                 </Button>
               )}
-              {isRestaurant && (
-                <Button onClick={() => setActionMode('ordering')} className="w-full">
-                  <UtensilsCrossed className="mr-2 h-4 w-4" />
-                  Pedir a Domicilio
+              {isRestaurant && whatsappUrl && (
+                <Button asChild className="w-full">
+                  <a href={whatsappUrl} target="_blank" rel="noopener noreferrer">
+                    <MessageCircle className="mr-2 h-4 w-4" />
+                    Pedir por WhatsApp
+                  </a>
                 </Button>
               )}
             </div>
@@ -112,19 +120,10 @@ const TourismSpotModal = ({ spot, isOpen, onClose }) => {
                   <h4 className="font-semibold text-sm">Formulario de Reserva</h4>
                   <Button variant="ghost" size="sm" onClick={() => setActionMode(null)} className="h-6 text-xs text-muted-foreground">Cancelar</Button>
                 </div>
-                <HotelBookingForm hotelName={spot.name} onClose={() => { setActionMode(null); onClose(); }} />
+                <HotelBookingForm hotelName={spot.name} phone={spot.contact_phone} onClose={() => { setActionMode(null); onClose(); }} />
              </div>
           )}
 
-          {actionMode === 'ordering' && (
-             <div className="animate-in fade-in slide-in-from-bottom-4 duration-300">
-                <div className="flex justify-between items-center mb-2">
-                  <h4 className="font-semibold text-sm">Menú Domicilios</h4>
-                  <Button variant="ghost" size="sm" onClick={() => setActionMode(null)} className="h-6 text-xs text-muted-foreground">Cancelar</Button>
-                </div>
-                <FoodOrderingForm restaurantName={spot.name} onClose={() => { setActionMode(null); onClose(); }} />
-             </div>
-          )}
 
           {/* Map Section */}
           {!actionMode && (
