@@ -159,6 +159,18 @@ export default defineConfig({
 		},
 		allowedHosts: true,
 	},
+	build: {
+		rollupOptions: {
+			output: {
+				// Separa dependencias estables para que el navegador las cachee entre despliegues
+				manualChunks: {
+					'vendor-react': ['react', 'react-dom', 'react-router-dom'],
+					'vendor-supabase': ['@supabase/supabase-js'],
+					'vendor-motion': ['framer-motion'],
+				},
+			},
+		},
+	},
 	resolve: {
 		extensions: ['.jsx', '.js', '.tsx', '.ts', '.json',],
 		alias: {

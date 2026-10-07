@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef, Suspense, lazy } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -12,8 +12,10 @@ import { Helmet } from 'react-helmet';
 import AvailableOrdersTab from '@/components/delivery-dashboard/AvailableOrdersTab';
 import InProgressOrdersTab from '@/components/delivery-dashboard/InProgressOrdersTab';
 import HistoryOrdersTab from '@/components/delivery-dashboard/HistoryOrdersTab';
-import EarningsTab from '@/components/delivery-dashboard/EarningsTab';
 import OrderDetailsModal from '@/components/delivery-dashboard/OrderDetailsModal';
+
+// Carga diferida: arrastra la librería de gráficos (recharts, ~350 kB) que solo se usa en 'Ganancias'
+const EarningsTab = lazy(() => import('@/components/delivery-dashboard/EarningsTab'));
 
 // ... (existing imports)
 
@@ -351,7 +353,9 @@ const DeliveryDashboard = () => {
                     </TabsContent>
 
                     <TabsContent value="ganancias" className="mt-0">
-                      <EarningsTab history={historyOrders} />
+                      <Suspense fallback={<div className="flex justify-center py-12"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>}>
+                        <EarningsTab history={historyOrders} />
+                      </Suspense>
                     </TabsContent>
                   </div>
 
