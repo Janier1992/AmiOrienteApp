@@ -248,7 +248,7 @@ const UniversalStoreDashboard = () => {
             // useGroceryStore, etc), not storeId/terminology — it reads the store
             // itself via useStoreDashboard() and only needs to know which cart to use.
             const element = featureKey === 'pos'
-                ? <Element useStore={cartStore} title={terminology?.product ? `${terminology.product} - Punto de Venta` : 'Punto de Venta'} />
+                ? <Element useStore={cartStore} title="Punto de Venta" />
                 : <Element storeId={store.id} terminology={terminology} />;
 
             return {

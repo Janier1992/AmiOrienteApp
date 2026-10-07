@@ -12,8 +12,8 @@ const AdminTab = ({ storeId }) => {
                     <CardTitle>Equipo de Trabajo</CardTitle>
                     <CardDescription>Gestiona quién tiene acceso a este panel.</CardDescription>
                 </div>
-                <Button variant="outline">
-                    <UserPlus className="h-4 w-4 mr-2" /> Invitar Miembro
+                <Button variant="outline" disabled title="Disponible próximamente">
+                    <UserPlus className="h-4 w-4 mr-2" /> Invitar Miembro (próximamente)
                 </Button>
             </CardHeader>
             <CardContent>

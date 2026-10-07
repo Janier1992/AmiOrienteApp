@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Search, Plus, ShoppingCart, Barcode, Pencil, Trash2 } from 'lucide-react';
+import { Search, Plus, ShoppingCart, Pencil, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -142,7 +142,6 @@ const SupermarketProductsView = () => {
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
                 </div>
-                <Button variant="outline"><Barcode className="h-4 w-4 mr-2" /> Escanear</Button>
             </div>
 
             {/* Table View */}

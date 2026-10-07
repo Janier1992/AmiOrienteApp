@@ -18,7 +18,11 @@ const ProductCard = ({ product, onAddToCart }) => {
     const isOutOfStock = product.stock <= 0;
 
     return (
-        <Card className={`overflow-hidden h-full flex flex-col group ${isOutOfStock ? 'opacity-60' : ''}`}>
+        <Card
+            className={`overflow-hidden h-full flex flex-col group ${isOutOfStock ? 'opacity-60' : 'cursor-pointer hover:shadow-md transition-shadow'}`}
+            // En un POS toda la tarjeta debe ser tocable, no solo el botón "+"
+            onClick={isOutOfStock ? undefined : () => onAddToCart(product)}
+        >
             <div className="relative h-32 overflow-hidden bg-slate-100">
                 {product.image_url ? (
                     <img
@@ -45,8 +49,9 @@ const ProductCard = ({ product, onAddToCart }) => {
                     <Button
                         size="sm"
                         className="h-7 w-7 rounded-full p-0"
-                        onClick={() => onAddToCart(product)}
+                        onClick={(e) => { e.stopPropagation(); onAddToCart(product); }}
                         disabled={isOutOfStock}
+                        aria-label={`Agregar ${product.name}`}
                     >
                         <Plus className="h-4 w-4" />
                     </Button>

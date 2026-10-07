@@ -54,7 +54,7 @@ const SubscriptionTab = ({ store }) => {
                  <div>
                     <h3 className="text-lg font-semibold">Configuración de Pagos (Opcional)</h3>
                     <p className="text-muted-foreground mt-1 mb-4">
-                        Si deseas recibir pagos directamente a tu cuenta bancaria a través de la plataforma, puedes configurar Stripe Connect. Esto es completamente opcional; puedes manejar los pagos en efectivo o por otros medios si lo prefieres.
+                        Si deseas recibir pagos directamente a tu cuenta bancaria a través de la plataforma, podrás conectar una pasarela de pagos (próximamente). Mientras tanto puedes recibir pagos en efectivo o por transferencia directa.
                     </p>
                     <Link to="/tienda/dashboard/pagos">
                         <Button variant="outline">Gestionar Configuración de Pagos</Button>

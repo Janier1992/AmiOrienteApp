@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
-import { Search, MapPin, Star, Filter, ShoppingBag, Clock, Phone } from 'lucide-react';
+import { Search, MapPin, Star, ShoppingBag, Clock, Phone } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -222,11 +222,6 @@ const StoresPage = () => {
                 <h2 className="text-xl font-bold text-slate-800">
                   {stores.length} Resultados {totalCount > 0 && `de ${totalCount}`}
                 </h2>
-                {/* Pagination Controls could go here */}
-                <Button variant="ghost" size="sm" className="text-slate-500">
-                  <Filter className="w-4 h-4 mr-2" />
-                  Más Filtros
-                </Button>
               </div>
 
               <AnimatePresence mode='popLayout'>

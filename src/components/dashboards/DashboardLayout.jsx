@@ -14,8 +14,10 @@ import { Helmet } from 'react-helmet';
 // So DashboardLayout just needs to provide the Main Content area and let Sidebar handle itself.
 
 import { DashboardSidebar } from './DashboardSidebar';
+import { useForcedLightTheme } from '@/hooks/use-forced-light-theme';
 
 export const DashboardLayout = ({ title, navItems, children }) => {
+  useForcedLightTheme();
   return (
     <div className="min-h-screen bg-slate-50 flex">
       <Helmet>

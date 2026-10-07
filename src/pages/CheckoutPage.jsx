@@ -19,7 +19,7 @@ const CheckoutPage = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const items = useCartStore(state => state.items);
-  const { getCartTotal, clearCart } = useCartActions();
+  const { getCartTotal, clearCart, removeFromCart } = useCartActions();
   const [processing, setProcessing] = useState(false);
   // Tras un pedido exitoso se vacía el carrito; sin esta guarda el efecto de
   // abajo lo tomaba por un carrito vacío y redirigía a /productos, pisando la
@@ -234,6 +234,7 @@ const CheckoutPage = () => {
 
       const stores = Object.values(groupedItems);
       const createdOrders = [];
+      const failedStores = [];
 
       // Procesar una orden por cada tienda
       for (const storeGroup of stores) {
@@ -259,8 +260,31 @@ const CheckoutPage = () => {
           price: item.price
         }));
 
-        const newOrder = await orderService.crearPedido(orderPayload, orderItems);
-        createdOrders.push(newOrder);
+        // Un fallo en una tienda no debe ocultar ni repetir los pedidos que sí se crearon.
+        try {
+          const newOrder = await orderService.crearPedido(orderPayload, orderItems);
+          createdOrders.push(newOrder);
+          orderPlacedRef.current = true; // evita que el carrito vacío nos saque de aquí
+          // Estos productos ya se pidieron: sacarlos del carrito evita duplicar el pedido al reintentar.
+          storeGroup.items.forEach(item => removeFromCart(item.id));
+        } catch (storeError) {
+          console.error(`Checkout error (${storeGroup.store_name}):`, storeError);
+          failedStores.push({ name: storeGroup.store_name, message: storeError.message });
+        }
+      }
+
+      if (createdOrders.length === 0) {
+        throw new Error(failedStores[0]?.message || 'No se pudo registrar tu pedido.');
+      }
+
+      if (failedStores.length > 0) {
+        orderPlacedRef.current = false;
+        toast({
+          title: "Pedido creado parcialmente",
+          description: `Se crearon ${createdOrders.length} pedido(s), pero no se pudo registrar el de: ${failedStores.map(f => f.name).join(', ')}. Esos productos siguen en tu carrito para que reintentes.`,
+          variant: "destructive"
+        });
+        return;
       }
 
       // Simular pequeño delay para UX
