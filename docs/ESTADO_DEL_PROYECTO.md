@@ -15,6 +15,8 @@ Documento de traspaso: qué funciona, cómo se verificó y qué falta para comer
 - Panel de domiciliario: ve los pedidos listos aunque esté desconectado; para aceptar debe conectarse. Si dos domiciliarios aceptan a la vez, el segundo recibe «ya fue tomado» (requiere aplicar `database_updates/20261007_unique_active_delivery_per_order.sql`).
 
 - Turismo: muestra los lugares reales de `tourism_spots` (antes un error silencioso mostraba siempre los de ejemplo). Reservas de hotel y pedidos de restaurante se envían por WhatsApp al número del establecimiento.
+- Pedidos del cliente se actualizan en vivo (Realtime) y ya no muestran una hora de entrega inventada.
+- Pruebas unitarias de `orderService` (totales, rollback) y `deliveryService` (carrera al aceptar).
 - Lista de deseos: corazón en productos y detalle (requiere `database_updates/20261007_wishlist_policies.sql`).
 
 ## Pendiente para comercializar
@@ -25,5 +27,6 @@ Documento de traspaso: qué funciona, cómo se verificó y qué falta para comer
 5. **Equipo de trabajo** (invitar miembros a una tienda) no está implementado.
 6. **Datos de ejemplo**: el directorio muestra negocios de muestra si la plataforma aún no tiene tiendas.
 7. **Normativa colombiana** (plataformas de domicilio y venta): pendiente de definir con el propietario. Al hacerlo, revisar también `TermsPage` y `PrivacyPolicyPage`: siguen llamando a la plataforma «Domicilios MiOriente» y los términos dicen que los pagos se procesan con Stripe, lo cual hoy no es cierto (todo es efectivo/transferencia).
-8. **Modo oscuro** en páginas públicas: algunas pantallas (p. ej. Servicios) tienen fondos fijos claros; el tema por defecto es claro.
-9. Plan de Supabase de pago antes del primer cliente (respaldos, límites, rendimiento).
+8. **Planes y comisiones**: `PricingPage` muestra 22 % / 15 % + $59.900, mientras el README habla de 8-10 % y $50.000-$80.000. Decidir cuál es el modelo definitivo y alinear README, página y comisión por defecto de la base de datos (22 %).
+9. **Modo oscuro** en páginas públicas: algunas pantallas (p. ej. Servicios) tienen fondos fijos claros; el tema por defecto es claro.
+10. Plan de Supabase de pago antes del primer cliente (respaldos, límites, rendimiento).
