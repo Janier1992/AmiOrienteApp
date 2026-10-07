@@ -2,21 +2,21 @@
 
 Se ejecutan en **Supabase → SQL Editor** (pega el archivo completo y pulsa *Run*).
 
-| Orden | Archivo | Qué hace | ¿Modifica datos? |
-|---|---|---|---|
-| 1 | `01_aplicar_migraciones_20261007.sql` | Crea la lista de deseos (`wishlist`, con RLS) y el índice que impide que dos domiciliarios tomen el mismo pedido. | Sí (estructura). Idempotente y transaccional. |
-| 2 | `02_auditoria_esquema.sql` | Devuelve una fila por sección (tablas, columnas, políticas RLS, funciones, triggers…) en JSON. | **No** (solo lectura). |
+| Archivo | Qué hace | ¿Modifica datos? |
+|---|---|---|
+| `02_auditoria_esquema.sql` | Devuelve una fila por sección (tablas, columnas, políticas RLS, funciones, triggers…) en JSON. | **No** (solo lectura). |
 
-## Antes de ejecutar el 01
-- Haz un respaldo si tienes datos reales (Supabase → *Database → Backups*).
-- Si ya existen pedidos con más de una entrega activa, el script se detiene con un mensaje que indica cuáles son; no deja cambios a medias.
-- Reemplaza a `database_updates/20261007_wishlist_policies.sql` y `database_updates/20261007_unique_active_delivery_per_order.sql` (mismo resultado, con verificaciones previas y permisos explícitos).
+## Importante: no hay migraciones pendientes de la entrega anterior
+Una primera versión de este directorio traía un `01_aplicar_migraciones_20261007.sql` (lista de deseos
+e índice único de entregas). **Se eliminó**: la auditoría real de la base mostró que ya existen
+`wishlist` (con política RLS e índice único `wishlist_user_id_product_id_key`) y
+`deliveries_order_id_key` (una entrega por pedido). No ejecutes nada de eso.
 
-## Después
-Ejecuta las 3 consultas de verificación del final del 01: deben devolver 3 políticas, 2 índices y `rls_activo = true`.
+Los hallazgos reales de seguridad y los desajustes entre el código y la base están en
+`docs/AUDITORIA_SUPABASE_2026-10-07.md`.
 
-## Auditoría (02)
-Es una sola consulta sin `;` final (algunos editores envuelven la consulta y el `;` la rompe). En la tabla de resultados usa *Copy → Copy as JSON* o descarga el CSV y compártelo. No contiene datos de usuarios, solo estructura.
-
-## Cómo se probaron
-Ambos scripts se ejecutaron contra PostgreSQL 16 con un esquema mínimo tipo Supabase: ejecución repetida, aislamiento por usuario con RLS, bloqueo de `anon`, duplicados rechazados, índice único de entregas y el caso de entregas duplicadas existentes. **No** se han ejecutado contra tu proyecto de Supabase.
+## Cómo repetir la auditoría
+1. Pega `02_auditoria_esquema.sql` en el SQL Editor y pulsa *Run*.
+2. En los resultados usa *Copy → Copy as JSON* (o descarga el CSV). No contiene datos de usuarios.
+3. Para actualizar el verificador de consultas del código, vuelca la sección `columnas` en
+   `tools/schema-check/schema.py` y ejecuta `python3 tools/schema-check/check.py`.

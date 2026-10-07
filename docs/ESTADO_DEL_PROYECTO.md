@@ -12,14 +12,20 @@ Documento de traspaso: qué funciona, cómo se verificó y qué falta para comer
 - Compra: carrito de invitado → login (conserva el carrito) → checkout → pedido → confirmación. Varias tiendas: los fallos parciales se reportan sin duplicar pedidos.
 - Registro/login de cliente, negocio y domiciliario, con redirección por rol y manejo de correo ya registrado / confirmación por correo.
 - Panel de tienda para los 10 nichos (pestañas, POS, productos). El panel siempre se muestra en tema claro.
-- Panel de domiciliario: ve los pedidos listos aunque esté desconectado; para aceptar debe conectarse. Si dos domiciliarios aceptan a la vez, el segundo recibe «ya fue tomado» (requiere aplicar `database_updates/20261007_unique_active_delivery_per_order.sql`).
+- Panel de domiciliario: ve los pedidos listos aunque esté desconectado; para aceptar debe conectarse. Si dos domiciliarios aceptan a la vez, el segundo recibe «ya fue tomado» (la base ya tiene `UNIQUE(order_id)` en `deliveries`).
 
 - Turismo: muestra los lugares reales de `tourism_spots` (antes un error silencioso mostraba siempre los de ejemplo). Reservas de hotel y pedidos de restaurante se envían por WhatsApp al número del establecimiento.
 - Pedidos del cliente se actualizan en vivo (Realtime) y ya no muestran una hora de entrega inventada.
 - Pruebas unitarias de `orderService` (totales, rollback) y `deliveryService` (carrera al aceptar).
 - Contraseñas: una sola política (8+ caracteres con mayúscula, minúscula, número y símbolo) en registro de cliente, negocio y domiciliario y en recuperar contraseña.
 - Accesibilidad: auditoría automática (axe-core, WCAG A) sobre 25 pantallas sin violaciones críticas pendientes (salvo `aria-controls` de las pestañas de Radix, comportamiento conocido de la librería).
-- Lista de deseos: corazón en productos y detalle (requiere `database_updates/20261007_wishlist_policies.sql`).
+- Lista de deseos: corazón en productos y detalle (la tabla `wishlist` y su política RLS ya existen en la base).
+
+## ⚠️ Hallazgos de la auditoría real de Supabase
+Ver **`docs/AUDITORIA_SUPABASE_2026-10-07.md`**. Resumen: hay vulnerabilidades críticas (cualquiera puede
+registrarse o volverse administrador; un cliente puede editar el total de su pedido) y varias consultas
+del código usan columnas que no existen (directorio de negocios y panel del domiciliario fallan contra
+la base real). Las pruebas de este repo usan un Supabase simulado, por eso no lo detectaban.
 
 ## Pendiente para comercializar
 1. **Totales del pedido en el servidor (seguridad).** `orderService.crearPedido` calcula subtotal, envío, impuestos y descuento en el navegador; un usuario podría manipular el total. Solución: función SQL `create_order` (SECURITY DEFINER) que lea precios/tarifas de las tablas y valide cupones; el cliente solo envía producto y cantidad. Requiere el esquema real y pruebas contra la base.
