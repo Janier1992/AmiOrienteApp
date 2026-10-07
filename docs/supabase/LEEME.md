@@ -5,7 +5,7 @@ Se ejecutan en **Supabase → SQL Editor** (pega el archivo completo y pulsa *Ru
 | Orden | Archivo | Qué hace | ¿Modifica datos? |
 |---|---|---|---|
 | 1 | `01_aplicar_migraciones_20261007.sql` | Crea la lista de deseos (`wishlist`, con RLS) y el índice que impide que dos domiciliarios tomen el mismo pedido. | Sí (estructura). Idempotente y transaccional. |
-| 2 | `02_auditoria_esquema.sql` | Devuelve un JSON con tablas, columnas, políticas RLS, funciones y triggers. | **No** (solo lectura). |
+| 2 | `02_auditoria_esquema.sql` | Devuelve una fila por sección (tablas, columnas, políticas RLS, funciones, triggers…) en JSON. | **No** (solo lectura). |
 
 ## Antes de ejecutar el 01
 - Haz un respaldo si tienes datos reales (Supabase → *Database → Backups*).
@@ -16,7 +16,7 @@ Se ejecutan en **Supabase → SQL Editor** (pega el archivo completo y pulsa *Ru
 Ejecuta las 3 consultas de verificación del final del 01: deben devolver 3 políticas, 2 índices y `rls_activo = true`.
 
 ## Auditoría (02)
-Copia la celda del resultado completo. Si el JSON es muy grande para pegarlo, guárdalo como archivo `.json` y compártelo. No contiene datos de usuarios, solo estructura.
+Es una sola consulta sin `;` final (algunos editores envuelven la consulta y el `;` la rompe). En la tabla de resultados usa *Copy → Copy as JSON* o descarga el CSV y compártelo. No contiene datos de usuarios, solo estructura.
 
 ## Cómo se probaron
 Ambos scripts se ejecutaron contra PostgreSQL 16 con un esquema mínimo tipo Supabase: ejecución repetida, aislamiento por usuario con RLS, bloqueo de `anon`, duplicados rechazados, índice único de entregas y el caso de entregas duplicadas existentes. **No** se han ejecutado contra tu proyecto de Supabase.
