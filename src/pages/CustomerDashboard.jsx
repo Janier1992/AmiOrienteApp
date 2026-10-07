@@ -69,6 +69,33 @@ const CustomerDashboard = () => {
     }
   }, []);
 
+  // Actualización en vivo: cuando la tienda confirma/prepara o el domiciliario
+  // recoge el pedido, el cliente lo ve sin recargar la página.
+  const refreshOrders = useCallback(async (userId) => {
+    const { data, error } = await supabase
+      .from('orders')
+      .select(`
+        *, 
+        stores (name), 
+        deliveries (*), 
+        order_items (*, products!order_items_product_id_fkey(name, image_url))
+      `)
+      .eq('customer_id', userId)
+      .order('created_at', { ascending: false });
+    if (!error && data) setOrders(data);
+  }, []);
+
+  useEffect(() => {
+    if (!user || user.user_metadata?.role !== 'cliente') return undefined;
+    const channel = supabase
+      .channel(`customer-orders-${user.id}`)
+      .on('postgres_changes',
+        { event: '*', schema: 'public', table: 'orders', filter: `customer_id=eq.${user.id}` },
+        () => refreshOrders(user.id))
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [user, refreshOrders]);
+
   useEffect(() => {
     if (authLoading) return;
 
