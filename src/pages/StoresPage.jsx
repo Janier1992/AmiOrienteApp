@@ -161,7 +161,7 @@ const StoresPage = () => {
   return (
     <>
       <Helmet>
-        <title>Servicios y Negocios | MiOriente</title>
+        <title>Servicios y Negocios | AmiOriente</title>
         <meta name="description" content="Encuentra los mejores restaurantes, tiendas y servicios en Marinilla y el Oriente Antioqueño." />
       </Helmet>
 

@@ -28,7 +28,7 @@
 // =============================================================================
 
 /** Nombre de la aplicación */
-export const APP_NAME = "MiOriente";
+export const APP_NAME = "AmiOriente";
 
 /** Descripción corta para SEO y metadatos */
 export const APP_DESCRIPTION = "Servicios y Domicilios en el Oriente Antioqueño";

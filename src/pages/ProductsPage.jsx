@@ -133,7 +133,7 @@ const ProductsPage = () => {
   return (
     <>
       <Helmet>
-        <title>{storeName} - Domicilios MiOriente</title>
+        <title>{storeName} - AmiOriente</title>
         <meta name="description" content={`Explora y compra los mejores productos de ${storeName}.`} />
       </Helmet>
 

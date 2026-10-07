@@ -320,7 +320,7 @@ const CheckoutPage = () => {
   return (
     <>
       <Helmet>
-        <title>Finalizar Compra - Domicilios MiOriente</title>
+        <title>Finalizar Compra - AmiOriente</title>
       </Helmet>
       <div className="container mx-auto px-4 py-8">
         <Button variant="ghost" onClick={() => navigate(-1)} className="mb-4">

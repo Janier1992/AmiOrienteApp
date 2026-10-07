@@ -41,7 +41,7 @@ const OrderConfirmationPage = () => {
   return (
     <>
       <Helmet>
-        <title>Pedido Confirmado - Domicilios MiOriente</title>
+        <title>Pedido Confirmado - AmiOriente</title>
       </Helmet>
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <motion.div

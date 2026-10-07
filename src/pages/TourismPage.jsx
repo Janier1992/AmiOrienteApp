@@ -158,7 +158,7 @@ const TourismPage = () => {
   return (
     <>
       <Helmet>
-        <title>Turismo en Marinilla - MiOriente</title>
+        <title>Turismo en Marinilla - AmiOriente</title>
         <meta name="description" content="Descubre Marinilla: Hoteles, Restaurantes, Cultura y Naturaleza en el corazón de Antioquia." />
       </Helmet>
       

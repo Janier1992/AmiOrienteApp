@@ -59,7 +59,7 @@ const PricingPage = () => {
   return (
     <>
       <Helmet>
-        <title>Planes y Precios - MiOriente</title>
+        <title>Planes y Precios - AmiOriente</title>
         <meta name="description" content="Elige el plan perfecto para tu negocio. Desde comisiones por venta hasta suscripciones con herramientas avanzadas." />
       </Helmet>
       <div className="bg-background">

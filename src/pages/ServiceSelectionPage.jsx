@@ -115,8 +115,8 @@ const ServiceSelectionPage = () => {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-4 relative pt-20">
       <Helmet>
-        <title>Selección de Servicio | MiOriente</title>
-        <meta name="description" content="Selecciona el tipo de servicio para registrar tu negocio en MiOriente." />
+        <title>Selección de Servicio | AmiOriente</title>
+        <meta name="description" content="Selecciona el tipo de servicio para registrar tu negocio en AmiOriente." />
       </Helmet>
 
       {/* Explicit Back / Home Button */}

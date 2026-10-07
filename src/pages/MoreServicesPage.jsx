@@ -54,8 +54,8 @@ const MoreServicesPage = () => {
   return (
     <>
       <Helmet>
-        <title>Más Servicios - MiOriente</title>
-        <meta name="description" content="Explora todas las herramientas y servicios avanzados que MiOriente ofrece para potenciar tu negocio." />
+        <title>Más Servicios - AmiOriente</title>
+        <meta name="description" content="Explora todas las herramientas y servicios avanzados que AmiOriente ofrece para potenciar tu negocio." />
       </Helmet>
       <div className="min-h-screen bg-background">
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

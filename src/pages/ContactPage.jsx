@@ -72,8 +72,8 @@ const ContactPage = () => {
   return (
     <>
       <Helmet>
-        <title>Contacto - Domicilios MiOriente</title>
-        <meta name="description" content="Contacta con el equipo de soporte de Domicilios MiOriente. Estamos para ayudarte." />
+        <title>Contacto - AmiOriente</title>
+        <meta name="description" content="Contacta con el equipo de soporte de AmiOriente. Estamos para ayudarte." />
       </Helmet>
       <div className="min-h-screen bg-background">
         <div className="max-w-6xl mx-auto px-6 py-12">

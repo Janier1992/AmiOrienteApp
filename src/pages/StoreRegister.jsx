@@ -135,8 +135,8 @@ const StoreRegister = () => {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 dark:bg-gray-900 p-4 relative">
       <Helmet>
-        <title>Registro de Negocio | MiOriente</title>
-        <meta name="description" content="Registra tu tienda, restaurante o servicio en MiOriente." />
+        <title>Registro de Negocio | AmiOriente</title>
+        <meta name="description" content="Registra tu tienda, restaurante o servicio en AmiOriente." />
       </Helmet>
 
       <div className="absolute top-4 left-4 z-10">
@@ -152,7 +152,7 @@ const StoreRegister = () => {
         <CardHeader className="text-center">
           <CardTitle className="text-3xl font-bold">Registrar Negocio</CardTitle>
           <CardDescription className="text-muted-foreground mt-2">
-            Únete a MiOriente y empieza a vender tus productos/servicios.
+            Únete a AmiOriente y empieza a vender tus productos/servicios.
           </CardDescription>
         </CardHeader>
         <CardContent>
