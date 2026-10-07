@@ -166,13 +166,14 @@ const StoresPage = () => {
       </Helmet>
 
       <div className="min-h-screen bg-slate-50 pb-20">
-        <PageHeader
-          title="Directorio de Servicios"
-          description="Lo que necesitas, cuando lo necesitas. Apoya el comercio local."
-          backgroundImage="https://images.unsplash.com/photo-1556742502-ec7c0e9f34b1?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80"
-        />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+          <PageHeader
+            title="Directorio de Servicios"
+            description="Lo que necesitas, cuando lo necesitas. Apoya el comercio local."
+          />
+        </div>
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8 relative z-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <Card className="p-4 shadow-lg border-none bg-white/95 backdrop-blur">
             <div className="flex flex-col md:flex-row gap-4 items-center">
               <div className="relative flex-grow w-full">

@@ -179,7 +179,8 @@ const ProductsPage = () => {
         </main>
       </div>
 
-      <div className="fixed bottom-6 right-6 z-50">
+      {/* En móvil queda por encima de la barra de navegación inferior */}
+      <div className="fixed bottom-24 right-4 md:bottom-6 md:right-6 z-50">
         <Button
           onClick={() => setIsCartOpen(true)}
           size="icon"
