@@ -7,6 +7,7 @@ import React, { useState } from 'react';
     import { Users, ArrowLeft, User, Mail, Phone, Lock, MapPin } from 'lucide-react';
     import { toast } from '@/components/ui/use-toast';
     import { useAuth } from '@/contexts/SupabaseAuthContext';
+    import { buildAuthRedirectUrl, getHomeRouteForUser, isExistingUserResponse } from '@/lib/authRoutes';
 
     const CustomerRegister = () => {
       const [formData, setFormData] = useState({
@@ -52,28 +53,40 @@ import React, { useState } from 'react';
         }
         
         setLoading(true);
-        const { error } = await signUp(formData.email, formData.password, {
+        const { user: newUser, session, error } = await signUp(formData.email, formData.password, {
           data: {
             full_name: formData.name,
             phone: formData.phone,
             address: formData.address,
             role: 'cliente'
           },
-          options: {
-            emailRedirectTo: `${window.location.origin}/auth/confirm`
-          }
+          emailRedirectTo: buildAuthRedirectUrl('/auth/confirm')
         });
         setLoading(false);
 
-        if (!error) {
+        if (error) return; // signUp ya mostró el error
+
+        if (isExistingUserResponse(newUser)) {
           toast({
-            title: "¡Revisa tu correo!",
-            description: "Te hemos enviado un enlace para confirmar tu cuenta.",
+            title: "Correo ya registrado",
+            description: "Ya existe una cuenta con este correo. Inicia sesión o recupera tu contraseña.",
+            variant: "destructive"
           });
-          navigate('/auth/confirm');
-        } else {
-            // Error is handled by signUp hook
+          return;
         }
+
+        if (session) {
+          // La confirmación por correo está desactivada: el usuario ya tiene sesión.
+          toast({ title: "¡Cuenta creada!", description: "Bienvenido a AmiOriente." });
+          navigate(getHomeRouteForUser(newUser));
+          return;
+        }
+
+        toast({
+          title: "¡Revisa tu correo!",
+          description: "Te hemos enviado un enlace para confirmar tu cuenta.",
+        });
+        navigate('/auth/confirm');
       };
 
       return (

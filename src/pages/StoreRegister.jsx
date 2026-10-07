@@ -10,6 +10,7 @@ import { useAuth } from '@/contexts/SupabaseAuthContext';
 import { supabase } from '@/lib/customSupabaseClient';
 import { toast } from '@/components/ui/use-toast';
 import { Loader2, Home } from 'lucide-react';
+import { buildAuthRedirectUrl, isExistingUserResponse } from '@/lib/authRoutes';
 
 const StoreRegister = () => {
   const [email, setEmail] = useState('');
@@ -73,7 +74,7 @@ const StoreRegister = () => {
     try {
       // We pass 'true' as the 4th argument to suppress the default error toast from context,
       // allowing us to handle the specific errors locally with custom messages.
-      const { user: newUser, error } = await signUp(email, password, {
+      const { user: newUser, session, error } = await signUp(email, password, {
         data: {
           role: 'tienda',
           store_name: storeName,
@@ -81,6 +82,7 @@ const StoreRegister = () => {
           category: serviceType, // Display Category (e.g. 'Cultivador')
           service_category: CATEGORY_DB_MAP[serviceType] || 'Domicilios', // FK Lookup Name (e.g. 'Cultivadores')
         },
+        emailRedirectTo: buildAuthRedirectUrl('/auth/confirm'),
       }, true);
 
       if (error) {
@@ -98,12 +100,25 @@ const StoreRegister = () => {
           description: message,
           variant: "destructive",
         });
-      } else if (newUser) {
+      } else if (isExistingUserResponse(newUser)) {
         toast({
-          title: "Registro Exitoso",
-          description: "¡Bienvenido! Hemos enviado un correo de confirmación. Por favor, revisa tu bandeja de entrada.",
+          title: "Correo ya registrado",
+          description: "Ya existe una cuenta con este correo. Inicia sesión o recupera tu contraseña.",
+          variant: "destructive",
         });
-        navigate('/tienda/dashboard');
+      } else if (newUser) {
+        if (session) {
+          // Confirmación por correo desactivada: ya hay sesión, ir al panel.
+          toast({ title: "Registro Exitoso", description: "¡Bienvenido a AmiOriente!" });
+          navigate('/tienda/dashboard');
+        } else {
+          // Sin sesión el panel redirigiría al login sin explicación.
+          toast({
+            title: "Registro Exitoso",
+            description: "Hemos enviado un correo de confirmación. Actívalo para ingresar a tu panel.",
+          });
+          navigate('/auth/confirm');
+        }
       }
     } catch (err) {
       console.error(err);

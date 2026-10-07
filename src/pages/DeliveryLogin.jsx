@@ -1,16 +1,18 @@
 import React, { useState } from 'react';
     import { motion } from 'framer-motion';
-    import { Link, useNavigate } from 'react-router-dom';
+    import { Link, useNavigate, useLocation } from 'react-router-dom';
     import { Button } from '@/components/ui/button';
     import { Input } from '@/components/ui/input';
     import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
     import { Truck, ArrowLeft, Mail, Lock } from 'lucide-react';
     import { useAuth } from '@/contexts/SupabaseAuthContext';
+    import { getPostLoginRoute } from '@/lib/authRoutes';
 
     const DeliveryLogin = () => {
       const [formData, setFormData] = useState({ email: '', password: '' });
       const [loading, setLoading] = useState(false);
       const navigate = useNavigate();
+      const location = useLocation();
       const { signIn } = useAuth();
 
       const handleInputChange = (e) => {
@@ -20,10 +22,10 @@ import React, { useState } from 'react';
       const handleLogin = async (e) => {
         e.preventDefault();
         setLoading(true);
-        const { error, isAdmin } = await signIn(formData.email, formData.password);
+        const { user, error, isAdmin } = await signIn(formData.email, formData.password);
         setLoading(false);
         if (!error) {
-          navigate(isAdmin ? '/admin' : '/domiciliario/dashboard');
+          navigate(getPostLoginRoute(user, isAdmin, location.search));
         }
       };
 

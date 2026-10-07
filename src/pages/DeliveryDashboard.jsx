@@ -175,6 +175,11 @@ const DeliveryDashboard = () => {
       navigate('/domiciliario/login');
       return;
     }
+    if (user.user_metadata?.role !== 'domiciliario') {
+      toast({ title: "Acceso no autorizado", description: "Esta sección es solo para domiciliarios.", variant: "destructive" });
+      navigate('/');
+      return;
+    }
     fetchData(user.id);
   }, [user, navigate, authLoading, fetchData]);
 
