@@ -3,7 +3,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Truck, Eye } from 'lucide-react';
 
-const AvailableOrdersTab = ({ isConnected, orders, onAcceptOrder, onViewDetails }) => {
+const AvailableOrdersTab = ({ isConnected, orders, onAcceptOrder, onViewDetails, onConnect }) => {
   if (orders.length === 0) {
     return (
       <div className="text-center py-12 bg-slate-100 rounded-lg">
@@ -17,8 +17,10 @@ const AvailableOrdersTab = ({ isConnected, orders, onAcceptOrder, onViewDetails 
     <div className="space-y-4">
       {/* Se puede ver qué hay disponible sin estar conectado; solo aceptar exige conexión. */}
       {!isConnected && (
-        <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-          Estás desconectado. Puedes ver los pedidos disponibles, pero debes conectarte para aceptarlos.
+        <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <span>Estás desconectado. Puedes ver los pedidos disponibles, pero debes conectarte para aceptarlos.</span>
+          {/* En móvil el botón del menú lateral queda oculto: se ofrece aquí mismo */}
+          {onConnect && <Button size="sm" onClick={onConnect} className="shrink-0">Conectarme</Button>}
         </div>
       )}
       {orders.map((order) => (

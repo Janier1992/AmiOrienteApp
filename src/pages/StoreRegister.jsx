@@ -11,6 +11,7 @@ import { supabase } from '@/lib/customSupabaseClient';
 import { toast } from '@/components/ui/use-toast';
 import { Loader2, Home } from 'lucide-react';
 import { buildAuthRedirectUrl, isExistingUserResponse } from '@/lib/authRoutes';
+import { getPasswordError, PASSWORD_HINT } from '@/lib/passwordPolicy';
 
 const StoreRegister = () => {
   const [email, setEmail] = useState('');
@@ -69,6 +70,13 @@ const StoreRegister = () => {
 
   const handleRegister = async (e) => {
     e.preventDefault();
+
+    const passwordError = getPasswordError(password);
+    if (passwordError) {
+      toast({ title: "Contraseña insegura", description: passwordError, variant: "destructive" });
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -214,6 +222,7 @@ const StoreRegister = () => {
                 required
                 className="mt-1"
               />
+              <p className="text-xs text-muted-foreground mt-1">{PASSWORD_HINT}</p>
             </div>
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? (

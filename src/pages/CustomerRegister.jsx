@@ -7,6 +7,7 @@ import React, { useState } from 'react';
     import { Users, ArrowLeft, User, Mail, Phone, Lock, MapPin } from 'lucide-react';
     import { toast } from '@/components/ui/use-toast';
     import { useAuth } from '@/contexts/SupabaseAuthContext';
+    import { getPasswordError, PASSWORD_HINT } from '@/lib/passwordPolicy';
     import { buildAuthRedirectUrl, getHomeRouteForUser, isExistingUserResponse } from '@/lib/authRoutes';
 
     const CustomerRegister = () => {
@@ -21,9 +22,7 @@ import React, { useState } from 'react';
       const navigate = useNavigate();
       const { signUp } = useAuth();
       
-      const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-
-      const handleInputChange = (e) => {
+            const handleInputChange = (e) => {
         setFormData({
           ...formData,
           [e.target.name]: e.target.value
@@ -43,10 +42,11 @@ import React, { useState } from 'react';
           return;
         }
 
-        if (!passwordRegex.test(formData.password)) {
+        const passwordError = getPasswordError(formData.password);
+        if (passwordError) {
           toast({
             title: "Contraseña insegura",
-            description: "La contraseña debe tener al menos 8 caracteres, e incluir mayúsculas, minúsculas, números y caracteres especiales.",
+            description: passwordError,
             variant: "destructive"
           });
           return;
@@ -135,6 +135,8 @@ import React, { useState } from 'react';
                     <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                     <Input type="password" name="password" placeholder="Contraseña segura" value={formData.password} onChange={handleInputChange} required className="pl-10" />
                   </div>
+
+                  <p className="text-xs text-muted-foreground -mt-2">{PASSWORD_HINT}</p>
 
                   <Button type="submit" className="w-full" disabled={loading}>
                     {loading ? 'Creando cuenta...' : 'Crear Cuenta'}

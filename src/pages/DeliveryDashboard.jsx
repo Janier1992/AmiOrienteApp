@@ -338,6 +338,7 @@ const DeliveryDashboard = () => {
                         orders={availableOrders}
                         onAcceptOrder={handleAcceptOrder}
                         onViewDetails={handleViewDetails}
+                        onConnect={() => setIsConnected(true)}
                       />
                     </TabsContent>
 

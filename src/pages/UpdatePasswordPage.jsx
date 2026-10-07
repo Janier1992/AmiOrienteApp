@@ -8,6 +8,7 @@ import React, { useState, useEffect } from 'react';
     import { toast } from '@/components/ui/use-toast';
     import { supabase } from '@/lib/customSupabaseClient';
     import { useAuth } from '@/contexts/SupabaseAuthContext';
+    import { getPasswordError, PASSWORD_HINT } from '@/lib/passwordPolicy';
 
     const UpdatePasswordPage = () => {
       const [password, setPassword] = useState('');
@@ -15,9 +16,7 @@ import React, { useState, useEffect } from 'react';
       const navigate = useNavigate();
       const { session } = useAuth();
       
-      const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-
-      useEffect(() => {
+            useEffect(() => {
         if (!session) {
           const hash = window.location.hash;
           if (!hash.includes('access_token')) {
@@ -34,10 +33,11 @@ import React, { useState, useEffect } from 'react';
       const handleUpdatePassword = async (e) => {
         e.preventDefault();
         
-        if (!passwordRegex.test(password)) {
+        const passwordError = getPasswordError(password);
+        if (passwordError) {
           toast({
             title: "Contraseña insegura",
-            description: "La contraseña debe tener al menos 8 caracteres, incluir una mayúscula, una minúscula, un número y un caracter especial.",
+            description: passwordError,
             variant: "destructive"
           });
           return;
@@ -93,6 +93,7 @@ import React, { useState, useEffect } from 'react';
                       className="pl-10"
                     />
                   </div>
+                  <p className="text-xs text-muted-foreground -mt-2">{PASSWORD_HINT}</p>
                   <Button type="submit" className="w-full" disabled={loading}>
                     {loading ? 'Actualizando...' : 'Actualizar Contraseña'}
                   </Button>
