@@ -221,12 +221,12 @@ const OrdersTab = ({ storeId, terminology = {} }) => {
                         )}
 
                         {/* Edit Action */}
-                        <Button size="sm" variant="outline" className="h-7 w-7 p-0" onClick={(e) => { e.stopPropagation(); openDetails(order); }}>
+                        <Button size="sm" variant="outline" className="h-7 w-7 p-0" aria-label="Ver detalles del pedido" onClick={(e) => { e.stopPropagation(); openDetails(order); }}>
                           <Pencil className="h-4 w-4" />
                         </Button>
 
                         {/* Delete Action */}
-                        <Button size="sm" variant="destructive" className="h-7 w-7 p-0" onClick={(e) => { e.stopPropagation(); handleDelete(order.id); }}>
+                        <Button size="sm" variant="destructive" className="h-7 w-7 p-0" aria-label="Eliminar pedido" onClick={(e) => { e.stopPropagation(); handleDelete(order.id); }}>
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>

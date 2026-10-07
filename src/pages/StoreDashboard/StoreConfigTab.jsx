@@ -73,20 +73,20 @@ const StoreConfigTab = ({ store: initialStore, setStore, user, onStoreCreated })
       <CardContent>
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Nombre del Negocio</label>
-            <Input type="text" name="name" value={storeConfig.name} onChange={handleConfigChange} />
+            <label htmlFor="config-name" className="block text-sm font-medium text-gray-700 mb-2">Nombre del Negocio</label>
+            <Input id="config-name" type="text" name="name" value={storeConfig.name} onChange={handleConfigChange} />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Descripción</label>
-            <Textarea name="description" value={storeConfig.description} onChange={handleConfigChange} rows={3} />
+            <label htmlFor="config-description" className="block text-sm font-medium text-gray-700 mb-2">Descripción</label>
+            <Textarea id="config-description" name="description" value={storeConfig.description} onChange={handleConfigChange} rows={3} />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">URL del logotipo</label>
-            <Input type="url" name="logo_url" value={storeConfig.logo_url} onChange={handleConfigChange} placeholder="https://ejemplo.com/logo.png" />
+            <label htmlFor="config-logo_url" className="block text-sm font-medium text-gray-700 mb-2">URL del logotipo</label>
+            <Input id="config-logo_url" type="url" name="logo_url" value={storeConfig.logo_url} onChange={handleConfigChange} placeholder="https://ejemplo.com/logo.png" />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Dirección</label>
-            <Input type="text" name="address" value={storeConfig.address} onChange={handleConfigChange} />
+            <label htmlFor="config-address" className="block text-sm font-medium text-gray-700 mb-2">Dirección</label>
+            <Input id="config-address" type="text" name="address" value={storeConfig.address} onChange={handleConfigChange} />
           </div>
           <Button onClick={handleSaveConfig} className="bg-primary text-primary-foreground hover:bg-primary/90" disabled={loading}>
             <Settings className="mr-2 h-4 w-4" />

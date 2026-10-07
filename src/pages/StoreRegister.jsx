@@ -233,7 +233,7 @@ const StoreRegister = () => {
             </Button>
             <p className="text-center text-sm text-muted-foreground">
               ¿Ya tienes cuenta?{' '}
-              <Link to="/tienda/login" className="text-primary hover:underline">
+              <Link to="/tienda/login" className="text-primary underline hover:no-underline">
                 Ingresar
               </Link>
             </p>

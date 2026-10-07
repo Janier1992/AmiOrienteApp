@@ -112,13 +112,14 @@ const ProductDetailPage = () => {
             ) : (
               <>
                 <div className="flex items-center gap-3">
-                  <Button variant="outline" size="icon" onClick={() => setQuantity(q => Math.max(1, q - 1))}>
+                  <Button variant="outline" size="icon" aria-label="Disminuir cantidad" onClick={() => setQuantity(q => Math.max(1, q - 1))}>
                     <Minus className="h-4 w-4" />
                   </Button>
                   <span className="w-10 text-center font-semibold">{quantity}</span>
                   <Button
                     variant="outline"
                     size="icon"
+                    aria-label="Aumentar cantidad"
                     onClick={() => setQuantity(q => stock !== null ? Math.min(stock, q + 1) : q + 1)}
                   >
                     <Plus className="h-4 w-4" />

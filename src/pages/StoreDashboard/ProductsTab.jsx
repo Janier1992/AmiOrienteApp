@@ -312,10 +312,10 @@ const ProductsTab = ({ storeId, terminology = {} }) => {
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">
-                        <Button variant="ghost" size="icon" onClick={() => handleEdit(product)} className="text-blue-500 hover:text-blue-700 hover:bg-blue-50">
+                        <Button variant="ghost" size="icon" aria-label={`Editar ${product.name}`} onClick={() => handleEdit(product)} className="text-blue-500 hover:text-blue-700 hover:bg-blue-50">
                           <Pencil className="h-4 w-4" />
                         </Button>
-                        <Button variant="ghost" size="icon" onClick={() => handleDelete(product.id)} className="text-red-500 hover:text-red-700 hover:bg-red-50">
+                        <Button variant="ghost" size="icon" aria-label={`Eliminar ${product.name}`} onClick={() => handleDelete(product.id)} className="text-red-500 hover:text-red-700 hover:bg-red-50">
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>

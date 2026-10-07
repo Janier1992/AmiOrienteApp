@@ -94,6 +94,7 @@ const CartPanel = ({ cart, updateCartQty, removeFromCart, clearCart, subtotal, t
                                 <div className="flex items-center gap-2 bg-slate-50 rounded-md p-0.5">
                                     <button
                                         className="h-6 w-6 flex items-center justify-center hover:bg-slate-200 rounded"
+                                        aria-label={`Quitar una unidad de ${item.name}`}
                                         onClick={() => updateCartQty(item.id, -1)}
                                     >
                                         <Minus className="h-3 w-3" />
@@ -101,6 +102,7 @@ const CartPanel = ({ cart, updateCartQty, removeFromCart, clearCart, subtotal, t
                                     <span className="text-xs w-4 text-center font-medium">{item.qty}</span>
                                     <button
                                         className="h-6 w-6 flex items-center justify-center hover:bg-slate-200 rounded"
+                                        aria-label={`Agregar una unidad de ${item.name}`}
                                         onClick={() => updateCartQty(item.id, 1)}
                                     >
                                         <Plus className="h-3 w-3" />
@@ -111,6 +113,7 @@ const CartPanel = ({ cart, updateCartQty, removeFromCart, clearCart, subtotal, t
                         </div>
                         <button
                             className="text-slate-300 hover:text-red-500 self-center"
+                            aria-label={`Quitar ${item.name} de la orden`}
                             onClick={() => removeFromCart(item.id)}
                         >
                             <Trash2 className="h-4 w-4" />
@@ -294,6 +297,7 @@ const GenericPOSView = ({ useStore, title = "Punto de Venta" }) => {
             <div className="xl:hidden fixed bottom-6 right-6 z-40">
                 <Button
                     className="h-16 w-16 rounded-full shadow-2xl bg-blue-600 hover:bg-blue-700 relative"
+                    aria-label="Ver orden actual"
                     onClick={() => setShowMobileCart(true)}
                 >
                     <ShoppingCart className="h-8 w-8 text-white" />

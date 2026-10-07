@@ -49,7 +49,7 @@ const CartSidebar = ({ isOpen, onClose }) => {
                     >
                         <div className="flex items-center justify-between p-4 border-b border-border">
                             <h2 className="text-2xl font-bold">Tu Carrito ({getCartItemCount()})</h2>
-                            <Button variant="ghost" size="icon" onClick={onClose}>
+                            <Button variant="ghost" size="icon" aria-label="Cerrar carrito" onClick={onClose}>
                                 <X className="h-6 w-6" />
                             </Button>
                         </div>
@@ -72,18 +72,18 @@ const CartSidebar = ({ isOpen, onClose }) => {
                                                 <h4 className="font-semibold text-foreground">{item.name}</h4>
                                                 <p className="text-sm text-muted-foreground">${Number(item.price).toLocaleString()}</p>
                                                 <div className="flex items-center mt-2">
-                                                    <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => updateQuantity(item.id, Math.max(1, item.quantity - 1))}>
+                                                    <Button variant="outline" size="icon" className="h-8 w-8" aria-label={`Disminuir cantidad de ${item.name}`} onClick={() => updateQuantity(item.id, Math.max(1, item.quantity - 1))}>
                                                         <Minus className="h-4 w-4" />
                                                     </Button>
                                                     <span className="w-10 text-center font-semibold text-foreground">{item.quantity}</span>
-                                                    <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => updateQuantity(item.id, item.quantity + 1)}>
+                                                    <Button variant="outline" size="icon" className="h-8 w-8" aria-label={`Aumentar cantidad de ${item.name}`} onClick={() => updateQuantity(item.id, item.quantity + 1)}>
                                                         <Plus className="h-4 w-4" />
                                                     </Button>
                                                 </div>
                                             </div>
                                             <div className="text-right">
                                                 <p className="font-bold text-foreground">${(Number(item.price) * item.quantity).toLocaleString()}</p>
-                                                <Button variant="ghost" size="icon" className="text-destructive hover:bg-destructive/10 mt-2" onClick={() => removeFromCart(item.id)}>
+                                                <Button variant="ghost" size="icon" className="text-destructive hover:bg-destructive/10 mt-2" aria-label={`Quitar ${item.name} del carrito`} onClick={() => removeFromCart(item.id)}>
                                                     <Trash2 className="h-4 w-4" />
                                                 </Button>
                                             </div>
