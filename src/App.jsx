@@ -11,6 +11,7 @@ import { cn } from '@/lib/utils';
 import { lazyWithPrefetch, prefetchRoutes } from '@/lib/route-utils';
 import { useRouteTransitionTimer } from '@/lib/performance-monitoring';
 import PageSkeleton from '@/components/shared/PageSkeleton';
+import ErrorBoundary from '@/components/shared/ErrorBoundary';
 import { PWAInstallPrompt } from '@/components/pwa/PWAInstallPrompt';
 import { OnboardingController } from '@/components/onboarding/OnboardingController';
 import { OfflineBanner } from '@/components/shared/OfflineBanner';
@@ -134,45 +135,48 @@ const AppContent = () => {
       {!hideHeader && <SiteHeader />}
 
       <main className={`flex-grow ${showBottomNav ? 'pb-20 md:pb-0' : ''}`}>
-        <Suspense fallback={<PageSkeleton />}>
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/productos" element={<ProductsPage />} />
-            <Route path="/productos/:id" element={<ProductDetailPage />} />
-            <Route path="/servicios" element={<StoresPage />} />
-            <Route path="/turismo" element={<TourismPage />} />
+        {/* key: al navegar a otra ruta el error de la anterior no se arrastra */}
+        <ErrorBoundary key={location.pathname}>
+          <Suspense fallback={<PageSkeleton />}>
+            <Routes>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/productos" element={<ProductsPage />} />
+              <Route path="/productos/:id" element={<ProductDetailPage />} />
+              <Route path="/servicios" element={<StoresPage />} />
+              <Route path="/turismo" element={<TourismPage />} />
 
-            {/* Protected / Conditional Routes */}
-            {isStoreUser && <Route path="/mas" element={<MoreServicesPage />} />}
-            {isStoreUser && <Route path="/precios" element={<PricingPage />} />}
+              {/* Protected / Conditional Routes */}
+              {isStoreUser && <Route path="/mas" element={<MoreServicesPage />} />}
+              {isStoreUser && <Route path="/precios" element={<PricingPage />} />}
 
-            {/* Auth Routes */}
-            <Route path="/tienda/login" element={<StoreLogin />} />
-            <Route path="/tienda/registro" element={<StoreRegister />} />
-            <Route path="/cliente/login" element={<CustomerLogin />} />
-            <Route path="/cliente/registro" element={<CustomerRegister />} />
-            <Route path="/domiciliario/login" element={<DeliveryLogin />} />
-            <Route path="/domiciliario/registro" element={<DeliveryRegister />} />
-            <Route path="/servicios/registro" element={<ServiceSelectionPage />} />
-            <Route path="/recuperar-contrasena" element={<ForgotPasswordPage />} />
-            <Route path="/actualizar-contrasena" element={<UpdatePasswordPage />} />
-            <Route path="/auth/confirm" element={<AuthConfirmation />} />
+              {/* Auth Routes */}
+              <Route path="/tienda/login" element={<StoreLogin />} />
+              <Route path="/tienda/registro" element={<StoreRegister />} />
+              <Route path="/cliente/login" element={<CustomerLogin />} />
+              <Route path="/cliente/registro" element={<CustomerRegister />} />
+              <Route path="/domiciliario/login" element={<DeliveryLogin />} />
+              <Route path="/domiciliario/registro" element={<DeliveryRegister />} />
+              <Route path="/servicios/registro" element={<ServiceSelectionPage />} />
+              <Route path="/recuperar-contrasena" element={<ForgotPasswordPage />} />
+              <Route path="/actualizar-contrasena" element={<UpdatePasswordPage />} />
+              <Route path="/auth/confirm" element={<AuthConfirmation />} />
 
-            {/* Dashboards */}
-            <Route path="/tienda/dashboard/*" element={<StoreDashboard />} />
-            <Route path="/cliente/dashboard/*" element={<CustomerDashboard />} />
-            <Route path="/domiciliario/dashboard/*" element={<DeliveryDashboard />} />
-            <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
+              {/* Dashboards */}
+              <Route path="/tienda/dashboard/*" element={<StoreDashboard />} />
+              <Route path="/cliente/dashboard/*" element={<CustomerDashboard />} />
+              <Route path="/domiciliario/dashboard/*" element={<DeliveryDashboard />} />
+              <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
 
-            {/* Utility Pages */}
-            <Route path="/centro-de-ayuda" element={<HelpCenter />} />
-            <Route path="/contacto" element={<ContactPage />} />
-            <Route path="/checkout" element={<CheckoutPage />} />
-            <Route path="/confirmacion-pedido" element={<OrderConfirmationPage />} />
-            <Route path="/terminos" element={<TermsPage />} />
-            <Route path="/privacidad" element={<PrivacyPolicyPage />} />
-          </Routes>
-        </Suspense>
+              {/* Utility Pages */}
+              <Route path="/centro-de-ayuda" element={<HelpCenter />} />
+              <Route path="/contacto" element={<ContactPage />} />
+              <Route path="/checkout" element={<CheckoutPage />} />
+              <Route path="/confirmacion-pedido" element={<OrderConfirmationPage />} />
+              <Route path="/terminos" element={<TermsPage />} />
+              <Route path="/privacidad" element={<PrivacyPolicyPage />} />
+            </Routes>
+          </Suspense>
+        </ErrorBoundary>
       </main>
 
       {showBottomNav && <BottomNavBar />}
