@@ -128,3 +128,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Service worker de desarrollo (vite-plugin-pwa devOptions)
+dev-dist
