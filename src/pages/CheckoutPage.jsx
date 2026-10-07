@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Helmet } from 'react-helmet';
 import { useNavigate } from 'react-router-dom';
 import { useCartStore, useCartActions } from '@/contexts/CartContext';
@@ -21,6 +21,10 @@ const CheckoutPage = () => {
   const items = useCartStore(state => state.items);
   const { getCartTotal, clearCart } = useCartActions();
   const [processing, setProcessing] = useState(false);
+  // Tras un pedido exitoso se vacía el carrito; sin esta guarda el efecto de
+  // abajo lo tomaba por un carrito vacío y redirigía a /productos, pisando la
+  // pantalla de confirmación.
+  const orderPlacedRef = useRef(false);
   const [deliveryAddress, setDeliveryAddress] = useState('');
   const [deliveryNotes, setDeliveryNotes] = useState('');
   const [couponInput, setCouponInput] = useState('');
@@ -55,7 +59,7 @@ const CheckoutPage = () => {
       return;
     }
     if (items.length === 0) {
-      navigate('/productos');
+      if (!orderPlacedRef.current) navigate('/productos');
       return;
     }
 
@@ -262,6 +266,7 @@ const CheckoutPage = () => {
       // Simular pequeño delay para UX
       await new Promise(resolve => setTimeout(resolve, 1000));
 
+      orderPlacedRef.current = true;
       clearCart();
 
       // Con un solo pedido mostramos la pantalla de confirmación con el

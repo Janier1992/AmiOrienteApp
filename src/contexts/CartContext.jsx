@@ -1,6 +1,9 @@
 import React, { createContext, useContext, useEffect, useRef } from 'react';
 import { useAuth } from '@/contexts/SupabaseAuthContext';
 import { createCartStore } from '@/stores/cartStore';
+import { mergeCartItems, readStoredCartItems } from '@/lib/cartMerge';
+
+const GUEST_CART_KEY = 'cart-storage-guest';
 
 const CartContext = createContext();
 
@@ -12,14 +15,22 @@ export const CartProvider = ({ children }) => {
   }
   
   useEffect(() => {
-    const cartKey = user ? `cart-storage-${user.id}` : 'cart-storage-guest';
-    
-    const savedState = localStorage.getItem(cartKey);
-    if (savedState) {
-      storeRef.current.getState().initialize(JSON.parse(savedState).items);
-    } else {
-      storeRef.current.getState().initialize([]);
+    const cartKey = user ? `cart-storage-${user.id}` : GUEST_CART_KEY;
+
+    let items = readStoredCartItems(localStorage, cartKey);
+
+    // Al iniciar sesión, el carrito armado como invitado pasa al del usuario
+    // (si no, quien elige productos y luego inicia sesión para pagar los perdería).
+    if (user) {
+      const guestItems = readStoredCartItems(localStorage, GUEST_CART_KEY);
+      if (guestItems.length > 0) {
+        items = mergeCartItems(items, guestItems);
+        localStorage.setItem(cartKey, JSON.stringify({ items }));
+        localStorage.removeItem(GUEST_CART_KEY);
+      }
     }
+
+    storeRef.current.getState().initialize(items);
 
     const unsubscribe = storeRef.current.subscribe(
       (currentState) => {
