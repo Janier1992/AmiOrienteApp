@@ -17,6 +17,8 @@ Documento de traspaso: qué funciona, cómo se verificó y qué falta para comer
 - Turismo: muestra los lugares reales de `tourism_spots` (antes un error silencioso mostraba siempre los de ejemplo). Reservas de hotel y pedidos de restaurante se envían por WhatsApp al número del establecimiento.
 - Pedidos del cliente se actualizan en vivo (Realtime) y ya no muestran una hora de entrega inventada.
 - Pruebas unitarias de `orderService` (totales, rollback) y `deliveryService` (carrera al aceptar).
+- Contraseñas: una sola política (8+ caracteres con mayúscula, minúscula, número y símbolo) en registro de cliente, negocio y domiciliario y en recuperar contraseña.
+- Accesibilidad: auditoría automática (axe-core, WCAG A) sobre 25 pantallas sin violaciones críticas pendientes (salvo `aria-controls` de las pestañas de Radix, comportamiento conocido de la librería).
 - Lista de deseos: corazón en productos y detalle (requiere `database_updates/20261007_wishlist_policies.sql`).
 
 ## Pendiente para comercializar
@@ -28,5 +30,6 @@ Documento de traspaso: qué funciona, cómo se verificó y qué falta para comer
 6. **Datos de ejemplo**: el directorio muestra negocios de muestra si la plataforma aún no tiene tiendas.
 7. **Normativa colombiana** (plataformas de domicilio y venta): pendiente de definir con el propietario. Al hacerlo, revisar también `TermsPage` y `PrivacyPolicyPage`: siguen llamando a la plataforma «Domicilios MiOriente» y los términos dicen que los pagos se procesan con Stripe, lo cual hoy no es cierto (todo es efectivo/transferencia).
 8. **Planes y comisiones**: `PricingPage` muestra 22 % / 15 % + $59.900, mientras el README habla de 8-10 % y $50.000-$80.000. Decidir cuál es el modelo definitivo y alinear README, página y comisión por defecto de la base de datos (22 %).
-9. **Modo oscuro** en páginas públicas: algunas pantallas (p. ej. Servicios) tienen fondos fijos claros; el tema por defecto es claro.
-10. Plan de Supabase de pago antes del primer cliente (respaldos, límites, rendimiento).
+9. **Contraste de color (WCAG AA).** El texto blanco sobre el verde primario (`--primary`, `src/index.css`) da ~3,4:1; AA pide 4,5:1 en texto normal. Oscurecer un poco el verde lo resuelve (afecta la identidad de marca: decisión del propietario).
+10. **Modo oscuro** en páginas públicas: algunas pantallas (p. ej. Servicios) tienen fondos fijos claros; el tema por defecto es claro.
+11. Plan de Supabase de pago antes del primer cliente (respaldos, límites, rendimiento).
