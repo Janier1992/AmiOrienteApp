@@ -270,6 +270,12 @@ export const deliveryService = {
         .single();
 
       if (error) {
+        // El índice único de la base de datos (ver database_updates/
+        // 20261007_unique_active_delivery_per_order.sql) impide que dos
+        // domiciliarios tomen el mismo pedido aunque acepten a la vez.
+        if (error.code === '23505') {
+          throw new Error('Este pedido ya fue tomado por otro domiciliario');
+        }
         manejarError(error, 'Error al aceptar la entrega');
       }
 

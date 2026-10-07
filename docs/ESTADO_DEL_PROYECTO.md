@@ -12,7 +12,7 @@ Documento de traspaso: qué funciona, cómo se verificó y qué falta para comer
 - Compra: carrito de invitado → login (conserva el carrito) → checkout → pedido → confirmación. Varias tiendas: los fallos parciales se reportan sin duplicar pedidos.
 - Registro/login de cliente, negocio y domiciliario, con redirección por rol y manejo de correo ya registrado / confirmación por correo.
 - Panel de tienda para los 10 nichos (pestañas, POS, productos). El panel siempre se muestra en tema claro.
-- Panel de domiciliario: ve los pedidos listos aunque esté desconectado; para aceptar debe conectarse.
+- Panel de domiciliario: ve los pedidos listos aunque esté desconectado; para aceptar debe conectarse. Si dos domiciliarios aceptan a la vez, el segundo recibe «ya fue tomado» (requiere aplicar `database_updates/20261007_unique_active_delivery_per_order.sql`).
 
 ## Pendiente para comercializar
 1. **Totales del pedido en el servidor (seguridad).** `orderService.crearPedido` calcula subtotal, envío, impuestos y descuento en el navegador; un usuario podría manipular el total. Solución: función SQL `create_order` (SECURITY DEFINER) que lea precios/tarifas de las tablas y valide cupones; el cliente solo envía producto y cantidad. Requiere el esquema real y pruebas contra la base.
