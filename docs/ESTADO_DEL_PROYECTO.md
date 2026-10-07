@@ -14,6 +14,9 @@ Documento de traspaso: qué funciona, cómo se verificó y qué falta para comer
 - Panel de tienda para los 10 nichos (pestañas, POS, productos). El panel siempre se muestra en tema claro.
 - Panel de domiciliario: ve los pedidos listos aunque esté desconectado; para aceptar debe conectarse. Si dos domiciliarios aceptan a la vez, el segundo recibe «ya fue tomado» (requiere aplicar `database_updates/20261007_unique_active_delivery_per_order.sql`).
 
+- Turismo: muestra los lugares reales de `tourism_spots` (antes un error silencioso mostraba siempre los de ejemplo). Reservas de hotel y pedidos de restaurante se envían por WhatsApp al número del establecimiento.
+- Lista de deseos: corazón en productos y detalle (requiere `database_updates/20261007_wishlist_policies.sql`).
+
 ## Pendiente para comercializar
 1. **Totales del pedido en el servidor (seguridad).** `orderService.crearPedido` calcula subtotal, envío, impuestos y descuento en el navegador; un usuario podría manipular el total. Solución: función SQL `create_order` (SECURITY DEFINER) que lea precios/tarifas de las tablas y valide cupones; el cliente solo envía producto y cantidad. Requiere el esquema real y pruebas contra la base.
 2. **Auditar RLS tabla por tabla** (lectura pública de `stores`/`products`, pedidos visibles para domiciliarios, aislamiento entre tiendas) y exportar el esquema completo a una migración base: hoy solo existen parches en `database_updates/`.

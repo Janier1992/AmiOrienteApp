@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
+import WishlistButton from '@/components/shared/WishlistButton';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -96,7 +97,10 @@ const ProductDetailPage = () => {
               </Link>
             )}
 
-            <h1 className="text-3xl font-bold text-foreground">{product.name}</h1>
+            <div className="flex items-start justify-between gap-3">
+              <h1 className="text-3xl font-bold text-foreground">{product.name}</h1>
+              <WishlistButton productId={product.id} className="shrink-0" />
+            </div>
             <p className="text-2xl font-bold text-primary">${price.toLocaleString()}</p>
 
             {product.description && (

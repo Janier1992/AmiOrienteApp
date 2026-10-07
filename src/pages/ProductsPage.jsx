@@ -9,6 +9,7 @@ import { toast } from '@/components/ui/use-toast';
 import { ShoppingBag, Package, Loader2, Leaf, Search } from 'lucide-react';
 import { supabase } from '@/lib/customSupabaseClient';
 import CartSidebar from '@/components/CartSidebar';
+import WishlistButton from '@/components/shared/WishlistButton';
 
 const ProductCard = ({ product }) => {
   const { addToCart } = useCartActions();
@@ -26,7 +27,7 @@ const ProductCard = ({ product }) => {
   const isFarmerProduct = product.stores?.service_categories?.name === 'Cultivadores';
 
   return (
-    <Card className="overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 group border border-border flex flex-col bg-card text-card-foreground">
+    <Card className="relative overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 group border border-border flex flex-col bg-card text-card-foreground">
       <Link to={`/productos/${product.id}`} className="relative block">
         <img
           alt={product.name}
@@ -39,6 +40,7 @@ const ProductCard = ({ product }) => {
           </div>
         )}
       </Link>
+      <WishlistButton productId={product.id} className="absolute top-2 right-2 h-9 w-9 z-10" />
       <CardContent className="p-4 flex-grow flex flex-col">
         <p className="text-xs text-muted-foreground mb-1">{product.stores?.name || 'Proveedor'}</p>
         <Link to={`/productos/${product.id}`}>
