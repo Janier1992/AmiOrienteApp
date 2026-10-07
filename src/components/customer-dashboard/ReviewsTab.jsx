@@ -14,6 +14,7 @@ const ReviewsTab = ({ userId }) => {
 
   useEffect(() => {
     fetchPendingReviews();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId]);
 
   const fetchPendingReviews = async () => {

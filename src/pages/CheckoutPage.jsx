@@ -6,7 +6,7 @@ import { useAuth } from '@/contexts/SupabaseAuthContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from '@/components/ui/use-toast';
-import { Loader2, ArrowLeft, CreditCard, AlertTriangle, MapPin, Tag, X, Truck } from 'lucide-react';
+import { Loader2, ArrowLeft, AlertTriangle, MapPin, Tag, X, Truck } from 'lucide-react';
 import orderService from '@/services/orderService';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';

@@ -5,7 +5,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Loader2, Plus, Minus, ShoppingBag } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
-import { Card } from '@/components/ui/card';
+
 
 // Mock menu for demo purposes
 const MOCK_MENU = [

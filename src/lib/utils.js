@@ -25,7 +25,7 @@
 
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
-import { CURRENCY_LOCALE, ORDER_STATUS, DELIVERY_STATUS } from './constants';
+import { CURRENCY_LOCALE } from './constants';
 
 // =============================================================================
 // UTILIDADES DE CSS
@@ -315,7 +315,7 @@ export function esEmailValido(email) {
 export function esTelefonoValido(telefono) {
 	if (!telefono || typeof telefono !== 'string') return false;
 	// Eliminar espacios y guiones
-	let limpio = telefono.replace(/[\s\-]/g, '');
+	let limpio = telefono.replace(/[\s-]/g, '');
 	// Eliminar prefijo +57 si existe
 	if (limpio.startsWith('+57')) {
 		limpio = limpio.substring(3);

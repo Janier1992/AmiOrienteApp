@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from '@/components/ui/dialog';
 import { supabase } from '@/lib/customSupabaseClient';
-import { MapPin, Plus, Trash2, Check } from 'lucide-react';
+import { MapPin, Plus, Trash2 } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
 
 const AddressesTab = ({ userId }) => {
@@ -15,6 +15,7 @@ const AddressesTab = ({ userId }) => {
 
   useEffect(() => {
     fetchAddresses();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId]);
 
   const fetchAddresses = async () => {

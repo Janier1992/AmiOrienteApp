@@ -45,6 +45,7 @@ const QuickGridProductView = ({ storeId }) => {
         if (products.length > 0 && (localProducts.length === 0 || modifiedRows.size === 0)) {
             setLocalProducts(products);
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [products, modifiedRows.size]);
 
     const handleCellChange = (id, field, value) => {

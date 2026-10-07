@@ -326,7 +326,7 @@ export function crearErrorValidacion(campo, mensaje = null) {
 // EXPORTACIÓN POR DEFECTO
 // =============================================================================
 
-export default {
+const errorHandler = {
     ErrorApp,
     traducirError,
     traducirErrorAuth,
@@ -340,3 +340,5 @@ export default {
     CODIGOS_ERROR,
     SEVERIDAD
 };
+
+export default errorHandler;

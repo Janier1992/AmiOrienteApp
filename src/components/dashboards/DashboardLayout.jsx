@@ -1,12 +1,12 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Helmet } from 'react-helmet';
-import { Button } from '@/components/ui/button';
-import { Menu, Home, LogOut, ChevronRight, X } from 'lucide-react'; // Imports shifted to Sheet component mostly
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { Link, useLocation } from 'react-router-dom';
-import { useAuth } from '@/contexts/SupabaseAuthContext';
-import { cn } from '@/lib/utils';
+
+ // Imports shifted to Sheet component mostly
+
+
+
+
 
 // Redefining Sidebar Internal Content here or importing it?
 // To avoid circular deps or complex prop drilling, let's keep the Navigation Logic localized or passed pure.

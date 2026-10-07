@@ -11,10 +11,11 @@ import { es } from 'date-fns/locale';
 const HotelReceptionTab = ({ storeId }) => {
   const [todaysActivity, setTodaysActivity] = useState({ arrivals: [], departures: [], staying: [] });
   const [stats, setStats] = useState({ available: 0, occupied: 0, cleaning: 0 });
-  const [loading, setLoading] = useState(true);
+  const [, setLoading] = useState(true);
 
   useEffect(() => {
     fetchData();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [storeId]);
 
   const fetchData = async () => {

@@ -1,20 +1,6 @@
 
 import { lazy } from 'react';
-import {
-    Utensils,
-    ShoppingBag,
-    Pill,
-    Shirt,
-    Wheat,
-    Hotel,
-    Package,
-    Scissors,
-    Store,
-    BookOpen,
-    Truck,
-    Palette,
-    Croissant
-} from 'lucide-react';
+import { Utensils, ShoppingBag, Pill, Shirt, Wheat, Hotel, Scissors, Store, BookOpen, Croissant } from 'lucide-react';
 import { useRestaurantStore } from '@/stores/useRestaurantStore';
 import { usePharmacyStore } from '@/stores/usePharmacyStore';
 import { useGroceryStore } from '@/stores/useGroceryStore';

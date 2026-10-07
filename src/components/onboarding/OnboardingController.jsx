@@ -143,6 +143,7 @@ export function OnboardingController() {
             checkAndTrigger('delivery_dashboard', true);
         }
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [pathname, user, role, completedGuides, skippedGuides]);
 
     return (

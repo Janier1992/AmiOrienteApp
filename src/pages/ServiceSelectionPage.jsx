@@ -33,7 +33,7 @@ const ServiceSelectionPage = () => {
       // User exists, check store
       setIsCheckingStore(true);
       try {
-        const { data: store, error } = await supabase
+        const { data: store } = await supabase
           .from('stores')
           .select('category')
           .eq('owner_id', user.id)

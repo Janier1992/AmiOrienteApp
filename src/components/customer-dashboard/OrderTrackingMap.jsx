@@ -27,7 +27,7 @@ const OrderTrackingMap = ({ delivery }) => {
 
     // Fetch initial location
     const fetchInitialLocation = async () => {
-      const { data, error } = await supabase
+      const { data } = await supabase
         .from('delivery_locations')
         .select('*')
         .eq('delivery_person_id', delivery.delivery_person_id)

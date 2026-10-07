@@ -1,20 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import {
-    Search,
-    ShoppingCart,
-    Plus,
-    Minus,
-    Trash2,
-    CreditCard,
-    User,
-    FileText,
-    CheckCircle,
-    X,
-    Loader2,
-    ChevronDown,
-    ChevronUp
-} from 'lucide-react';
+import { Search, ShoppingCart, Plus, Minus, Trash2, CheckCircle, X, Loader2 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';

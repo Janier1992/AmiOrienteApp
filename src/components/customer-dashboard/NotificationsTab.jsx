@@ -25,6 +25,7 @@ const NotificationsTab = ({ userId }) => {
       .subscribe();
 
     return () => supabase.removeChannel(channel);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId]);
 
   const fetchNotifications = async () => {

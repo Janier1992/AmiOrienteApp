@@ -1,14 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import {
-    Search,
-    Plus,
-    Loader2,
-    FileImage as ImageIcon,
-    Pencil,
-    Trash2,
-    Shirt,
-} from 'lucide-react';
+import { Search, Plus, Loader2, Pencil, Trash2, Shirt } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -128,7 +120,7 @@ const VARIANT_COLORS = [
  */
 const ClothingProductsView = () => {
     // Modular Store usage
-    const { products, fetchProducts, saveProduct, deleteProduct, isLoading } = useClothingStore();
+    const { products, fetchProducts, saveProduct, deleteProduct } = useClothingStore();
     const { store } = useStoreDashboard();
 
     const [searchTerm, setSearchTerm] = useState('');

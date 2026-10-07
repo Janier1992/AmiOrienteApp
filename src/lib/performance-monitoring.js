@@ -24,7 +24,6 @@ export const useRouteTransitionTimer = () => {
   const startTime = useRef(performance.now());
 
   useEffect(() => {
-    const duration = performance.now() - startTime.current;
     // Reset for next navigation
     startTime.current = performance.now();
   }, [location]);

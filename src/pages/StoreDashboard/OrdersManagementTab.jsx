@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from '@/components/ui/use-toast';
-import { Package, User, Clock, Truck, MapPin, Trash2, Pencil } from 'lucide-react';
+import { Package, User, Clock, MapPin, Trash2, Pencil } from 'lucide-react';
 import { useStoreDashboard } from '@/stores/useStoreDashboard';
 import LoadingSpinner from '@/components/shared/LoadingSpinner';
 

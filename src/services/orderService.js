@@ -39,7 +39,7 @@
  */
 
 import { supabase } from '@/lib/customSupabaseClient';
-import { ORDER_STATUS, SERVICE_FEE, DELIVERY_BASE_FEE } from '@/lib/constants';
+import { SERVICE_FEE, DELIVERY_BASE_FEE } from '@/lib/constants';
 
 // =============================================================================
 // CONSTANTES DEL MÓDULO

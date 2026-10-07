@@ -15,7 +15,7 @@ const HotelReservationsTab = ({ storeId }) => {
   const { user } = useAuth();
   const [reservations, setReservations] = useState([]);
   const [rooms, setRooms] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [selectedRes, setSelectedRes] = useState(null); // The reservation being viewed/edited
   
@@ -36,6 +36,7 @@ const HotelReservationsTab = ({ storeId }) => {
 
   useEffect(() => {
     fetchData();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [storeId]);
 
   const fetchData = async () => {

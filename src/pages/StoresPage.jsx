@@ -1,13 +1,13 @@
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { Search, MapPin, Star, Filter, ShoppingBag, Clock, Phone } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { supabase } from '@/lib/customSupabaseClient';
+
+
 import { customerService } from '@/services/customerService';
 import { SAMPLE_STORES, SERVICE_CATEGORIES_LIST } from '@/data/sample-data';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -114,6 +114,7 @@ const StoresPage = () => {
       fetchStores();
     }, 500);
     return () => clearTimeout(timer);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchTerm, selectedCategory, page]);
 
   const fetchStores = async () => {

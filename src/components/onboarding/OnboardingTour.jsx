@@ -1,15 +1,8 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useOnboardingStore } from '@/stores/useOnboardingStore';
 import { ONBOARDING_GUIDES } from '@/data/onboardingGuides';
 import { Button } from '@/components/ui/button';
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardFooter,
-    CardHeader,
-    CardTitle
-} from '@/components/ui/card';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { AnimatePresence, motion } from 'framer-motion';
 import { X, ChevronRight, ChevronLeft } from 'lucide-react';
 

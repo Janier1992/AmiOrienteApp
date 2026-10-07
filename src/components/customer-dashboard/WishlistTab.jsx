@@ -13,6 +13,7 @@ const WishlistTab = ({ userId }) => {
 
   useEffect(() => {
     fetchWishlist();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId]);
 
   const fetchWishlist = async () => {

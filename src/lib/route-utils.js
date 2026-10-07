@@ -1,5 +1,5 @@
 
-import { lazy, useEffect } from 'react';
+import { lazy } from 'react';
 
 // Registry to keep track of loaded and preloaded components
 const componentCache = new Map();

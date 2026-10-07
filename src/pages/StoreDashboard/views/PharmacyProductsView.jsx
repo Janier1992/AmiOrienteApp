@@ -91,10 +91,10 @@ const PharmacyProductCard = ({ product, onEdit, onDelete }) => {
  * Vista de Farmacia
  */
 const PharmacyProductsView = () => {
-    const { products, fetchProducts, saveProduct, deleteProduct, isLoading } = usePharmacyStore();
+    const { products, fetchProducts, saveProduct, deleteProduct } = usePharmacyStore();
     const { store } = useStoreDashboard();
 
-    const [searchTerm, setSearchTerm] = useState('');
+    const [searchTerm] = useState('');
     const [isAddOpen, setIsAddOpen] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [editingProduct, setEditingProduct] = useState(null);

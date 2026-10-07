@@ -1,16 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import {
-    Search,
-    Plus,
-    Grid,
-    List,
-    Loader2,
-    FileImage as ImageIcon,
-    Pencil,
-    Trash2,
-    Sprout
-} from 'lucide-react';
+import { Search, Plus, Loader2, Pencil, Trash2, Sprout } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -109,11 +99,9 @@ const AgroCropsView = () => {
         fetchCrops: fetchProducts,
         addCrop: addProduct,
         updateCrop: updateProduct,
-        deleteCrop: deleteProduct,
-        isLoadingCrops
+        deleteCrop: deleteProduct
     } = useAgroStore();
     const { store } = useStoreDashboard(); // Keep generic store only for store.id
-    const [viewMode, setViewMode] = useState('grid');
     const [searchTerm, setSearchTerm] = useState('');
 
     const [isAddOpen, setIsAddOpen] = useState(false);

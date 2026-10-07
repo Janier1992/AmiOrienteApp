@@ -14,6 +14,7 @@ const StoreCustomersTab = () => {
 
     useEffect(() => {
         if (store?.id) fetchCustomers(store.id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [store?.id]);
 
     if (isLoadingCustomers) return <div className="p-8 text-center text-muted-foreground">Cargando clientes...</div>;

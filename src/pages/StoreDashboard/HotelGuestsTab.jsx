@@ -14,6 +14,7 @@ const HotelGuestsTab = ({ storeId }) => {
 
   useEffect(() => {
     if (storeId) fetchGuests();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [storeId]);
 
   const fetchGuests = async () => {

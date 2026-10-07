@@ -1,7 +1,6 @@
 import React from 'react';
 import { AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useNavigate } from 'react-router-dom';
 
 /**
  * HOC para proteger componentes de dashboard según la categoría del negocio.
@@ -12,7 +11,6 @@ import { useNavigate } from 'react-router-dom';
  */
 export const withStoreCategory = (WrappedComponent, allowedCategories) => {
     const ProtectedComponent = (props) => {
-        const navigate = useNavigate();
         const { store } = props;
 
         // Si no hay tienda cargada, asumimos que el padre maneja el loading/error o no renderiza esto.

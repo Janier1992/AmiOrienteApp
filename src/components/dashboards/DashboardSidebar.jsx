@@ -2,10 +2,10 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { LogOut, Home, SquareStack, ChevronRight, Menu } from 'lucide-react'; // Added Menu icon for trigger
+import { LogOut, Home, ChevronRight, Menu } from 'lucide-react'; // Added Menu icon for trigger
 import { useAuth } from '@/contexts/SupabaseAuthContext';
 import { cn } from '@/lib/utils';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'; // Import Sheet
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'; // Import Sheet
 
 export const DashboardSidebar = ({ title, navItems }) => {
   const { signOut } = useAuth();

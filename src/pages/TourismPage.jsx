@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { Helmet } from 'react-helmet';
-import { Map, Hotel, Utensils, Landmark, Mountain, Star, Search, Loader2, MapPin, Navigation } from 'lucide-react';
+import { Map, Hotel, Utensils, Landmark, Mountain, Star, Search, Loader2, MapPin } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -90,7 +90,7 @@ const TourismPage = () => {
       
       try {
           // Fetch categories
-          const { data: categoriesData, error: categoriesError } = await supabase
+          const { data: categoriesData } = await supabase
             .from('tourism_categories')
             .select('*');
 

@@ -4,14 +4,15 @@ import { Button } from '@/components/ui/button';
 import { supabase } from '@/lib/customSupabaseClient';
 import { CreditCard, Plus, Trash2, ShieldCheck } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+
 
 const PaymentMethodsTab = ({ userId }) => {
   const [methods, setMethods] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [, setLoading] = useState(true);
 
   useEffect(() => {
     fetchMethods();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId]);
 
   const fetchMethods = async () => {

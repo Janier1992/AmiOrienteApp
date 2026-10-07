@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
-import { Menu, Home, ShoppingBag, Store, Map, User, LogIn, MoreHorizontal, ShieldCheck } from 'lucide-react';
+import { Menu, Home, ShoppingBag, Store, Map, User, MoreHorizontal, ShieldCheck } from 'lucide-react';
 import { useAuth } from '@/contexts/SupabaseAuthContext';
 import { useIsAdmin } from '@/hooks/use-is-admin';
 
