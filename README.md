@@ -137,7 +137,7 @@ Si no eres programador, sigue estos 3 pasos sencillos para ver la aplicación fu
 
 ### 1. Preparar el Entorno
 Necesitas tener instalado un programa llamado **Node.js** (es el motor que hace funcionar la app).
-*   Descárgalo e instálalo desde aquí: [Node.js Oficial](https://nodejs.org/) (Descarga la versión "LTS").
+*   Descárgalo e instálalo desde aquí: [Node.js Oficial](https://nodejs.org/). La versión que usa el proyecto está en `.nvmrc` (Node 20).
 
 ### 2. Instalar las Dependencias
 Abre la carpeta del proyecto en una terminal (o Símbolo del Sistema) y escribe este comando:
@@ -146,12 +146,15 @@ npm install
 ```
 *Verás una barra de carga. Espera a que termine.*
 
-### 3. ¡Iniciar la App!
+### 3. Configurar las variables de entorno
+Copia `.env.example` a `.env` y completa la URL y la clave pública (anon) de tu proyecto Supabase (ver sección *Variables de Entorno*). Sin este archivo la app no arranca.
+
+### 4. ¡Iniciar la App!
 Una vez termine de instalar, escribe este comando para encender el servidor:
 ```bash
 npm run dev
 ```
-Te aparecerá un enlace como `http://localhost:5173`. ¡Haz clic ahí o copialo en tu navegador para usar AmiOriente!
+Te aparecerá un enlace como `http://localhost:3000`. ¡Haz clic ahí o copialo en tu navegador para usar AmiOriente!
 
 ### Para Generar la Versión Final (Producción)
 Si quieres subir la app a internet, usa este comando:
@@ -160,25 +163,31 @@ npm run build
 ```
 Esto creará una carpeta llamada `dist` lista para subir a cualquier hosting.
 
-### 4. Despliegue en GitHub Pages
-El proyecto está configurado para desplegarse en GitHub Pages usando rutas absolutas.
-1.  Asegúrate de que `vite.config.js` tenga `base: '/AmiOrienteApp/'`.
-2.  Ejecuta el script de despliegue manual (o usa Actions):
-    ```bash
-    cd dist
-    git init
-    git add .
-    git commit -m "Deploy"
-    git push -f https://github.com/Janier1992/AmiOrienteApp.git HEAD:gh-pages
-    ```
+### Calidad antes de entregar cambios
+```bash
+npm run lint   # ESLint (debe terminar sin errores)
+npm test       # Pruebas unitarias (Vitest)
+npm run build  # Compilación de producción
+```
+
+### Despliegue en GitHub Pages
+El despliegue es automático: cada push a `main` ejecuta `.github/workflows/deploy.yml`, que corre lint, tests y build y publica `dist/`.
+1.  En GitHub → *Settings → Secrets and variables → Actions* define `VITE_SUPABASE_URL` y `VITE_SUPABASE_ANON_KEY`.
+2.  La app usa `HashRouter`, por lo que funciona bajo el subdirectorio `/AmiOrienteApp/` sin configuración extra.
+3.  En Supabase → *Authentication → URL Configuration* agrega la URL publicada (por ejemplo `https://janier1992.github.io/AmiOrienteApp/`) a *Redirect URLs*; si no, los enlaces de confirmación de correo y de recuperación de contraseña no funcionarán.
 
 ---
 
 ## 🔒 Variables de Entorno
-El proyecto requiere un archivo `.env` en la raíz para conectar con Supabase:
+El proyecto requiere un archivo `.env` en la raíz (nunca se sube a git; hay un modelo en `.env.example`):
 ```env
+VITE_SUPABASE_URL=https://tu-proyecto.supabase.co
 VITE_SUPABASE_ANON_KEY=tu_clave_anonima
 ```
+La clave *anon* es pública por diseño: la seguridad real la dan las políticas RLS de Supabase. **Nunca** pongas la clave `service_role` en el frontend.
+
+### Base de datos
+Los cambios de esquema y políticas RLS están como migraciones SQL en `database_updates/` (prefijo con la fecha). Aplícalas en orden en el editor SQL de Supabase. Ver `docs/ESTADO_DEL_PROYECTO.md` para el estado y los pendientes.
 
 ---
 
