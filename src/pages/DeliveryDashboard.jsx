@@ -57,7 +57,7 @@ const DeliverySidebar = ({ isOpen, onClose, activeTab, onTabChange, isConnected,
 
           <div className="p-4 space-y-4 flex-1">
             <div id="delivery-status-card" className="p-4 bg-muted/30 rounded-lg border">
-              <p className="text-sm font-medium mb-2">Estado: <span className={isConnected ? "text-green-600" : "text-gray-500"}>{isConnected ? "Conectado" : "Desconectado"}</span></p>
+              <p className="text-sm font-medium mb-2">Estado: <span className={isConnected ? "text-green-700 dark:text-green-400" : "text-muted-foreground"}>{isConnected ? "Conectado" : "Desconectado"}</span></p>
               <Button
                 onClick={onConnect}
                 size="sm"
@@ -100,7 +100,7 @@ const DeliverySidebar = ({ isOpen, onClose, activeTab, onTabChange, isConnected,
             <Button variant="outline" className="w-full justify-start" onClick={() => navigate('/')}>
               <Home className="mr-2 h-4 w-4" /> Ir al inicio
             </Button>
-            <Button variant="ghost" className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50" onClick={onLogout}>
+            <Button variant="ghost" className="w-full justify-start text-red-600 dark:text-red-400 hover:text-red-700 hover:bg-red-50" onClick={onLogout}>
               <LogOut className="mr-2 h-4 w-4" /> Cerrar Sesión
             </Button>
           </div>

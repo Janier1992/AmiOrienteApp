@@ -9,19 +9,19 @@ const TermsPage = () => {
       <Helmet>
         <title>Términos y Condiciones - Domicilios MiOriente</title>
       </Helmet>
-      <div className="bg-gray-50 min-h-screen">
-        <header className="bg-white shadow-md sticky top-0 z-30">
+      <div className="bg-background min-h-screen">
+        <header className="bg-card shadow-md sticky top-0 z-30">
           <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between h-16">
               <Link to="/" className="flex items-center space-x-2">
                 <ShoppingBag className="h-8 w-8 text-primary" />
-                <span className="text-xl font-bold text-gray-800">Domicilios - MiOriente</span>
+                <span className="text-xl font-bold text-foreground">Domicilios - MiOriente</span>
               </Link>
             </div>
           </div>
         </header>
         <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="bg-white p-8 rounded-lg shadow">
+          <div className="bg-card p-8 rounded-lg shadow">
             <h1 className="text-3xl font-bold mb-6">Términos y Condiciones</h1>
             <div className="prose max-w-none">
               <p><strong>Última actualización:</strong> 18 de julio de 2025</p>

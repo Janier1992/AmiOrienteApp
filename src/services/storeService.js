@@ -167,6 +167,36 @@ export const storeService = {
   },
 
   /**
+   * Negocio que opera el usuario: el suyo si es dueño; si no, el primero del
+   * que es miembro del equipo (colaborador).
+   *
+   * @param {string} idUsuario - UUID del usuario
+   * @returns {Promise<Object|null>} Tienda (con `viewerRole`: 'owner' | 'admin' | 'editor') o null
+   */
+  async obtenerTiendaDelUsuario(idUsuario) {
+    validarId(idUsuario, 'ID del usuario');
+
+    const propia = await this.obtenerTiendaPorPropietario(idUsuario);
+    if (propia) return { ...propia, viewerRole: 'owner' };
+
+    try {
+      const { data: membresia, error } = await supabase
+        .from('store_members')
+        .select('role, stores ( *, service_categories(name) )')
+        .eq('user_id', idUsuario)
+        .order('created_at', { ascending: true })
+        .limit(1)
+        .maybeSingle();
+
+      if (error) manejarErrorSupabase(error, ERROR_TIENDA_NO_ENCONTRADA);
+      if (!membresia?.stores) return null;
+      return { ...membresia.stores, viewerRole: membresia.role };
+    } catch (error) {
+      manejarErrorSupabase(error, ERROR_TIENDA_NO_ENCONTRADA);
+    }
+  },
+
+  /**
    * Actualiza la información de una tienda.
    * 
    * @param {string} idTienda - UUID de la tienda

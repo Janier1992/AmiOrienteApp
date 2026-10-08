@@ -193,7 +193,7 @@ const TourismPage = () => {
             >
               <div className="absolute inset-0 bg-white/20 blur-xl rounded-full group-hover:bg-white/30 transition-all"></div>
               <div className="relative flex items-center bg-white rounded-full shadow-2xl p-2">
-                <Search className="h-6 w-6 text-slate-400 ml-3" />
+                <Search className="h-6 w-6 text-slate-500 ml-3" />
                 <Input 
                   type="text" 
                   placeholder="¿Qué buscas? (Ej: Hotel Cannua, Iglesia...)"

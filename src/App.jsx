@@ -151,7 +151,7 @@ const AppContent = () => {
 
               {/* Protected / Conditional Routes */}
               {isStoreUser && <Route path="/mas" element={<MoreServicesPage />} />}
-              {isStoreUser && <Route path="/precios" element={<PricingPage />} />}
+              <Route path="/precios" element={<PricingPage />} />
 
               {/* Auth Routes */}
               <Route path="/tienda/login" element={<StoreLogin />} />

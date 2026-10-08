@@ -73,7 +73,7 @@ const WishlistTab = ({ userId }) => {
               const product = item.products;
               return (
                 <div key={item.id} className="border rounded-lg overflow-hidden flex flex-col">
-                  <div className="h-40 overflow-hidden bg-gray-100">
+                  <div className="h-40 overflow-hidden bg-muted">
                     <img 
                       src={product.image_url || 'https://placehold.co/400x300'} 
                       alt={product.name}

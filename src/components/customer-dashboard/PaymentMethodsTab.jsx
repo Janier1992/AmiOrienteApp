@@ -60,13 +60,13 @@ const PaymentMethodsTab = ({ userId }) => {
           {methods.map((method) => (
             <div key={method.id} className="flex items-center justify-between p-4 border rounded-lg bg-card">
               <div className="flex items-center gap-4">
-                <div className="bg-slate-100 p-2 rounded">
-                  <CreditCard className="h-6 w-6 text-slate-700" />
+                <div className="bg-muted p-2 rounded">
+                  <CreditCard className="h-6 w-6 text-foreground" />
                 </div>
                 <div>
                   <p className="font-semibold flex items-center gap-2">
                     {method.brand} •••• {method.last_four}
-                    {method.is_default && <span className="text-xs bg-green-100 text-green-700 px-2 rounded-full">Principal</span>}
+                    {method.is_default && <span className="text-xs bg-green-100 text-green-700 dark:text-green-400 px-2 rounded-full">Principal</span>}
                   </p>
                   <p className="text-sm text-muted-foreground">Expira: {method.exp_month}/{method.exp_year}</p>
                 </div>

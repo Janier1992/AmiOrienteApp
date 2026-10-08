@@ -60,7 +60,7 @@ const NotificationsTab = ({ userId }) => {
     switch(type) {
         case 'order': return <Package className="h-5 w-5 text-blue-500" />;
         case 'promo': return <Tag className="h-5 w-5 text-purple-500" />;
-        default: return <Info className="h-5 w-5 text-gray-500" />;
+        default: return <Info className="h-5 w-5 text-muted-foreground" />;
     }
   };
 

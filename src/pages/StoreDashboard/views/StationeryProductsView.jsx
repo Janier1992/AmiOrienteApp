@@ -46,7 +46,7 @@ const StationeryProductCard = ({ product, onEdit, onDelete }) => {
                         className="max-h-full max-w-full object-contain mix-blend-multiply"
                     />
                 ) : (
-                    <div className="flex flex-col items-center text-gray-400">
+                    <div className="flex flex-col items-center text-gray-500">
                         <ImageIcon className="h-10 w-10 mb-2" />
                         <span className="text-xs">Sin imagen</span>
                     </div>
@@ -89,7 +89,7 @@ const StationeryProductCard = ({ product, onEdit, onDelete }) => {
                 <div className="flex items-center gap-2 mt-2">
                     <span className="text-lg font-bold text-slate-900">${Number(product.price).toLocaleString()}</span>
                     {product.discount > 0 && (
-                        <span className="text-sm text-gray-400 line-through">
+                        <span className="text-sm text-gray-500 line-through">
                             ${(product.price * (1 + product.discount / 100)).toLocaleString()}
                         </span>
                     )}
@@ -258,7 +258,7 @@ const StationeryProductsView = () => {
 
             <div className="flex flex-col md:flex-row justify-between items-center gap-4 bg-white p-2 rounded-2xl shadow-sm border border-gray-100">
                 <div className="relative w-full md:w-96">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
                     <Input
                         placeholder="Buscar por nombre, SKU o categoría..."
                         className="pl-10 bg-gray-50 border-transparent focus:bg-white transition-colors"
@@ -367,7 +367,7 @@ const StationeryProductsView = () => {
                     </div>
                 ))}
                 {filteredProducts.length === 0 && (
-                    <div className="col-span-full py-12 text-center text-gray-400">
+                    <div className="col-span-full py-12 text-center text-gray-500">
                         No se encontraron productos. Añade uno nuevo para empezar.
                     </div>
                 )}

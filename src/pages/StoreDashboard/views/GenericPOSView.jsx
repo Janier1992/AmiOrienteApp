@@ -31,7 +31,7 @@ const ProductCard = ({ product, onAddToCart }) => {
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                     />
                 ) : (
-                    <div className="w-full h-full flex items-center justify-center text-slate-400">
+                    <div className="w-full h-full flex items-center justify-center text-slate-500">
                         <ShoppingCart className="h-8 w-8" />
                     </div>
                 )}
@@ -72,7 +72,7 @@ const CartPanel = ({ cart, updateCartQty, removeFromCart, clearCart, subtotal, t
                     <ShoppingCart className="h-5 w-5" />
                     Orden Actual
                 </h2>
-                <p className="text-xs text-slate-400">{cart.length} ítems</p>
+                <p className="text-xs text-slate-500">{cart.length} ítems</p>
             </div>
             {onCloseMobile && (
                 <Button variant="ghost" size="icon" onClick={onCloseMobile} className="lg:hidden">
@@ -121,7 +121,7 @@ const CartPanel = ({ cart, updateCartQty, removeFromCart, clearCart, subtotal, t
                     </div>
                 ))}
                 {cart.length === 0 && (
-                    <div className="text-center py-10 text-slate-400 text-sm">
+                    <div className="text-center py-10 text-slate-500 text-sm">
                         El carrito está vacío
                     </div>
                 )}
@@ -255,7 +255,7 @@ const GenericPOSView = ({ useStore, title = "Punto de Venta" }) => {
                         </h1>
                     </div>
                     <div className="relative w-full sm:w-72">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
                         <Input
                             placeholder="Buscar producto..."
                             className="pl-9 bg-slate-50"
@@ -272,7 +272,7 @@ const GenericPOSView = ({ useStore, title = "Punto de Venta" }) => {
                         ))}
                     </div>
                     {filteredProducts.length === 0 && (
-                        <div className="h-full flex flex-col items-center justify-center text-slate-400 min-h-[200px]">
+                        <div className="h-full flex flex-col items-center justify-center text-slate-500 min-h-[200px]">
                             <Search className="h-12 w-12 mb-2 opacity-20" />
                             <p>No se encontraron productos</p>
                         </div>
@@ -369,7 +369,7 @@ const GenericPOSView = ({ useStore, title = "Punto de Venta" }) => {
             <Dialog open={invoiceModalOpen} onOpenChange={setInvoiceModalOpen}>
                 <DialogContent className="sm:max-w-[400px]">
                     <DialogHeader>
-                        <DialogTitle className="flex items-center gap-2 text-green-600"><CheckCircle className="h-6 w-6" /> Venta Exitosa</DialogTitle>
+                        <DialogTitle className="flex items-center gap-2 text-green-700"><CheckCircle className="h-6 w-6" /> Venta Exitosa</DialogTitle>
                     </DialogHeader>
                     {lastOrder && (
                         <div className="bg-slate-50 p-4 rounded-lg text-sm space-y-3 font-mono border">

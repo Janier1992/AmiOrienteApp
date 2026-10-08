@@ -215,7 +215,7 @@ const KitchenMaintenanceView = ({ storeId }) => {
                         {/* List */}
                         <div className="border rounded-lg p-4 overflow-y-auto space-y-3 bg-slate-50">
                             <h4 className="font-semibold text-sm mb-2 flex items-center"><History className="h-4 w-4 mr-2" /> Historial</h4>
-                            {isLoadingLogs ? <p className="text-xs text-gray-500">Cargando...</p> : logs.length === 0 ? <p className="text-xs text-gray-400 italic">Sin registros.</p> : (
+                            {isLoadingLogs ? <p className="text-xs text-gray-500">Cargando...</p> : logs.length === 0 ? <p className="text-xs text-gray-500 italic">Sin registros.</p> : (
                                 logs.map(log => (
                                     <div key={log.id} className="bg-white p-3 rounded border text-sm shadow-sm">
                                         <div className="flex justify-between font-semibold text-xs text-gray-500 mb-1">

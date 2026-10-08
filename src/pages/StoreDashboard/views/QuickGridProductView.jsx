@@ -196,7 +196,7 @@ const QuickGridProductView = ({ storeId }) => {
                     <Button
                         onClick={handleSaveBatch}
                         disabled={isSaving || modifiedRows.size === 0}
-                        className={`${modifiedRows.size > 0 ? 'bg-green-600 hover:bg-green-700' : 'bg-gray-200 text-gray-400'}`}
+                        className={`${modifiedRows.size > 0 ? 'bg-green-700 hover:bg-green-800' : 'bg-gray-200 text-gray-500'}`}
                         size="sm"
                     >
                         {isSaving ? <RefreshCw className="h-4 w-4 animate-spin mr-2" /> : <Save className="h-4 w-4 mr-2" />}

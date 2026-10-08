@@ -1,61 +1,29 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Link } from 'react-router-dom';
+import { planService } from '@/services/planService';
+import { FALLBACK_PLANS, CUSTOM_PLAN_ID, describeCommission, describePrice, describeTeamLimit } from '@/config/plans';
 
-const plans = [
-  {
-    name: 'Básico',
-    price: 'Gratis',
-    frequency: '+ 22% por venta',
-    description: 'Ideal para tiendas que recién comienzan y quieren vender en línea sin costo inicial.',
-    features: [
-      'Listado de productos ilimitado',
-      'Gestión de pedidos',
-      'Panel de control de la tienda',
-      'Pagos en efectivo y transferencia (pago en línea próximamente)',
-    ],
-    cta: 'Comienza Ahora',
-    path: '/tienda/registro',
-    isFeatured: false,
-  },
-  {
-    name: 'Profesional',
-    price: '$59,900',
-    frequency: '/mes + 15% por venta',
-    description: 'Para negocios en crecimiento que buscan optimizar su operación y reducir costos.',
-    features: [
-      'Todo lo del plan Básico',
-      'Comisión por venta reducida (15%)',
-      'Control de inventario avanzado',
-      'Administración de equipo y roles (próximamente)',
-      'Soporte prioritario',
-    ],
-    cta: 'Elegir Profesional',
-    path: '/tienda/dashboard/suscripcion',
-    isFeatured: true,
-  },
-  {
-    name: 'Empresarial',
-    price: 'Personalizado',
-    frequency: '',
-    description: 'Soluciones a medida para grandes volúmenes de venta y necesidades específicas.',
-    features: [
-      'Todo lo del plan Profesional',
-      'Comisiones personalizadas',
-      'Agente de IA para atención al cliente',
-      'Automatización de marketing',
-      'Gerente de cuenta dedicado',
-    ],
-    cta: 'Contactar a Ventas',
-    path: '/contacto',
-    isFeatured: false,
-  },
-];
+const FEATURED_PLAN_ID = 'pro';
+
+const planCta = (plan) => {
+  if (plan.id === CUSTOM_PLAN_ID) return { label: 'Contactar a Ventas', path: '/contacto' };
+  if (plan.id === FEATURED_PLAN_ID) return { label: `Elegir ${plan.name}`, path: '/tienda/dashboard/suscripcion' };
+  return { label: 'Comienza Ahora', path: '/tienda/registro' };
+};
 
 const PricingPage = () => {
+  const [plans, setPlans] = useState(FALLBACK_PLANS);
+
+  useEffect(() => {
+    let active = true;
+    planService.listarPlanes().then((list) => active && setPlans(list));
+    return () => { active = false; };
+  }, []);
+
   return (
     <>
       <Helmet>
@@ -74,9 +42,13 @@ const PricingPage = () => {
           </div>
 
           <div className="mt-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {plans.map((plan) => (
-              <Card key={plan.name} className={`flex flex-col bg-card text-card-foreground border-border ${plan.isFeatured ? 'border-primary border-2 shadow-2xl' : ''}`}>
-                {plan.isFeatured && (
+            {plans.map((plan) => {
+              const isFeatured = plan.id === FEATURED_PLAN_ID;
+              const price = describePrice(plan);
+              const cta = planCta(plan);
+              return (
+              <Card key={plan.id} className={`flex flex-col bg-card text-card-foreground border-border ${isFeatured ? 'border-primary border-2 shadow-2xl' : ''}`}>
+                {isFeatured && (
                   <div className="py-1 px-4 bg-primary text-primary-foreground text-sm font-semibold rounded-t-lg text-center">
                     Más Popular
                   </div>
@@ -87,11 +59,14 @@ const PricingPage = () => {
                 </CardHeader>
                 <CardContent className="flex-grow">
                   <div className="text-center mb-8">
-                    <span className="text-5xl font-bold">{plan.price}</span>
-                    <span className="text-muted-foreground">{plan.frequency}</span>
+                    <span className="text-5xl font-bold">{price.amount}</span>
+                    <span className="text-muted-foreground">{price.suffix}</span>
+                    <p className="mt-2 text-sm text-muted-foreground">
+                      {describeCommission(plan)} · {describeTeamLimit(plan)}
+                    </p>
                   </div>
                   <ul className="space-y-4">
-                    {plan.features.map((feature) => (
+                    {(plan.features || []).map((feature) => (
                       <li key={feature} className="flex items-start">
                         <Check className="h-5 w-5 text-primary mr-3 mt-1 flex-shrink-0" />
                         <span>{feature}</span>
@@ -100,14 +75,15 @@ const PricingPage = () => {
                   </ul>
                 </CardContent>
                 <CardFooter>
-                  <Link to={plan.path} className="w-full">
-                    <Button size="lg" className="w-full" variant={plan.isFeatured ? 'default' : 'outline'}>
-                      {plan.cta}
+                  <Link to={cta.path} className="w-full">
+                    <Button size="lg" className="w-full" variant={isFeatured ? 'default' : 'outline'}>
+                      {cta.label}
                     </Button>
                   </Link>
                 </CardFooter>
               </Card>
-            ))}
+              );
+            })}
           </div>
         </div>
       </div>
