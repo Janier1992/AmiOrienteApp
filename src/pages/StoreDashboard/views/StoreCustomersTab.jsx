@@ -43,7 +43,7 @@ const StoreCustomersTab = () => {
                                         <Badge variant="secondary" className="text-xs font-normal">
                                             <ShoppingBag className="h-3 w-3 mr-1" /> {customer.total_orders} pedidos
                                         </Badge>
-                                        <span className="text-xs font-bold text-green-600">
+                                        <span className="text-xs font-bold text-green-700">
                                             ${Number(customer.total_spent).toLocaleString()}
                                         </span>
                                     </div>

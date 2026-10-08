@@ -350,7 +350,7 @@ const CheckoutPage = () => {
                       <span className="text-sm font-normal text-muted-foreground">Subtotal: ${group.total.toLocaleString()}</span>
                     </h3>
                     {shippingZones[group.store_id]?.length > 0 && (
-                      <div className="mb-3 flex flex-col sm:flex-row gap-2 bg-white p-3 rounded border">
+                      <div className="mb-3 flex flex-col sm:flex-row gap-2 bg-card p-3 rounded border">
                         <div className="flex items-center gap-1 text-xs text-muted-foreground shrink-0">
                           <Truck className="h-4 w-4" /> Envío:
                         </div>
@@ -386,7 +386,7 @@ const CheckoutPage = () => {
                     )}
                     <div className="space-y-2">
                       {group.items.map(item => (
-                        <div key={item.id} className="flex justify-between items-center text-sm bg-white p-2 rounded border-b last:border-0 border-slate-100">
+                        <div key={item.id} className="flex justify-between items-center text-sm bg-card p-2 rounded border-b last:border-0 border-slate-100">
                           <div className="flex items-center gap-3">
                             {item.image_url && <img src={item.image_url} alt={item.name} className="h-10 w-10 object-cover rounded" />}
                             <div>
@@ -414,7 +414,7 @@ const CheckoutPage = () => {
                   <div className="flex items-center justify-between p-3 border border-green-200 bg-green-50 rounded-md">
                     <div>
                       <p className="font-semibold text-green-800">{appliedCoupon.code}</p>
-                      <p className="text-xs text-green-700">-${appliedCoupon.amount.toLocaleString()} en {appliedCoupon.store_name}</p>
+                      <p className="text-xs text-green-700 dark:text-green-400">-${appliedCoupon.amount.toLocaleString()} en {appliedCoupon.store_name}</p>
                     </div>
                     <Button variant="ghost" size="icon" onClick={handleRemoveCoupon}>
                       <X className="h-4 w-4" />
@@ -471,7 +471,7 @@ const CheckoutPage = () => {
                     </div>
                   )}
                   {appliedCoupon && (
-                    <div className="flex justify-between text-green-600">
+                    <div className="flex justify-between text-green-700 dark:text-green-400">
                       <span>Descuento ({appliedCoupon.code})</span>
                       <span>-${appliedCoupon.amount.toLocaleString()}</span>
                     </div>
@@ -485,7 +485,7 @@ const CheckoutPage = () => {
                 <div className="pt-4">
                   <Button
                     onClick={handleProcessOrder}
-                    className="w-full bg-green-600 hover:bg-green-700"
+                    className="w-full bg-green-700 text-white hover:bg-green-800"
                     size="lg"
                     disabled={processing}
                   >

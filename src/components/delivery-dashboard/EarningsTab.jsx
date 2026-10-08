@@ -58,10 +58,10 @@ const EarningsTab = ({ history }) => {
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">Ganancias Totales</CardTitle>
-                        <DollarSign className="h-4 w-4 text-green-600" />
+                        <DollarSign className="h-4 w-4 text-green-700 dark:text-green-400" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold text-green-600">${stats.totalEarnings.toLocaleString()}</div>
+                        <div className="text-2xl font-bold text-green-700 dark:text-green-400">${stats.totalEarnings.toLocaleString()}</div>
                         <p className="text-xs text-muted-foreground">
                             +${stats.todayEarnings.toLocaleString()} hoy
                         </p>

@@ -47,9 +47,9 @@ const CouponsTab = () => {
                         <div className="flex justify-between items-start mb-4">
                             <div>
                                 <h3 className="font-bold text-lg text-primary">{coupon.code}</h3>
-                                <p className="text-sm text-gray-600">{coupon.stores?.name}</p>
+                                <p className="text-sm text-muted-foreground">{coupon.stores?.name}</p>
                             </div>
-                            <div className="bg-white p-2 rounded-lg shadow-sm border">
+                            <div className="bg-card p-2 rounded-lg shadow-sm border">
                                 <span className="font-bold text-xl text-primary">
                                     {coupon.discount_type === 'percentage' ? `${coupon.value}%` : `$${coupon.value}`}
                                 </span>

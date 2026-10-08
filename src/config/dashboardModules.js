@@ -38,6 +38,7 @@ export const COMMON_MODULE_LABELS = {
     descuentos: 'Descuentos',
     analiticas: 'Analíticas',
     pagos: 'Pagos',
+    equipo: 'Equipo',
     suscripcion: 'Mi Plan',
 };
 

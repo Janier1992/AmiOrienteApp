@@ -12,7 +12,7 @@
 set -u
 cd "$(dirname "$0")/../.."
 DIR=tools/db-test
-MIGRATION=database_updates/20261008_security_critical_fixes.sql
+MIGRATIONS="database_updates/20261008_security_critical_fixes.sql database_updates/20261008_delivery_status_rpc.sql database_updates/20261009_teams_plans_commissions.sql"
 PSQL="psql -q -v ON_ERROR_STOP=0"
 fails=0
 
@@ -21,8 +21,10 @@ for phase in before after; do
   $PSQL -d postgres -c "DROP DATABASE IF EXISTS $db" -c "CREATE DATABASE $db" >/dev/null 2>&1
   $PSQL -d "$db" -v ON_ERROR_STOP=1 -f "$DIR/replica.sql" >/dev/null || { echo "Error cargando la réplica"; exit 2; }
   if [ "$phase" = after ]; then
-    $PSQL -d "$db" -v ON_ERROR_STOP=1 -f "$MIGRATION" >/dev/null || { echo "Error aplicando la migración"; exit 2; }
-    $PSQL -d "$db" -v ON_ERROR_STOP=1 -f "$MIGRATION" >/dev/null || { echo "La migración no es idempotente"; exit 2; }
+    for m in $MIGRATIONS; do
+      $PSQL -d "$db" -v ON_ERROR_STOP=1 -f "$m" >/dev/null || { echo "Error aplicando $m"; exit 2; }
+      $PSQL -d "$db" -v ON_ERROR_STOP=1 -f "$m" >/dev/null || { echo "$m no es idempotente"; exit 2; }
+    done
     attack=false; after=true; titulo="DESPUÉS de la migración (ataques bloqueados)"
   else
     attack=true; after=false; titulo="ANTES de la migración (ataques funcionan = vulnerabilidad real)"

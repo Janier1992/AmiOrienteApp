@@ -16,6 +16,7 @@ import PaymentMethodsTab from '@/components/customer-dashboard/PaymentMethodsTab
 import NotificationsTab from '@/components/customer-dashboard/NotificationsTab';
 import ReviewsTab from '@/components/customer-dashboard/ReviewsTab';
 import CouponsTab from '@/components/customer-dashboard/CouponsTab';
+import TeamMembershipBanner from '@/components/customer-dashboard/TeamMembershipBanner';
 
 const CustomerDashboard = () => {
   const navigate = useNavigate();
@@ -182,6 +183,7 @@ const CustomerDashboard = () => {
 
       <main className="flex-1 p-4 md:p-8 overflow-y-auto max-h-screen mt-14 md:mt-0">
         <div className="max-w-5xl mx-auto space-y-6">
+          <TeamMembershipBanner userId={user.id} />
           {activeTab === 'pedidos' && <OrdersTab orders={orders} />}
           {activeTab === 'perfil' && profile && (
             <ProfileTab

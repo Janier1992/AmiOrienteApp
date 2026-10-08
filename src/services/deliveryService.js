@@ -245,47 +245,28 @@ export const deliveryService = {
     validarId(idDomiciliario, 'ID del domiciliario');
 
     try {
-      // Verificar que el pedido no esté ya asignado
-      const { data: entregaExistente } = await supabase
-        .from('deliveries')
-        .select('id')
-        .eq('order_id', idPedido)
-        .not('status', 'eq', ESTADOS_ENTREGA.ENTREGADO)
-        .maybeSingle();
-
-      if (entregaExistente) {
-        throw new Error('Este pedido ya fue tomado por otro domiciliario');
-      }
-
-      // Crear registro de entrega
-      const { data: nuevaEntrega, error } = await supabase
-        .from('deliveries')
-        .insert({
-          order_id: idPedido,
-          delivery_person_id: idDomiciliario,
-          status: ESTADOS_ENTREGA.ASIGNADO,
-          assigned_at: new Date().toISOString()
-        })
-        .select()
-        .single();
+      // La función accept_order (SECURITY DEFINER) valida en el servidor que quien
+      // llama sea el domiciliario, que el pedido esté disponible y que nadie más
+      // lo haya tomado; crea la entrega y pone el pedido "En curso" en una sola
+      // transacción (el domiciliario no tiene permiso de escribir en orders).
+      const { error } = await supabase.rpc('accept_order', {
+        order_id_to_accept: idPedido,
+        delivery_person_id_to_assign: idDomiciliario
+      });
 
       if (error) {
-        // El índice único de la base de datos (ver database_updates/
-        // 20261007_unique_active_delivery_per_order.sql) impide que dos
-        // domiciliarios tomen el mismo pedido aunque acepten a la vez.
         if (error.code === '23505') {
           throw new Error('Este pedido ya fue tomado por otro domiciliario');
         }
         manejarError(error, 'Error al aceptar la entrega');
       }
 
-      // Actualizar estado del pedido
-      await supabase
-        .from('orders')
-        .update({ status: 'En curso' })
-        .eq('id', idPedido);
-
-      return nuevaEntrega;
+      const { data: entrega } = await supabase
+        .from('deliveries')
+        .select('*')
+        .eq('order_id', idPedido)
+        .maybeSingle();
+      return entrega;
     } catch (error) {
       manejarError(error, 'Error al aceptar la entrega');
     }
@@ -321,35 +302,16 @@ export const deliveryService = {
     }
 
     try {
-      const actualizaciones = { status: nuevoEstado };
-
-      // Si está entregado, registrar hora de entrega
-      if (nuevoEstado === ESTADOS_ENTREGA.ENTREGADO) {
-        actualizaciones.delivered_at = new Date().toISOString();
-      }
-
-      // Si está recogido, registrar hora de recogida
-      if (nuevoEstado === ESTADOS_ENTREGA.RECOGIDO) {
-        actualizaciones.picked_up_at = new Date().toISOString();
-      }
-
-      const { data: entregaActualizada, error } = await supabase
-        .from('deliveries')
-        .update(actualizaciones)
-        .eq('order_id', idPedido)
-        .select()
-        .single();
+      // update_delivery_status valida que la entrega sea del domiciliario, que el
+      // estado solo avance, registra las horas y, al entregar, cierra también el
+      // pedido (el domiciliario no puede escribir en orders directamente).
+      const { data: entregaActualizada, error } = await supabase.rpc('update_delivery_status', {
+        p_order_id: idPedido,
+        p_status: nuevoEstado
+      });
 
       if (error) {
         manejarError(error, ERRORES.ERROR_ACTUALIZACION);
-      }
-
-      // Si se entregó, actualizar también el estado del pedido
-      if (nuevoEstado === ESTADOS_ENTREGA.ENTREGADO) {
-        await supabase
-          .from('orders')
-          .update({ status: 'Entregado' })
-          .eq('id', idPedido);
       }
 
       return entregaActualizada;

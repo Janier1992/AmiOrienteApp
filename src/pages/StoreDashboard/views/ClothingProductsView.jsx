@@ -87,7 +87,7 @@ const ClothingProductCard = ({ product, onEdit, onDelete }) => {
                             </span>
                         ))
                     ) : (
-                        <span className="text-[10px] text-gray-400 italic">Talla única</span>
+                        <span className="text-[10px] text-gray-500 italic">Talla única</span>
                     )}
                 </div>
 
@@ -95,7 +95,7 @@ const ClothingProductCard = ({ product, onEdit, onDelete }) => {
                     <div className="flex flex-col">
                         <span className="text-sm font-medium text-slate-900">${Number(product.price).toLocaleString()}</span>
                     </div>
-                    <span className="text-xs text-gray-400">Total: {product.stock} un.</span>
+                    <span className="text-xs text-gray-500">Total: {product.stock} un.</span>
                 </div>
             </CardContent>
         </Card>
@@ -402,7 +402,7 @@ const ClothingProductsView = () => {
                                             </div>
                                         </div>
                                     ))}
-                                    {variants.length === 0 && <p className="text-xs text-gray-400 text-center py-2">Sin variantes definidas</p>}
+                                    {variants.length === 0 && <p className="text-xs text-gray-500 text-center py-2">Sin variantes definidas</p>}
                                 </div>
                             </div>
                         </div>

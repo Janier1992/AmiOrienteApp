@@ -204,18 +204,15 @@ Para mantener la plataforma en funcionamiento, se estiman los siguientes costos 
 *   **Mantenimiento**: Costos variables de desarrollo para nuevas funcionalidades.
 
 ### Modelo de Suscripción para Negocios
-Se establece un modelo híbrido obligatorio para todos los comercios registrados:
+Los planes viven en la tabla `plans` de Supabase (única fuente de verdad: precio, comisión por venta y límite de equipo). Valores iniciales (decisión de negocio, se cambian con un `UPDATE`):
 
-1.  **Plan Básico (Comisión por Venta)**
-    *   **Costo de Entrada**: GRATIS.
-    *   **Modelo**: Cobro del **8-10%** sobre cada pedido exitoso gestionado por la app.
-    *   *Ideal para*: Pequeños negocios o emprendimientos que están arrancando.
+| Plan | Precio | Comisión por venta | Equipo (incluye al dueño) |
+|---|---|---|---|
+| **Básico** | Gratis | 10 % | hasta 2 personas |
+| **Profesional** | $59.900 COP / mes | 0 % | hasta 10 personas |
+| **Empresarial** | A convenir | A convenir | ilimitado |
 
-2.  **Plan Profesional (Suscripción Mensual)**
-    *   **Costo**: $50,000 - $80,000 COP / mes.
-    *   **Beneficio**: 0% de comisión en ventas.
-    *   **Extras**: Posicionamiento destacado en la app y soporte prioritario.
-    *   *Ideal para*: Restaurantes o tiendas con alto volumen de ventas diaria.
+La comisión de cada venta se toma del plan del negocio y se guarda en la transacción (cambiar de plan no altera el historial). Mientras no haya pagos en línea, el cambio de plan lo activa el administrador de la plataforma desde el Panel de Administración (el negocio lo solicita en «Mi Plan»).
 
 ---
 

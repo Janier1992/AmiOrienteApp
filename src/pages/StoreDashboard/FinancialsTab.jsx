@@ -21,7 +21,7 @@ const FinancialsTab = ({ storeId }) => {
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">Balance Disponible</CardTitle>
-                        <DollarSign className="h-4 w-4 text-green-600" />
+                        <DollarSign className="h-4 w-4 text-green-700" />
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold text-green-700">${balance.toLocaleString()}</div>
@@ -39,7 +39,7 @@ const FinancialsTab = ({ storeId }) => {
                 </Card>
                  <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Comisiones (Soy del Campo)</CardTitle>
+                        <CardTitle className="text-sm font-medium">Comisiones de AmiOriente</CardTitle>
                         <CreditCard className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>

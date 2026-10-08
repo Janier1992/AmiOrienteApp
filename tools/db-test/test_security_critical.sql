@@ -166,6 +166,11 @@ DELETE FROM public.deliveries;
     $q$ SELECT public.accept_order('00000000-0000-0000-0000-00000000f004', '00000000-0000-0000-0000-0000000000d2') $q$, true);
 \endif
 
+\if :after
+  \ir test_delivery_flow.sql
+  \ir test_teams_plans.sql
+\endif
+
 -- ================================= resultado =================================
 \echo
 \echo '================ RESULTADO ================'

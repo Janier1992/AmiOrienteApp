@@ -80,7 +80,7 @@ const OrdersTab = ({ storeId, terminology = {} }) => {
       <CardContent>
         {orders.length === 0 ? (
           <div className="text-center py-12">
-            <Package className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+            <Package className="h-12 w-12 text-gray-500 mx-auto mb-4" />
             <p>No tienes {T.order.toLowerCase()}s activos.</p>
           </div>
         ) : (
@@ -119,7 +119,7 @@ const OrdersTab = ({ storeId, terminology = {} }) => {
 
                       <div className="border-t border-b py-2">
                         <div className="flex items-center gap-2 mb-1">
-                          <User className="h-4 w-4 text-slate-400" />
+                          <User className="h-4 w-4 text-slate-500" />
                           <span className="font-medium text-slate-900 truncate">{customerName}</span>
                         </div>
                         <div className="flex justify-between items-center text-sm">
@@ -191,7 +191,7 @@ const OrdersTab = ({ storeId, terminology = {} }) => {
                       <div className="flex items-center gap-1">
                         <Clock className="h-3 w-3" /> {new Date(order.created_at).toLocaleDateString()}
                       </div>
-                      <div className="text-xs text-gray-400">{new Date(order.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
+                      <div className="text-xs text-gray-500">{new Date(order.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
                     </div>
 
                     {/* Total */}

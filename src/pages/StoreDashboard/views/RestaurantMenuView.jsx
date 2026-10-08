@@ -49,7 +49,7 @@ const MenuProductCard = ({ product, onEdit, onDelete, onToggleAvailability }) =>
 
                 {/* Availability Toggle Overlay */}
                 <div className="absolute top-3 left-3 z-20">
-                    <Badge variant={isAvailable ? "default" : "destructive"} className={isAvailable ? "bg-green-500 hover:bg-green-600" : "bg-red-500"}>
+                    <Badge variant={isAvailable ? "default" : "destructive"} className={isAvailable ? "bg-green-500 hover:bg-green-700" : "bg-red-500"}>
                         {isAvailable ? "Disponible" : "Agotado"}
                     </Badge>
                 </div>
@@ -95,7 +95,7 @@ const MenuProductCard = ({ product, onEdit, onDelete, onToggleAvailability }) =>
                 <div className="flex items-center justify-between mt-2 pt-3 border-t border-orange-50">
                     <span className="text-xl font-extrabold text-slate-800">${Number(product.price).toLocaleString()}</span>
                     <div className="flex items-center gap-2">
-                        <Label htmlFor={`stock-${product.id}`} className="text-xs text-gray-400 cursor-pointer">Activo</Label>
+                        <Label htmlFor={`stock-${product.id}`} className="text-xs text-gray-500 cursor-pointer">Activo</Label>
                         <Switch
                             id={`stock-${product.id}`}
                             checked={isAvailable}
@@ -264,7 +264,7 @@ const RestaurantMenuView = () => {
             {/* Filter */}
             <div className="flex flex-col md:flex-row gap-4 items-center bg-white p-2 rounded-2xl shadow-sm border border-slate-100 relative z-10">
                 <div className="relative flex-1 w-full">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-500" />
                     <Input
                         placeholder="Buscar en el menú..."
                         className="pl-12 border-0 bg-slate-50 rounded-xl focus:bg-white transition-all py-6 text-lg"
@@ -288,7 +288,7 @@ const RestaurantMenuView = () => {
             </div>
 
             {filteredProducts.length === 0 && (
-                <div className="flex flex-col items-center justify-center py-20 text-gray-400">
+                <div className="flex flex-col items-center justify-center py-20 text-gray-500">
                     <Flame className="h-16 w-16 mb-4 text-orange-200" />
                     <p className="text-xl font-medium">Tu menú está vacío.</p>
                     <p>Agrega deliciosos platos para tus clientes.</p>

@@ -49,6 +49,9 @@ export const useStoreDashboard = create((set, get) => ({
   /** Datos de la tienda del usuario actual */
   store: null,
 
+  /** Usuario para el que se cargó `store` (dueño o miembro del equipo) */
+  storeUserId: null,
+
   /** Estadísticas de la tienda (ventas, pedidos, etc.) */
   stats: null,
 
@@ -186,7 +189,7 @@ export const useStoreDashboard = create((set, get) => ({
     // Stale-While-Revalidate: If we have data, don't set loading to true immediately for "hard" loading
     // We can use a separate "isRefetching" state if we wanted to show a small spinner, but for now we just keep data visible.
 
-    if (!currentStore || currentStore.owner_id !== userId) {
+    if (!currentStore || get().storeUserId !== userId) {
       set({ isLoadingStore: true, error: null });
     }
 
@@ -200,10 +203,10 @@ export const useStoreDashboard = create((set, get) => ({
     }, TIMEOUT_CARGA);
 
     try {
-      const datosTienda = await storeService.obtenerTiendaPorPropietario(userId);
+      const datosTienda = await storeService.obtenerTiendaDelUsuario(userId);
 
       clearTimeout(timeoutId);
-      set({ store: datosTienda });
+      set({ store: datosTienda, storeUserId: userId });
 
       if (datosTienda) {
         get().fetchStats(datosTienda.id);
@@ -490,6 +493,7 @@ export const useStoreDashboard = create((set, get) => ({
   reset: () => {
     set({
       store: null,
+      storeUserId: null,
       stats: null,
       orders: [],
       products: [],

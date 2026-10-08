@@ -154,7 +154,7 @@ const ProductsTab = ({ storeId, terminology = {} }) => {
         </div>
         <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
           <DialogTrigger asChild>
-            <Button className="w-full sm:w-auto bg-green-600 hover:bg-green-700" onClick={openAddModal}>
+            <Button className="w-full sm:w-auto bg-green-700 hover:bg-green-800" onClick={openAddModal}>
               <Plus className="h-4 w-4 mr-2" /> Nuevo {T.product}
             </Button>
           </DialogTrigger>
@@ -194,7 +194,7 @@ const ProductsTab = ({ storeId, terminology = {} }) => {
                 <Label htmlFor="description">Descripción</Label>
                 <Textarea id="description" name="description" value={formData.description} onChange={handleInputChange} rows={3} />
               </div>
-              <Button type="submit" className="w-full bg-green-600 hover:bg-green-700" disabled={isSubmitting}>
+              <Button type="submit" className="w-full bg-green-700 hover:bg-green-800" disabled={isSubmitting}>
                 {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : (editingId ? `Actualizar ${T.product}` : `Guardar ${T.product}`)}
               </Button>
             </form>
@@ -230,7 +230,7 @@ const ProductsTab = ({ storeId, terminology = {} }) => {
                     {product.image_url ? (
                       <img src={product.image_url} alt={product.name} className="h-20 w-20 rounded-md object-cover" />
                     ) : (
-                      <div className="h-20 w-20 rounded-md bg-slate-100 flex items-center justify-center text-slate-400">
+                      <div className="h-20 w-20 rounded-md bg-slate-100 flex items-center justify-center text-slate-500">
                         <ImageIcon className="h-8 w-8" />
                       </div>
                     )}
@@ -293,7 +293,7 @@ const ProductsTab = ({ storeId, terminology = {} }) => {
                       {product.image_url ? (
                         <img src={product.image_url} alt={product.name} className="h-10 w-10 rounded-md object-cover" />
                       ) : (
-                        <div className="h-10 w-10 rounded-md bg-slate-100 flex items-center justify-center text-slate-400">
+                        <div className="h-10 w-10 rounded-md bg-slate-100 flex items-center justify-center text-slate-500">
                           <ImageIcon className="h-5 w-5" />
                         </div>
                       )}

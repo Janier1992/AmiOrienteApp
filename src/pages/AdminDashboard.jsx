@@ -23,6 +23,8 @@ import LoadingSpinner from '@/components/shared/LoadingSpinner';
 import { SupportTicketsPanel } from '@/components/admin/SupportTicketsPanel';
 import { getStoreTypeConfig } from '@/config/storeTypes';
 import { FEATURE_MODULE_LABELS, COMMON_MODULE_LABELS } from '@/config/dashboardModules';
+import { planService } from '@/services/planService';
+import { FALLBACK_PLANS } from '@/config/plans';
 
 const STATUS_LABEL = {
     active: { label: 'Activa', variant: 'default' },
@@ -39,6 +41,7 @@ const AdminDashboard = () => {
     const [moduleEditingStore, setModuleEditingStore] = useState(null);
     const [pendingDisabled, setPendingDisabled] = useState([]);
     const [savingModules, setSavingModules] = useState(false);
+    const [plans, setPlans] = useState(FALLBACK_PLANS);
 
     const fetchStores = useCallback(async () => {
         setIsLoading(true);
@@ -49,7 +52,21 @@ const AdminDashboard = () => {
 
     useEffect(() => {
         fetchStores();
+        planService.listarPlanes().then(setPlans);
     }, [fetchStores]);
+
+    const handleChangePlan = async (store, planId) => {
+        setUpdatingId(store.id);
+        try {
+            await planService.cambiarPlanDelNegocio(store.id, planId);
+            toast({ title: 'Plan actualizado', description: `${store.name} ahora tiene el plan ${plans.find(p => p.id === planId)?.name || planId}.` });
+            await fetchStores();
+        } catch (error) {
+            toast({ title: 'No se pudo cambiar el plan', description: error.message, variant: 'destructive' });
+        } finally {
+            setUpdatingId(null);
+        }
+    };
 
     const handleToggleStatus = async (store) => {
         const newStatus = store.status === 'suspended' ? 'active' : 'suspended';
@@ -145,7 +162,7 @@ const AdminDashboard = () => {
                             <CardTitle className="text-sm font-medium">Activos</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold text-green-600">{stats.active}</div>
+                            <div className="text-2xl font-bold text-green-700">{stats.active}</div>
                         </CardContent>
                     </Card>
                     <Card>
@@ -183,6 +200,7 @@ const AdminDashboard = () => {
                                         <TableHead>Categoría</TableHead>
                                         <TableHead>Dueño</TableHead>
                                         <TableHead>Registrado</TableHead>
+                                        <TableHead>Plan</TableHead>
                                         <TableHead>Estado</TableHead>
                                         <TableHead className="text-right">Acción</TableHead>
                                     </TableRow>
@@ -207,6 +225,17 @@ const AdminDashboard = () => {
                                                     <div className="text-xs text-muted-foreground">{store.profiles?.email}</div>
                                                 </TableCell>
                                                 <TableCell>{new Date(store.created_at).toLocaleDateString('es-CO')}</TableCell>
+                                                <TableCell>
+                                                    <select
+                                                        aria-label={`Plan de ${store.name}`}
+                                                        className="h-8 rounded-md border border-input bg-background px-2 text-sm"
+                                                        value={(Array.isArray(store.subscriptions) ? store.subscriptions[0] : store.subscriptions)?.plan_id || 'basic'}
+                                                        disabled={updatingId === store.id}
+                                                        onChange={(e) => handleChangePlan(store, e.target.value)}
+                                                    >
+                                                        {plans.map(pl => <option key={pl.id} value={pl.id}>{pl.name}</option>)}
+                                                    </select>
+                                                </TableCell>
                                                 <TableCell>
                                                     <Badge variant={statusInfo.variant}>{statusInfo.label}</Badge>
                                                 </TableCell>
