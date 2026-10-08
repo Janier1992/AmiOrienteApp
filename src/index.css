@@ -77,6 +77,8 @@
     background-position: center;
     background-repeat: no-repeat;
     background-attachment: fixed;
+    /* Color de respaldo mientras carga la foto (o si la red falla) */
+    background-color: #1f4d36;
     min-height: 100vh;
   }
 
