@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Helmet } from 'react-helmet';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useCartStore, useCartActions } from '@/contexts/CartContext';
 import { useAuth } from '@/contexts/SupabaseAuthContext';
 import { Button } from '@/components/ui/button';
@@ -499,7 +499,9 @@ const CheckoutPage = () => {
                     )}
                   </Button>
                   <p className="text-xs text-center text-muted-foreground mt-2">
-                    Al confirmar, aceptas nuestros términos y condiciones.
+                    Al confirmar, aceptas los{' '}
+                    <Link to="/terminos" target="_blank" rel="noopener noreferrer" className="underline">Términos y Condiciones</Link>.
+                    El valor total ya incluye el costo del domicilio.
                   </p>
                 </div>
               </CardContent>

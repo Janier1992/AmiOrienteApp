@@ -5,7 +5,9 @@ import React, { useState } from 'react';
     import { Input } from '@/components/ui/input';
     import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
     import { Users, ArrowLeft, User, Mail, Phone, Lock, MapPin } from 'lucide-react';
-    import { toast } from '@/components/ui/use-toast';
+import LegalConsent from '@/components/auth/LegalConsent';
+import { LEGAL_VERSION } from '@/config/legal';
+import { toast } from '@/components/ui/use-toast';
     import { useAuth } from '@/contexts/SupabaseAuthContext';
     import { getPasswordError, PASSWORD_HINT } from '@/lib/passwordPolicy';
     import { buildAuthRedirectUrl, getHomeRouteForUser, isExistingUserResponse } from '@/lib/authRoutes';
@@ -19,6 +21,7 @@ import React, { useState } from 'react';
         password: ''
       });
       const [loading, setLoading] = useState(false);
+      const [acceptedLegal, setAcceptedLegal] = useState(false);
       const navigate = useNavigate();
       const { signUp } = useAuth();
       
@@ -42,6 +45,15 @@ import React, { useState } from 'react';
           return;
         }
 
+        if (!acceptedLegal) {
+          toast({
+            title: "Falta tu autorización",
+            description: "Debes aceptar los Términos y la Política de Privacidad para crear la cuenta.",
+            variant: "destructive"
+          });
+          return;
+        }
+
         const passwordError = getPasswordError(formData.password);
         if (passwordError) {
           toast({
@@ -58,7 +70,9 @@ import React, { useState } from 'react';
             full_name: formData.name,
             phone: formData.phone,
             address: formData.address,
-            role: 'cliente'
+            role: 'cliente',
+            accepted_terms: true,
+            legal_version: LEGAL_VERSION
           },
           emailRedirectTo: buildAuthRedirectUrl('/auth/confirm')
         });
@@ -138,7 +152,8 @@ import React, { useState } from 'react';
 
                   <p className="text-xs text-muted-foreground -mt-2">{PASSWORD_HINT}</p>
 
-                  <Button type="submit" className="w-full" disabled={loading}>
+                  <LegalConsent accepted={acceptedLegal} onAcceptedChange={setAcceptedLegal} />
+                  <Button type="submit" className="w-full" disabled={loading || !acceptedLegal}>
                     {loading ? 'Creando cuenta...' : 'Crear Cuenta'}
                   </Button>
                 </form>

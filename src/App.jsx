@@ -47,6 +47,7 @@ const CheckoutPage = lazyWithPrefetch('checkout', () => import('@/pages/Checkout
 const OrderConfirmationPage = lazyWithPrefetch('order-confirm', () => import('@/pages/OrderConfirmationPage'));
 const TermsPage = lazyWithPrefetch('terms', () => import('@/pages/TermsPage'));
 const PrivacyPolicyPage = lazyWithPrefetch('privacy', () => import('@/pages/PrivacyPolicyPage'));
+const DataRequestPage = lazyWithPrefetch('data-request', () => import('@/pages/DataRequestPage'));
 const MoreServicesPage = lazyWithPrefetch('more', () => import('@/pages/MoreServicesPage'));
 const PricingPage = lazyWithPrefetch('pricing', () => import('@/pages/PricingPage'));
 const ServiceSelectionPage = lazyWithPrefetch('service-select', () => import('@/pages/ServiceSelectionPage'));
@@ -178,6 +179,7 @@ const AppContent = () => {
               <Route path="/confirmacion-pedido" element={<OrderConfirmationPage />} />
               <Route path="/terminos" element={<TermsPage />} />
               <Route path="/privacidad" element={<PrivacyPolicyPage />} />
+              <Route path="/datos-personales" element={<DataRequestPage />} />
             </Routes>
           </Suspense>
         </ErrorBoundary>

@@ -1,73 +1,100 @@
 import React from 'react';
-import { Helmet } from 'react-helmet';
 import { Link } from 'react-router-dom';
-import { ShoppingBag } from 'lucide-react';
+import LegalPage, { LegalEntityBlock, LegalSection, LegalValue } from '@/components/legal/LegalPage';
+import { LEGAL_ENTITY, PLATFORM_NAME } from '@/config/legal';
 
-const PrivacyPolicyPage = () => {
-  return (
-    <>
-      <Helmet>
-        <title>Política de Privacidad - Domicilios MiOriente</title>
-      </Helmet>
-      <div className="bg-background min-h-screen">
-        <header className="bg-card shadow-md sticky top-0 z-30">
-          <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-between h-16">
-              <Link to="/" className="flex items-center space-x-2">
-                <ShoppingBag className="h-8 w-8 text-primary" />
-                <span className="text-xl font-bold text-foreground">Domicilios - MiOriente</span>
-              </Link>
-            </div>
-          </div>
-        </header>
-        <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="bg-card text-card-foreground p-8 rounded-lg shadow border border-border">
-            <h1 className="text-3xl font-bold mb-6">Política de Privacidad</h1>
-            <div className="prose max-w-none text-muted-foreground">
-              <p><strong>Última actualización:</strong> 18 de julio de 2025</p>
-              
-              <p>En Domicilios MiOriente, respetamos su privacidad y nos comprometemos a proteger sus datos personales. Esta política de privacidad le informará sobre cómo cuidamos sus datos personales cuando visita nuestra plataforma y le informará sobre sus derechos de privacidad y cómo la ley lo protege, en cumplimiento de la Ley 1581 de 2012 y el Decreto 1377 de 2013 en Colombia.</p>
+const PrivacyPolicyPage = () => (
+  <LegalPage
+    title="Política de Privacidad y Tratamiento de Datos Personales"
+    description="Cómo AmiOriente recolecta, usa y protege tus datos personales, y cómo ejercer tus derechos."
+  >
+    <p>
+      Esta política explica cómo tratamos los datos personales de quienes usan {PLATFORM_NAME}, conforme a la Ley 1581 de
+      2012, el Decreto 1377 de 2013 (compilado en el Decreto 1074 de 2015) y demás normas de protección de datos
+      personales de Colombia.
+    </p>
 
-              <h2 className="text-xl font-semibold mt-6">1. Qué datos recopilamos</h2>
-              <p>Podemos recopilar, usar, almacenar y transferir diferentes tipos de datos personales sobre usted, que hemos agrupado de la siguiente manera:</p>
-              <ul>
-                <li><strong>Datos de Identidad:</strong> Incluye nombre, apellido, nombre de usuario o identificador similar.</li>
-                <li><strong>Datos de Contacto:</strong> Incluye dirección de facturación, dirección de entrega, dirección de correo electrónico y números de teléfono.</li>
-                <li><strong>Datos Financieros:</strong> Incluye detalles de la cuenta bancaria y la tarjeta de pago, gestionados de forma segura por nuestro procesador de pagos Stripe.</li>
-                <li><strong>Datos de Transacción:</strong> Incluye detalles sobre los pagos hacia y desde usted y otros detalles de productos y servicios que nos ha comprado.</li>
-                <li><strong>Datos Técnicos:</strong> Incluye la dirección del protocolo de Internet (IP), sus datos de inicio de sesión, el tipo y la versión del navegador.</li>
-                <li><strong>Datos de Geolocalización:</strong> Para los domiciliarios, recopilamos datos de ubicación en tiempo real para facilitar las entregas.</li>
-              </ul>
+    <LegalSection title="1. Responsable del tratamiento">
+      <LegalEntityBlock />
+      <p>Para ejercer sus derechos puede escribir al correo <LegalValue value={LEGAL_ENTITY.email} /> o usar el <Link to="/datos-personales" className="text-primary underline">formulario de solicitudes sobre datos personales</Link>.</p>
+    </LegalSection>
 
-              <h2 className="text-xl font-semibold mt-6">2. Cómo usamos sus datos personales</h2>
-              <p>Usaremos sus datos personales en las siguientes circunstancias:</p>
-              <ul>
-                <li>Para registrarlo como un nuevo cliente, tienda o domiciliario.</li>
-                <li>Para procesar y entregar su pedido, incluyendo la gestión de pagos, tarifas y cargos.</li>
-                <li>Para gestionar nuestra relación con usted, lo que incluirá notificarle sobre cambios en nuestros términos o política de privacidad.</li>
-                <li>Para permitirle participar en sorteos, concursos o completar una encuesta.</li>
-                <li>Para administrar y proteger nuestro negocio y este sitio web (incluida la resolución de problemas, el análisis de datos, las pruebas, el mantenimiento del sistema, el soporte, la generación de informes y el alojamiento de datos).</li>
-              </ul>
+    <LegalSection title="2. Qué datos recolectamos">
+      <ul className="list-disc pl-6 space-y-1">
+        <li><strong>Identificación y contacto:</strong> nombre, correo electrónico, teléfono y dirección.</li>
+        <li><strong>Cuenta:</strong> tipo de cuenta (cliente, negocio o domiciliario), contraseña (almacenada de forma cifrada, nunca en texto claro) y registros de sesión.</li>
+        <li><strong>Pedidos y transacciones:</strong> productos pedidos, direcciones de entrega, valores, método de pago, estado y calificaciones. Si usted pide productos de farmacia o veterinaria, el pedido puede dar a conocer información sobre su salud o la de su mascota; solo la usamos para atender ese pedido y usted no está obligado a suministrarla.</li>
+        <li><strong>Ubicación:</strong> si usted lo autoriza en el navegador, usamos su ubicación para sugerirle negocios cercanos. Durante una entrega en curso, la ubicación del domiciliario se comparte con el cliente de ese pedido.</li>
+        <li><strong>Negocios:</strong> nombre y datos comerciales, productos, horarios, datos de contacto del negocio y de su equipo.</li>
+        <li><strong>Domiciliarios:</strong> nombre, contacto, dirección y la declaración de independencia y de afiliación a seguridad social aceptada al registrarse. No almacenamos copias de documentos ni datos bancarios en la Plataforma.</li>
+        <li><strong>Técnicos y de uso:</strong> tipo de dispositivo y navegador, y registros de errores. Guardamos en su dispositivo el carrito, el tema (claro u oscuro) y la sesión, para que la aplicación funcione.</li>
+        <li><strong>Comunicaciones:</strong> los mensajes que nos envía por el formulario de contacto o de solicitudes.</li>
+      </ul>
+      <p>No recolectamos de forma intencional datos de menores de 18 años; la Plataforma no está dirigida a ellos. No solicitamos datos sensibles (origen racial, orientación sexual, convicciones, datos biométricos, etc.).</p>
+    </LegalSection>
 
-              <h2 className="text-xl font-semibold mt-6">3. Divulgación de sus datos personales</h2>
-              <p>Es posible que tengamos que compartir sus datos personales con las partes que se detallan a continuación para los fines establecidos en la tabla del párrafo 2 anterior:</p>
-              <ul>
-                <li>Proveedores de servicios externos que actúan como procesadores, que brindan servicios de TI y administración de sistemas.</li>
-                <li>Asesores profesionales que actúan como procesadores o controladores conjuntos, incluidos abogados, banqueros, auditores y aseguradores que brindan servicios de consultoría, bancarios, legales, de seguros y contables.</li>
-                <li>Stripe, nuestro proveedor de servicios de pago.</li>
-              </ul>
+    <LegalSection title="3. Para qué usamos sus datos (finalidades)">
+      <ul className="list-disc pl-6 space-y-1">
+        <li>Crear y administrar su cuenta, y verificar su identidad.</li>
+        <li>Gestionar pedidos: compartir con el negocio y el domiciliario los datos necesarios para preparar y entregar.</li>
+        <li>Mostrar el estado y la ubicación del pedido, y enviar avisos operativos.</li>
+        <li>Calcular y registrar pagos, comisiones, planes y aportes que la ley ponga a cargo de la Plataforma, y cumplir obligaciones tributarias, contables y de seguridad social.</li>
+        <li>Atender solicitudes, peticiones, quejas y reclamos, y prestar soporte.</li>
+        <li>Prevenir fraude, garantizar la seguridad y cumplir órdenes de autoridades.</li>
+        <li>Mejorar la Plataforma con estadísticas agregadas y anónimas.</li>
+        <li>Si usted lo autoriza de manera expresa, enviarle información comercial. Puede retirar esa autorización en cualquier momento.</li>
+      </ul>
+    </LegalSection>
 
-              <h2 className="text-xl font-semibold mt-6">4. Seguridad de los datos</h2>
-              <p>Hemos implementado medidas de seguridad apropiadas para evitar que sus datos personales se pierdan, usen o accedan de forma accidental de manera no autorizada, se alteren o se divulguen. Además, limitamos el acceso a sus datos personales a aquellos empleados, agentes, contratistas y otros terceros que tienen una necesidad comercial de conocerlos.</p>
+    <LegalSection title="4. Autorización">
+      <p>Al registrarse marca de forma expresa que acepta esta política y los Términos. Guardamos la fecha y la versión que aceptó, como prueba de la autorización. Puede solicitar una copia de esa prueba y revocar su autorización en cualquier momento, salvo cuando exista un deber legal o contractual de conservar los datos.</p>
+    </LegalSection>
 
-              <h2 className="text-xl font-semibold mt-6">5. Sus derechos legales</h2>
-              <p>Bajo ciertas circunstancias, usted tiene derechos bajo las leyes de protección de datos en relación con sus datos personales, incluyendo el derecho a solicitar acceso, corrección, eliminación, restricción, transferencia, y a oponerse al procesamiento.</p>
-            </div>
-          </div>
-        </main>
-      </div>
-    </>
-  );
-};
+    <LegalSection title="5. Con quién compartimos sus datos">
+      <ul className="list-disc pl-6 space-y-1">
+        <li><strong>Negocios y domiciliarios</strong> que participan en su pedido, solo con los datos necesarios (por ejemplo, nombre, teléfono y dirección de entrega).</li>
+        <li><strong>Proveedores tecnológicos (encargados del tratamiento)</strong> que nos prestan servicios de alojamiento de base de datos y autenticación, publicación del sitio, tipografías y mapas (por ejemplo, Supabase, GitHub, Google Fonts y OpenStreetMap), que pueden recibir datos técnicos como su dirección IP. Algunos tienen sus servidores fuera de Colombia, por lo que sus datos pueden ser transmitidos o transferidos al exterior; exigimos a estos proveedores niveles adecuados de seguridad y confidencialidad.</li>
+        <li><strong>Autoridades</strong> cuando la ley o una orden judicial o administrativa lo exija.</li>
+      </ul>
+      <p>No vendemos sus datos personales.</p>
+    </LegalSection>
+
+    <LegalSection title="6. Sus derechos como titular">
+      <ul className="list-disc pl-6 space-y-1">
+        <li>Conocer, actualizar y rectificar sus datos.</li>
+        <li>Solicitar prueba de la autorización que nos dio.</li>
+        <li>Ser informado, previa solicitud, del uso que se ha dado a sus datos.</li>
+        <li>Presentar quejas ante la Superintendencia de Industria y Comercio (SIC) por infracciones a la ley, una vez agotado el trámite de consulta o reclamo ante nosotros.</li>
+        <li>Revocar la autorización y/o solicitar la supresión de sus datos cuando no se respeten los principios, derechos y garantías, o cuando ya no sean necesarios.</li>
+        <li>Acceder de forma gratuita a sus datos personales.</li>
+      </ul>
+    </LegalSection>
+
+    <LegalSection title="7. Cómo ejercer sus derechos y en qué plazos">
+      <ul className="list-disc pl-6 space-y-1">
+        <li><strong>Consultas</strong> (conocer los datos que tenemos): respondemos en máximo diez (10) días hábiles, prorrogables por cinco (5) días hábiles más si le informamos el motivo.</li>
+        <li><strong>Reclamos</strong> (corrección, actualización, supresión, revocatoria o presunto incumplimiento): respondemos en máximo quince (15) días hábiles, prorrogables por ocho (8) más. Si el reclamo está incompleto, le pediremos que lo complete dentro de los cinco (5) días siguientes.</li>
+        <li>Envíe su solicitud con su nombre, correo de la cuenta y una descripción clara de lo que pide, por el <Link to="/datos-personales" className="text-primary underline">formulario</Link> o al correo <LegalValue value={LEGAL_ENTITY.email} />. Podemos pedirle un dato para verificar que es el titular.</li>
+        <li>La supresión no procede mientras exista un deber legal o contractual de conservar la información (por ejemplo, soportes de transacciones).</li>
+      </ul>
+    </LegalSection>
+
+    <LegalSection title="8. Seguridad">
+      <p>Aplicamos medidas técnicas y organizativas razonables: cifrado de las comunicaciones, contraseñas cifradas, control de acceso por roles a nivel de base de datos, y revisión de los permisos de cada tipo de cuenta. Ningún sistema es infalible; si ocurre un incidente que afecte sus datos, lo gestionaremos y notificaremos a las autoridades y a los afectados conforme a la ley.</p>
+    </LegalSection>
+
+    <LegalSection title="9. Cuánto tiempo conservamos los datos">
+      <p>Mientras su cuenta esté activa y durante el tiempo adicional que exijan las normas contables, tributarias y de protección al consumidor. Cumplido ese plazo, los suprimimos o anonimizamos.</p>
+    </LegalSection>
+
+    <LegalSection title="10. Almacenamiento local y cookies">
+      <p>Usamos el almacenamiento del navegador para mantener su sesión, su carrito y sus preferencias. No usamos cookies de publicidad de terceros. Puede borrar estos datos desde la configuración de su navegador, aunque la sesión y el carrito se perderán.</p>
+    </LegalSection>
+
+    <LegalSection title="11. Cambios a esta política">
+      <p>Si cambiamos esta política, publicaremos la nueva versión con su fecha y, cuando el cambio afecte las finalidades, le pediremos de nuevo su autorización.</p>
+    </LegalSection>
+  </LegalPage>
+);
 
 export default PrivacyPolicyPage;

@@ -39,6 +39,12 @@ jobs:
         env:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          # Datos de la persona jurídica (variables, no secretos): GitHub → Settings → Variables → Actions
+          VITE_LEGAL_NAME: ${{ vars.VITE_LEGAL_NAME }}
+          VITE_LEGAL_NIT: ${{ vars.VITE_LEGAL_NIT }}
+          VITE_LEGAL_ADDRESS: ${{ vars.VITE_LEGAL_ADDRESS }}
+          VITE_LEGAL_PHONE: ${{ vars.VITE_LEGAL_PHONE }}
+          VITE_LEGAL_EMAIL: ${{ vars.VITE_LEGAL_EMAIL }}
       - name: Setup Pages
         uses: actions/configure-pages@v4
       - name: Upload artifact
