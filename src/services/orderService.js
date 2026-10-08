@@ -248,7 +248,7 @@ export const orderService = {
                 .from('orders')
                 .select(`
           *,
-          stores (id, name, address, phone, image_url, lat, lng),
+          stores (id, name, address, contact_phone, logo_url),
           profiles (id, full_name, phone, email),
           order_items (
             id, 

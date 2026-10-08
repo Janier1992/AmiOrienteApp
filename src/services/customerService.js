@@ -147,7 +147,7 @@ export const customerService = {
         .from('orders')
         .select(`
           *, 
-          stores (name, address, phone, image_url), 
+          stores (name, address, contact_phone, logo_url), 
           deliveries (status, delivery_person_id, profiles(full_name, phone)), 
           order_items (*, products!order_items_product_id_fkey(name, image_url, price))
         `)
@@ -188,7 +188,7 @@ export const customerService = {
         .from('orders')
         .select(`
           *, 
-          stores (name, address, phone, image_url), 
+          stores (name, address, contact_phone, logo_url), 
           deliveries (status, delivery_person_id, profiles(full_name, phone)), 
           order_items (*, products!order_items_product_id_fkey(name, image_url))
         `)
@@ -226,7 +226,7 @@ export const customerService = {
         .from('orders')
         .select(`
           *, 
-          stores (name, image_url), 
+          stores (name, logo_url), 
           order_items (quantity, price, products!order_items_product_id_fkey(name))
         `)
         .eq('customer_id', idUsuario)
@@ -260,7 +260,7 @@ export const customerService = {
         .from('orders')
         .select(`
           *, 
-          stores (name, address, phone, image_url),
+          stores (name, address, contact_phone, logo_url),
           profiles (full_name, phone, email),
           deliveries (*, profiles(full_name, phone)),
           order_items (*, products!order_items_product_id_fkey(*))
@@ -424,8 +424,12 @@ export const customerService = {
       }
 
       // Paginación
+      // Nota: no existe columna `is_open`/horarios en `stores` todavía —
+      // ordenar por ella (como hacía antes) hacía fallar toda la consulta
+      // silenciosamente y el directorio caía siempre a los negocios de
+      // muestra. Si se agrega disponibilidad en vivo más adelante, aquí es
+      // donde se reintroduce el orden "abiertas primero".
       query = query
-        .order('is_open', { ascending: false }) // Tiendas abiertas primero (UX)
         .order('created_at', { ascending: false })
         .range(from, to);
 

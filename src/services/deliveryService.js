@@ -121,7 +121,7 @@ export const deliveryService = {
           delivery_address,
           delivery_lat,
           delivery_lng,
-          stores (id, name, address, lat, lng, phone),
+          stores (id, name, address, contact_phone),
           profiles (full_name, phone)
         `)
         .in('status', ESTADOS_DISPONIBLES_PARA_ENTREGA)
@@ -198,7 +198,7 @@ export const deliveryService = {
             delivery_lat,
             delivery_lng,
             created_at,
-            stores (name, address, phone, lat, lng),
+            stores (name, address, contact_phone),
             profiles (full_name, phone),
             order_items (quantity, products!order_items_product_id_fkey(name))
           )

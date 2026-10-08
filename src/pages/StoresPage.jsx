@@ -24,16 +24,18 @@ const StoreCard = ({ store }) => (
     <Card className="h-full flex flex-col hover:shadow-xl transition-all duration-300 group overflow-hidden border-slate-200">
       <div className="relative h-48 overflow-hidden">
         <img
-          src={store.image_url || store.logo_url || 'https://images.unsplash.com/photo-1556740758-90de2742e1e2?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80'}
+          src={store.logo_url || store.image_url || 'https://images.unsplash.com/photo-1556740758-90de2742e1e2?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80'}
           alt={store.name}
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
         />
-        <div className="absolute top-3 right-3">
-          <Badge className="bg-white/90 text-slate-800 hover:bg-white shadow-sm backdrop-blur-sm">
-            <Star className="w-3 h-3 text-yellow-500 fill-yellow-500 mr-1" />
-            {store.rating || 4.5}
-          </Badge>
-        </div>
+        {(store.star_rating || store.rating) && (
+          <div className="absolute top-3 right-3">
+            <Badge className="bg-white/90 text-slate-800 hover:bg-white shadow-sm backdrop-blur-sm">
+              <Star className="w-3 h-3 text-yellow-500 fill-yellow-500 mr-1" />
+              {store.star_rating || store.rating}
+            </Badge>
+          </div>
+        )}
         <div className="absolute top-3 left-3">
           <Badge variant="secondary" className="shadow-sm backdrop-blur-sm opacity-90">
             {store.category}
@@ -59,14 +61,16 @@ const StoreCard = ({ store }) => (
             <MapPin className="w-3.5 h-3.5 text-primary shrink-0" />
             <span className="truncate">{store.address || 'Marinilla, Antioquia'}</span>
           </div>
-          <div className="flex items-center gap-2">
-            <Clock className="w-3.5 h-3.5 text-primary shrink-0" />
-            <span className="truncate">{store.hours || '8:00 AM - 8:00 PM'}</span>
-          </div>
-          {store.phone && (
+          {store.hours && (
+            <div className="flex items-center gap-2">
+              <Clock className="w-3.5 h-3.5 text-primary shrink-0" />
+              <span className="truncate">{store.hours}</span>
+            </div>
+          )}
+          {(store.contact_phone || store.phone) && (
             <div className="flex items-center gap-2">
               <Phone className="w-3.5 h-3.5 text-primary shrink-0" />
-              <span className="truncate">{store.phone}</span>
+              <span className="truncate">{store.contact_phone || store.phone}</span>
             </div>
           )}
         </div>
