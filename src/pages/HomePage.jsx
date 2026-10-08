@@ -184,26 +184,33 @@ const HomePage = () => {
       <div className="min-h-screen flex flex-col">
         <div className="pt-8 pb-28 sm:pt-12 sm:pb-40">
           <div className="max-w-5xl mx-auto px-5 sm:px-6">
-            <div className="rounded-2xl bg-primary/90 backdrop-blur-[2px] p-5 shadow-xl">
-              <div className="flex items-center gap-1.5 text-primary-foreground/90 text-sm font-medium mb-3">
-                {locatingUser ? <Loader2 className="h-4 w-4 animate-spin" /> : <MapPin className="h-4 w-4" />}
-                {locationLabel}
-              </div>
-              <h1 className="text-xl sm:text-2xl font-bold text-primary-foreground mb-1">
-                {firstName ? `Hola, ${firstName}` : 'Hola'}
-              </h1>
-              <p className="text-primary-foreground/90 text-sm mb-5">¿Qué necesitas hoy en tu región?</p>
+            {/* Tarjeta "de vidrio": el verde es solo un velo difuminado para que la
+                foto se vea a través; el texto es blanco fijo con sombra (no depende
+                del tema) y un degradado oscuro suave abajo asegura la lectura. */}
+            <div className="relative overflow-hidden rounded-3xl bg-primary/30 backdrop-blur-md ring-1 ring-white/30 shadow-2xl p-5 text-white [text-shadow:0_1px_3px_rgba(0,0,0,0.55)]">
+              <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/10 via-black/10 to-black/35" aria-hidden="true" />
+              <div className="relative">
+                <div className="flex items-center gap-1.5 text-sm font-semibold mb-3">
+                  {locatingUser ? <Loader2 className="h-4 w-4 animate-spin" /> : <MapPin className="h-4 w-4" />}
+                  {locationLabel}
+                </div>
+                <h1 className="text-2xl sm:text-3xl font-bold mb-1">
+                  {firstName ? `Hola, ${firstName}` : 'Hola'}
+                </h1>
+                <p className="text-sm sm:text-base font-medium mb-5">¿Qué necesitas hoy en tu región?</p>
 
-              <form onSubmit={handleSearchSubmit} className="relative">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <input
-                  type="text"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  placeholder="Busca restaurantes, farmacias, tiendas..."
-                  className="w-full rounded-xl bg-white pl-11 pr-4 py-3 text-sm text-foreground shadow-sm focus:outline-none focus:ring-2 focus:ring-white/60"
-                />
-              </form>
+                <form onSubmit={handleSearchSubmit} className="relative">
+                  <Search className="absolute z-10 left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-600" />
+                  <input
+                    type="text"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    placeholder="Busca negocios o productos"
+                    aria-label="Buscar negocios o productos"
+                    className="w-full rounded-2xl bg-white/90 backdrop-blur pl-11 pr-4 py-3.5 text-sm text-slate-900 placeholder:text-slate-600 shadow-lg [text-shadow:none] focus:outline-none focus:ring-2 focus:ring-white"
+                  />
+                </form>
+              </div>
             </div>
           </div>
         </div>
