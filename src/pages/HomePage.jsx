@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import {
   Search, MapPin, Star, Utensils, ShoppingCart, Pill, Shirt,
-  Croissant, Sprout, Hotel, Store, Loader2
+  Croissant, Sprout, Hotel, Store, Loader2, User, Truck, ArrowRight
 } from 'lucide-react';
 import { useAuth } from '@/contexts/SupabaseAuthContext';
 import { customerService } from '@/services/customerService';
@@ -67,6 +67,45 @@ const StoreCard = ({ store }) => (
   </Link>
 );
 
+const ROLES = [
+  {
+    icon: User,
+    title: 'Clientes',
+    description: 'Pide de tus negocios favoritos.',
+    link: '/cliente/registro',
+  },
+  {
+    icon: Store,
+    title: 'Negocios',
+    description: 'Vende y crece en tu región.',
+    link: '/servicios/registro',
+  },
+  {
+    icon: Truck,
+    title: 'Domiciliarios',
+    description: 'Entrega y genera ingresos.',
+    link: '/domiciliario/registro',
+  },
+];
+
+const RoleCard = ({ icon: Icon, title, description, link }) => (
+  <Link
+    to={link}
+    className="flex flex-col gap-2.5 rounded-2xl border border-border bg-card p-4 transition-shadow hover:shadow-md"
+  >
+    <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center">
+      <Icon className="h-5 w-5 text-primary" />
+    </div>
+    <div>
+      <p className="text-sm font-semibold text-foreground">{title}</p>
+      <p className="text-xs text-muted-foreground mt-0.5">{description}</p>
+    </div>
+    <span className="text-xs font-semibold text-primary flex items-center gap-1 mt-auto">
+      Comenzar <ArrowRight className="h-3 w-3" />
+    </span>
+  </Link>
+);
+
 const HomePage = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -106,16 +145,16 @@ const HomePage = () => {
           className="relative bg-cover bg-center"
           style={{ backgroundImage: "url('https://horizons-cdn.hostinger.com/9a2f1d5f-26c5-4fa8-b3e7-17e2b7bc86a9/eaa5c3ede657a14fb3f5ca74349a2d50.jpg')" }}
         >
-          <div className="absolute inset-0 bg-gradient-to-b from-primary/90 via-primary/80 to-primary" />
+          <div className="absolute inset-0 bg-gradient-to-b from-primary/75 via-primary/70 to-primary/95" />
           <div className="relative max-w-5xl mx-auto px-5 pt-6 pb-7 sm:px-6">
             <div className="flex items-center gap-1.5 text-primary-foreground/90 text-sm font-medium mb-3">
               <MapPin className="h-4 w-4" />
               Marinilla, Antioquia
             </div>
-            <h1 className="text-xl sm:text-2xl font-bold text-primary-foreground mb-1">
+            <h1 className="text-xl sm:text-2xl font-bold text-primary-foreground mb-1 [text-shadow:0_1px_3px_rgba(0,0,0,0.25)]">
               {firstName ? `Hola, ${firstName}` : 'Hola'}
             </h1>
-            <p className="text-primary-foreground/85 text-sm mb-5">¿Qué necesitas hoy en tu región?</p>
+            <p className="text-primary-foreground/90 text-sm mb-5 [text-shadow:0_1px_2px_rgba(0,0,0,0.2)]">¿Qué necesitas hoy en tu región?</p>
 
             <form onSubmit={handleSearchSubmit} className="relative">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -162,6 +201,16 @@ const HomePage = () => {
                 ))}
               </div>
             )}
+          </section>
+
+          {/* Únete a AmiOriente */}
+          <section>
+            <h2 className="text-base font-bold text-foreground mb-4">Únete a AmiOriente</h2>
+            <div className="grid grid-cols-3 gap-3">
+              {ROLES.map((role) => (
+                <RoleCard key={role.title} {...role} />
+              ))}
+            </div>
           </section>
         </main>
       </div>
