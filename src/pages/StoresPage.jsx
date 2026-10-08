@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
+import { useSearchParams } from 'react-router-dom';
 import { Search, MapPin, Star, ShoppingBag, Clock, Phone } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -105,10 +106,12 @@ const StoreCard = ({ store }) => (
 );
 
 const StoresPage = () => {
+  const [searchParams] = useSearchParams();
   const [stores, setStores] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('Todos');
+  // Permite llegar ya filtrado desde fuera (ej. las categorías del Home: /servicios?categoria=Restaurante)
+  const [selectedCategory, setSelectedCategory] = useState(searchParams.get('categoria') || 'Todos');
   const [page, setPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
 

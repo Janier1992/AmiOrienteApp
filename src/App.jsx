@@ -118,10 +118,12 @@ const AppContent = () => {
   }, [location.pathname, isStoreUser]);
 
   // Dynamic Background Logic
+  // El Home ahora es una página de exploración opaca (no una landing con foto
+  // de fondo translúcida), así que ya no necesita el overlay oscuro — solo
+  // las páginas de auth siguen mostrando la foto de fondo a través.
   const bgClass = useMemo(() => {
-    const isHomePage = location.pathname === '/';
     const isAuthPage = authRoutes.some(path => location.pathname.startsWith(path));
-    return (isHomePage || isAuthPage)
+    return isAuthPage
       ? 'bg-black/30'
       : 'bg-white/90 dark:bg-slate-950/90';
   }, [location.pathname, authRoutes]);

@@ -63,10 +63,11 @@ const ProductsPage = () => {
   const [storeName, setStoreName] = useState("Todos los Productos");
   const [loading, setLoading] = useState(true);
   const [isCartOpen, setIsCartOpen] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchParams] = useSearchParams();
+  // Permite llegar con una búsqueda ya escrita (ej. el buscador del Home: /productos?buscar=arepas)
+  const [searchTerm, setSearchTerm] = useState(searchParams.get('buscar') || '');
   const getCartItemCount = useCartStore(state => state.getCartItemCount);
   const cartItemCount = getCartItemCount();
-  const [searchParams] = useSearchParams();
   const storeId = searchParams.get('tienda');
 
   useEffect(() => {

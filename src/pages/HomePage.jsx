@@ -1,146 +1,164 @@
 
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { User, Truck, Store, Utensils, Hotel, Leaf } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
+import {
+  Search, MapPin, Star, Utensils, ShoppingCart, Pill, Shirt,
+  Croissant, Sprout, Hotel, Store, Loader2
+} from 'lucide-react';
+import { useAuth } from '@/contexts/SupabaseAuthContext';
+import { customerService } from '@/services/customerService';
+import { SERVICE_CATEGORIES_LIST } from '@/data/sample-data';
 
-const FeatureCard = ({ icon, title, description }) => (
-  <div className="text-center p-6 bg-white/95 dark:bg-slate-900/95 rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 border border-white/20 transform hover:-translate-y-1">
-    <div className="mx-auto bg-primary/10 rounded-full h-16 w-16 flex items-center justify-center mb-4">
-      {icon}
-    </div>
-    <h3 className="text-xl font-semibold text-foreground mb-2">{title}</h3>
-    <p className="text-muted-foreground">{description}</p>
-  </div>
-);
+// Mismo set de categorías que filtra StoresPage (stores.category real),
+// con un ícono por categoría para el grid del Home.
+const CATEGORY_ICON = {
+  'Restaurante': Utensils,
+  'Hotel': Hotel,
+  'Ropa': Shirt,
+  'Farmacia': Pill,
+  'Papelería': Store,
+  'Panadería': Croissant,
+  'Supermercado': ShoppingCart,
+  'Cultivador': Sprout,
+  'Veterinaria': Store,
+  'General': Store,
+};
 
-const RoleCard = ({ icon, title, description, link, buttonText }) => (
-  <Card className="text-center shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col bg-white/95 dark:bg-slate-900/95 border-none">
-    <CardHeader>
-      <div className="mx-auto bg-primary/10 rounded-full h-20 w-20 flex items-center justify-center">
-        {icon}
+const CategoryTile = ({ name }) => {
+  const Icon = CATEGORY_ICON[name] || Store;
+  return (
+    <Link
+      to={`/servicios?categoria=${encodeURIComponent(name)}`}
+      className="flex flex-col items-center gap-2 group"
+    >
+      <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center transition-transform group-hover:-translate-y-0.5">
+        <Icon className="h-6 w-6 text-primary" />
       </div>
-      <CardTitle className="mt-4 text-2xl text-foreground">{title}</CardTitle>
-    </CardHeader>
-    <CardContent className="flex-grow flex flex-col justify-between">
-      <CardDescription className="mb-6 text-base text-muted-foreground">{description}</CardDescription>
-      <Link to={link}>
-        <Button className="w-full text-lg py-6">{buttonText}</Button>
-      </Link>
-    </CardContent>
-  </Card>
+      <span className="text-xs font-medium text-foreground text-center leading-tight">{name}</span>
+    </Link>
+  );
+};
+
+const StoreCard = ({ store }) => (
+  <Link
+    to={`/productos?tienda=${store.id}`}
+    className="flex-shrink-0 w-44 rounded-2xl border border-border bg-card overflow-hidden transition-shadow hover:shadow-md"
+  >
+    <div className="h-24 bg-muted relative">
+      {store.logo_url ? (
+        <img src={store.logo_url} alt={store.name} className="w-full h-full object-cover" />
+      ) : (
+        <div className="w-full h-full flex items-center justify-center bg-primary/10">
+          <Store className="h-7 w-7 text-primary/50" />
+        </div>
+      )}
+      {store.star_rating && (
+        <span className="absolute bottom-2 left-2 bg-white rounded-full px-2 py-0.5 text-[11px] font-bold text-amber-600 flex items-center gap-1">
+          <Star className="h-3 w-3 fill-amber-500 text-amber-500" />
+          {store.star_rating}
+        </span>
+      )}
+    </div>
+    <div className="p-3">
+      <p className="text-sm font-semibold truncate">{store.name}</p>
+      <p className="text-xs text-muted-foreground truncate">{store.category || 'Comercio local'}</p>
+    </div>
+  </Link>
 );
 
 const HomePage = () => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const [searchTerm, setSearchTerm] = useState('');
+  const [nearbyStores, setNearbyStores] = useState([]);
+  const [loadingStores, setLoadingStores] = useState(true);
+
+  const firstName = user?.user_metadata?.full_name?.split(' ')[0];
+
+  useEffect(() => {
+    const loadNearby = async () => {
+      setLoadingStores(true);
+      const { data } = await customerService.getStores({ page: 1, limit: 8 });
+      setNearbyStores(data || []);
+      setLoadingStores(false);
+    };
+    loadNearby();
+  }, []);
+
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    navigate(`/productos${searchTerm.trim() ? `?buscar=${encodeURIComponent(searchTerm.trim())}` : ''}`);
+  };
+
   return (
     <>
       <Helmet>
         <title>AmiOriente - Tu Conexión con el Oriente Antioqueño</title>
-        <meta name="description" content="La plataforma integral de servicios, domicilios, comercio y turismo en el Oriente Antioqueño. Conectamos la región en una experiencia única." />
+        <meta name="description" content="Restaurantes, mercados, farmacias, turismo y comercio local del Oriente Antioqueño, todo en un solo lugar." />
       </Helmet>
-      <main className="relative z-10 w-full">
-        {/* Hero Section */}
-        <div className="relative pt-12 pb-16 md:pt-24 md:pb-32">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            {/* Added a darker backdrop to hero content specifically to make text pop against sunset */}
-            <div className="relative bg-black/40 backdrop-blur-sm rounded-3xl p-8 md:p-12 shadow-2xl border border-white/10 text-center">
-              <motion.h1
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8 }}
-                className="text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-7xl drop-shadow-lg"
-              >
-                <span className="block text-white mb-2">Conectando tu</span>
-                {/* TODO: Integrate RegionContext here for dynamic city name */}
-                <span className="block text-primary-foreground bg-clip-text text-transparent bg-gradient-to-r from-green-300 to-emerald-200">
-                  Región
-                </span>
-              </motion.h1>
-              <motion.p
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.2 }}
-                className="mt-6 max-w-lg mx-auto text-xl md:text-2xl text-white/90 sm:max-w-3xl drop-shadow-md font-medium"
-              >
-                Tu plataforma integral para domicilios, comercio, turismo y todos los servicios que nuestra comunidad tiene para ofrecer.
-              </motion.p>
-              <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.4 }}
-                className="mt-10 max-w-sm mx-auto sm:max-w-none sm:flex sm:justify-center gap-4"
-              >
-                <Link to="/productos">
-                  <Button id="hero-explore-btn" size="lg" className="w-full sm:w-auto text-lg px-8 py-6 shadow-xl bg-primary hover:bg-primary/90">
-                    Explorar Productos
-                  </Button>
-                </Link>
-                <Link to="/servicios/registro">
-                  <Button size="lg" variant="outline" className="w-full sm:w-auto text-lg px-8 py-6 bg-white/20 text-white border-white hover:bg-white/30 backdrop-blur-md shadow-xl">
-                    Registra tu Servicio
-                  </Button>
-                </Link>
-              </motion.div>
+
+      <div className="bg-background min-h-screen">
+        {/* Encabezado */}
+        <div className="bg-primary">
+          <div className="max-w-5xl mx-auto px-5 pt-6 pb-7 sm:px-6">
+            <div className="flex items-center gap-1.5 text-primary-foreground/90 text-sm font-medium mb-3">
+              <MapPin className="h-4 w-4" />
+              Marinilla, Antioquia
             </div>
+            <h1 className="text-xl sm:text-2xl font-bold text-primary-foreground mb-1">
+              {firstName ? `Hola, ${firstName}` : 'Hola'}
+            </h1>
+            <p className="text-primary-foreground/85 text-sm mb-5">¿Qué necesitas hoy en tu región?</p>
+
+            <form onSubmit={handleSearchSubmit} className="relative">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Busca restaurantes, farmacias, tiendas..."
+                className="w-full rounded-xl bg-white pl-11 pr-4 py-3 text-sm text-foreground shadow-sm focus:outline-none focus:ring-2 focus:ring-white/60"
+              />
+            </form>
           </div>
         </div>
 
-        <section id="features-section" className="py-12 md:py-20">
-          <div className="container mx-auto px-4">
-            {/* Semi-transparent container for features section */}
-            <div className="bg-white/80 dark:bg-slate-950/80 backdrop-blur-md rounded-3xl p-8 shadow-xl">
-              <h2 className="text-3xl md:text-4xl font-bold text-center text-foreground mb-4 drop-shadow-sm">
-                Todo lo que necesitas
-              </h2>
-              <p className="text-center text-muted-foreground text-lg mb-12 max-w-2xl mx-auto">
-                Descubre la variedad de servicios disponibles en nuestra plataforma
-              </p>
+        <main className="max-w-5xl mx-auto px-5 sm:px-6 py-8 space-y-10">
+          {/* Categorías */}
+          <section>
+            <h2 className="text-base font-bold text-foreground mb-4">Categorías</h2>
+            <div className="grid grid-cols-4 sm:grid-cols-5 gap-4">
+              {SERVICE_CATEGORIES_LIST.map((name) => (
+                <CategoryTile key={name} name={name} />
+              ))}
+            </div>
+          </section>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                <FeatureCard icon={<Store className="h-10 w-10 text-primary" />} title="Comercio Local" description="Apoya a los negocios y artesanos de tu ciudad y alrededores." />
-                <FeatureCard icon={<Utensils className="h-10 w-10 text-primary" />} title="Gastronomía" description="Descubre los sabores únicos de la región en nuestros mejores restaurantes." />
-                <FeatureCard icon={<Hotel className="h-10 w-10 text-primary" />} title="Turismo y Hoteles" description="Encuentra el lugar perfecto para tu próxima escapada de fin de semana." />
-                <FeatureCard icon={<Leaf className="h-10 w-10 text-primary" />} title="Del Campo a tu Mesa" description="Compra productos frescos directamente de nuestros campesinos locales." />
+          {/* Negocios cerca de ti */}
+          <section>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-base font-bold text-foreground">Cerca de ti</h2>
+              <Link to="/servicios" className="text-xs font-semibold text-primary">Ver todo</Link>
+            </div>
+            {loadingStores ? (
+              <div className="flex items-center justify-center py-10 text-muted-foreground">
+                <Loader2 className="h-5 w-5 animate-spin mr-2" /> Cargando negocios...
               </div>
-            </div>
-          </div>
-        </section>
-
-        <section id="roles" className="py-12 md:py-20">
-          <div className="container mx-auto px-4">
-            {/* Text has drop-shadow to be readable against sunset if bg-black/30 is applied in App.jsx */}
-            <h2 className="text-3xl md:text-4xl font-bold text-center text-white mb-12 drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)]">
-              Únete a Nuestra Comunidad
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-              <RoleCard
-                icon={<Store className="h-10 w-10 text-primary" />}
-                title="Para Negocios"
-                description="Registra tu tienda, restaurante, hotel o servicio turístico y llega a más clientes en toda la región."
-                link="/servicios/registro"
-                buttonText="Comenzar ahora"
-              />
-              <RoleCard
-                icon={<User className="h-10 w-10 text-primary" />}
-                title="Para Clientes"
-                description="Encuentra todo lo que buscas, desde productos locales hasta experiencias únicas, sin salir de casa."
-                link="/cliente/registro"
-                buttonText="Registrarse"
-              />
-              <RoleCard
-                icon={<Truck className="h-10 w-10 text-primary" />}
-                title="Para Domiciliarios"
-                description="Únete a nuestra red de entregas y genera ingresos adicionales con horarios flexibles."
-                link="/domiciliario/registro"
-                buttonText="Aplicar ahora"
-              />
-            </div>
-          </div>
-        </section>
-      </main>
+            ) : nearbyStores.length === 0 ? (
+              <p className="text-sm text-muted-foreground py-6 text-center border border-dashed rounded-xl">
+                Todavía no hay negocios registrados en tu zona.
+              </p>
+            ) : (
+              <div className="flex gap-3 overflow-x-auto pb-2 -mx-1 px-1">
+                {nearbyStores.map((store) => (
+                  <StoreCard key={store.id} store={store} />
+                ))}
+              </div>
+            )}
+          </section>
+        </main>
+      </div>
     </>
   );
 };
