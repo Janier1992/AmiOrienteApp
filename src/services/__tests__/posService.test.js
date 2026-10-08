@@ -5,13 +5,10 @@ const mockSingle = vi.fn();
 const mockSelect = vi.fn(() => ({ single: mockSingle }));
 const mockInsertOrders = vi.fn(() => ({ select: mockSelect }));
 const mockInsertItems = vi.fn();
-const mockEq = vi.fn();
-const mockUpdate = vi.fn(() => ({ eq: mockEq }));
 
 const mockFrom = vi.fn((table) => {
     if (table === 'orders') return { insert: mockInsertOrders };
     if (table === 'order_items') return { insert: mockInsertItems };
-    if (table === 'products') return { update: mockUpdate };
     throw new Error(`Unexpected table: ${table}`);
 });
 
@@ -29,7 +26,6 @@ describe('posService.createPOSSale', () => {
         vi.clearAllMocks();
         mockSingle.mockResolvedValue({ data: { id: 'order-1' }, error: null });
         mockInsertItems.mockResolvedValue({ error: null });
-        mockEq.mockResolvedValue({ error: null });
     });
 
     it('crea la orden con los datos correctos', async () => {
@@ -61,21 +57,10 @@ describe('posService.createPOSSale', () => {
         ]);
     });
 
-    it('descuenta stock solo para items que lo tienen', async () => {
+    it('no toca products directamente: el stock lo descuenta el trigger de la base al insertar order_items', async () => {
         await posService.createPOSSale({ storeId: 'store-1', cart, guestInfo: {}, total: 30000 });
 
-        // Solo prod-1 tiene stock definido (10 - 2 = 8)
-        expect(mockFrom).toHaveBeenCalledWith('products');
-        expect(mockUpdate).toHaveBeenCalledTimes(1);
-        expect(mockUpdate).toHaveBeenCalledWith({ stock: 8 });
-        expect(mockEq).toHaveBeenCalledWith('id', 'prod-1');
-    });
-
-    it('nunca deja el stock en negativo', async () => {
-        const overSoldCart = [{ id: 'prod-1', name: 'Arroz', price: 5000, qty: 99, stock: 5 }];
-        await posService.createPOSSale({ storeId: 'store-1', cart: overSoldCart, guestInfo: {}, total: 5000 });
-
-        expect(mockUpdate).toHaveBeenCalledWith({ stock: 0 });
+        expect(mockFrom).not.toHaveBeenCalledWith('products');
     });
 
     it('lanza error y no sigue si falla la creación de la orden', async () => {
@@ -86,16 +71,13 @@ describe('posService.createPOSSale', () => {
         ).rejects.toThrow('db down');
 
         expect(mockInsertItems).not.toHaveBeenCalled();
-        expect(mockUpdate).not.toHaveBeenCalled();
     });
 
-    it('lanza error y no descuenta stock si falla la inserción de order_items', async () => {
+    it('lanza error si falla la inserción de order_items', async () => {
         mockInsertItems.mockResolvedValue({ error: new Error('items failed') });
 
         await expect(
             posService.createPOSSale({ storeId: 'store-1', cart, guestInfo: {}, total: 30000 })
         ).rejects.toThrow('items failed');
-
-        expect(mockUpdate).not.toHaveBeenCalled();
     });
 });

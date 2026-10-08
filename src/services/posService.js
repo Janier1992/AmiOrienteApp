@@ -2,9 +2,13 @@ import { supabase } from '@/lib/customSupabaseClient';
 
 /**
  * Single source of truth for POS sales across every store vertical.
- * Always creates the order, inserts order_items (so the commission
- * trigger on order_items fires consistently) and decrements stock for
- * any item that tracks it.
+ * Always creates the order and inserts order_items — stock is NOT
+ * touched here on purpose: the existing DB trigger
+ * on_order_item_created_update_stock already does
+ * `products.stock = stock - NEW.quantity` for every order_items row,
+ * unconditionally (confirmed via pg_get_functiondef). Decrementing it
+ * again here was double-subtracting on every POS sale with a tracked
+ * stock item.
  */
 export const posService = {
     async createPOSSale({ storeId, cart, guestInfo, total, status = 'Entregado' }) {
@@ -33,16 +37,6 @@ export const posService = {
         }));
         const { error: itemsError } = await supabase.from('order_items').insert(orderItems);
         if (itemsError) throw itemsError;
-
-        for (const item of cart) {
-            if (item.stock !== undefined) {
-                const { error: stockError } = await supabase
-                    .from('products')
-                    .update({ stock: Math.max(0, item.stock - item.qty) })
-                    .eq('id', item.id);
-                if (stockError) throw stockError;
-            }
-        }
 
         return order;
     },
