@@ -40,7 +40,7 @@ Auditoría en `docs/AUDITORIA_SUPABASE_2026-10-07.md`. Las correcciones están e
 3. **Pagos en línea.** Todo se registra como efectivo/contraentrega. La pestaña Pagos anuncia Bold como próxima integración.
 4. **Cupón consumido antes de crear el pedido** (`redeem_discount`): si el pedido falla, el cupón ya se gastó. Resolver al mover la creación del pedido al servidor.
 5. ~~Equipo de trabajo~~ (hecho; ver sección arriba).
-6. **Datos de ejemplo**: el directorio muestra negocios de muestra si la plataforma aún no tiene tiendas.
+6. ~~Datos de ejemplo~~ (hecho: el directorio y turismo muestran solo datos reales, con mensajes claros si no hay; los de ejemplo solo con `VITE_DEMO_MODE=true`, para presentaciones).
 7. **Normativa colombiana** (plataformas de domicilio y venta): pendiente de definir con el propietario. Al hacerlo, revisar también `TermsPage` y `PrivacyPolicyPage`: siguen llamando a la plataforma «Domicilios MiOriente» y los términos dicen que los pagos se procesan con Stripe, lo cual hoy no es cierto (todo es efectivo/transferencia).
 8. ~~Planes y comisiones~~ (unificados en la tabla `plans`; falta que el propietario confirme los valores).
 9. ~~Contraste de color (WCAG AA)~~ (hecho: verde primario `142 64% 28%`, texto secundario y destructivo oscurecidos; auditoría axe `color-contrast` con 0 hallazgos en ~50 pantallas en tema claro y oscuro).

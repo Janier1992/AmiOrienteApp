@@ -10,6 +10,7 @@ import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
 
 import { customerService } from '@/services/customerService';
 import { SAMPLE_STORES, SERVICE_CATEGORIES_LIST } from '@/data/sample-data';
+import { isDemoMode } from '@/lib/demoMode';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import PageHeader from '@/components/shared/PageHeader';
@@ -83,6 +84,7 @@ const StoresPage = () => {
   const [selectedCategory, setSelectedCategory] = useState(searchParams.get('categoria') || 'Todos');
   const [page, setPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
+  const [loadError, setLoadError] = useState(false);
 
   // Debounce search
   useEffect(() => {
@@ -103,12 +105,10 @@ const StoresPage = () => {
         category: selectedCategory
       });
 
-      // If we have search/filter results, prioritize them.
-      // Only fall back to the curated sample list for the default, unfiltered
-      // browse view when the platform has no real stores registered yet —
-      // and mark them as such, since they aren't real platform listings and
-      // "Ver Productos" has nowhere real to send a customer for them.
-      if (data.length === 0 && !searchTerm && selectedCategory === 'Todos') {
+      setLoadError(false);
+      // Los negocios de ejemplo solo se muestran en modo demostración (ver
+      // src/lib/demoMode.js); en producción solo hay negocios reales.
+      if (isDemoMode && data.length === 0 && !searchTerm && selectedCategory === 'Todos') {
         setStores(SAMPLE_STORES.map(s => ({ ...s, _isSample: true })));
       } else {
         setStores(data);
@@ -117,8 +117,8 @@ const StoresPage = () => {
 
     } catch (error) {
       console.error('Error fetching stores:', error);
-      // Fallback
-      setStores(SAMPLE_STORES.map(s => ({ ...s, _isSample: true })));
+      setLoadError(true);
+      setStores(isDemoMode ? SAMPLE_STORES.map(s => ({ ...s, _isSample: true })) : []);
     } finally {
       setLoading(false);
     }
@@ -229,15 +229,30 @@ const StoresPage = () => {
                 ) : (
                   <div className="text-center py-20">
                     <ShoppingBag className="h-16 w-16 text-muted-foreground/40 mx-auto mb-4" />
-                    <h3 className="text-lg font-medium text-foreground">No encontramos lo que buscas</h3>
-                    <p className="text-muted-foreground">Intenta cambiar los términos de búsqueda o la categoría.</p>
-                    <Button
-                      variant="link"
-                      onClick={() => { setSearchTerm(''); setSelectedCategory('Todos'); }}
-                      className="mt-2"
-                    >
-                      Limpiar filtros
-                    </Button>
+                    {loadError ? (
+                      <>
+                        <h3 className="text-lg font-medium text-foreground">No pudimos cargar los negocios</h3>
+                        <p className="text-muted-foreground">Revisa tu conexión e inténtalo de nuevo.</p>
+                        <Button variant="outline" onClick={fetchStores} className="mt-3">Reintentar</Button>
+                      </>
+                    ) : !searchTerm && selectedCategory === 'Todos' ? (
+                      <>
+                        <h3 className="text-lg font-medium text-foreground">Aún no hay negocios registrados</h3>
+                        <p className="text-muted-foreground">Muy pronto verás aquí los comercios del Oriente Antioqueño.</p>
+                      </>
+                    ) : (
+                      <>
+                        <h3 className="text-lg font-medium text-foreground">No encontramos lo que buscas</h3>
+                        <p className="text-muted-foreground">Intenta cambiar los términos de búsqueda o la categoría.</p>
+                        <Button
+                          variant="link"
+                          onClick={() => { setSearchTerm(''); setSelectedCategory('Todos'); }}
+                          className="mt-2"
+                        >
+                          Limpiar filtros
+                        </Button>
+                      </>
+                    )}
                   </div>
                 )}
               </AnimatePresence>

@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/lib/customSupabaseClient';
 import { SAMPLE_TOURISM_SPOTS } from '@/data/sample-data';
+import { isDemoMode } from '@/lib/demoMode';
 import { motion, AnimatePresence } from 'framer-motion';
 import TourismSpotModal from '@/components/tourism/TourismSpotModal';
 
@@ -109,24 +110,12 @@ const TourismPage = () => {
               }));
           }
 
-          // Use sample data if DB is empty or fails
-          if (fetchedSpots.length === 0) {
+          // Los lugares de ejemplo solo se usan en modo demostración (ver
+          // src/lib/demoMode.js): en producción solo se muestran los reales.
+          if (isDemoMode && fetchedSpots.length === 0) {
               fetchedSpots = SAMPLE_TOURISM_SPOTS;
-          } else {
-              // Optionally merge sample data for demo purposes if needed, 
-              // but usually we prefer real data if available.
-              // For now, let's append sample data to ensure richness
-              fetchedSpots = [...fetchedSpots, ...SAMPLE_TOURISM_SPOTS];
-               // Remove duplicates based on ID or Name to avoid clutter
-              const uniqueMap = new Map();
-              fetchedSpots.forEach(item => uniqueMap.set(item.name, item)); // using name as key for simplicity in demo
-              fetchedSpots = Array.from(uniqueMap.values());
-          }
-
-          if (fetchedCategories.length === 0) {
-               // Extract categories from sample data if DB categories empty
-               const cats = [...new Set(SAMPLE_TOURISM_SPOTS.map(s => s.category_name))];
-               fetchedCategories = cats.map((name, i) => ({ id: i, name }));
+              const cats = [...new Set(SAMPLE_TOURISM_SPOTS.map(s => s.category_name))];
+              fetchedCategories = cats.map((name, i) => ({ id: i, name }));
           }
 
           setCategories(fetchedCategories);
@@ -134,9 +123,11 @@ const TourismPage = () => {
 
       } catch (e) {
           console.error("Critical error in TourismPage:", e);
-          setSpots(SAMPLE_TOURISM_SPOTS);
-          const cats = [...new Set(SAMPLE_TOURISM_SPOTS.map(s => s.category_name))];
-          setCategories(cats.map((name, i) => ({ id: i, name })));
+          if (isDemoMode) {
+            setSpots(SAMPLE_TOURISM_SPOTS);
+            const cats = [...new Set(SAMPLE_TOURISM_SPOTS.map(s => s.category_name))];
+            setCategories(cats.map((name, i) => ({ id: i, name })));
+          }
       } finally {
           setLoading(false);
       }
@@ -255,9 +246,13 @@ const TourismPage = () => {
                     className="text-center py-20 bg-white rounded-2xl border border-dashed border-slate-300"
                  >
                     <MapIcon className="h-20 w-20 text-slate-200 mx-auto mb-4" />
-                    <h2 className="text-2xl font-bold text-slate-700 mb-2">No encontramos resultados</h2>
+                    <h2 className="text-2xl font-bold text-slate-700 mb-2">
+                      {spots.length === 0 ? 'Pronto habrá lugares para descubrir' : 'No encontramos resultados'}
+                    </h2>
                     <p className="text-slate-500 max-w-md mx-auto">
-                        Intenta con otra categoría o busca algo diferente en Marinilla.
+                        {spots.length === 0
+                          ? 'Estamos sumando sitios turísticos y hoteles de Marinilla. Vuelve muy pronto.'
+                          : 'Intenta con otra categoría o busca algo diferente en Marinilla.'}
                     </p>
                     <Button 
                         variant="link" 
