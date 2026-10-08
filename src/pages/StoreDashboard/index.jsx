@@ -13,11 +13,11 @@ const UniversalStoreDashboard = React.lazy(() => import('./dashboards/UniversalS
 const StoreDashboardRouter = () => {
     const { user, signOut } = useAuth();
     const navigate = useNavigate();
-    const { store, isLoadingStore, error, fetchStoreData } = useStoreDashboard();
+    const { store, storeUserId, isLoadingStore, error, fetchStoreData } = useStoreDashboard();
 
     useEffect(() => {
         if (user) {
-            if (store && store.owner_id !== user.id) {
+            if (store && useStoreDashboard.getState().storeUserId !== user.id) {
                 useStoreDashboard.getState().reset();
             }
             fetchStoreData(user.id);
@@ -25,21 +25,23 @@ const StoreDashboardRouter = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user, fetchStoreData]);
 
+    // Una cuenta de otro rol (p. ej. cliente) solo entra si es colaboradora de un
+    // negocio; si no tiene negocio, no debe ver "Negocio no encontrado, ¿registrar
+    // uno?" como si pudiera convertirse en tienda desde aquí.
+    const isStoreRole = !user?.user_metadata?.role || user.user_metadata.role === 'tienda';
+    const hasNoAccess = !!user && storeUserId === user.id && !isLoadingStore && !store && !isStoreRole;
+
     useEffect(() => {
         if (!user) {
             navigate('/tienda/login');
             return;
         }
-        // Consistente con CustomerDashboard/DeliveryDashboard: una cuenta de
-        // otro rol no debe ver "Negocio no encontrado, ¿registrar uno?" como
-        // si pudiera convertirse en tienda desde aquí.
-        if (user.user_metadata?.role && user.user_metadata.role !== 'tienda') {
+        if (hasNoAccess) {
             navigate('/');
         }
-    }, [user, navigate]);
+    }, [user, hasNoAccess, navigate]);
 
-    if (!user) return null;
-    if (user.user_metadata?.role && user.user_metadata.role !== 'tienda') return null;
+    if (!user || hasNoAccess) return null;
 
     if (isLoadingStore) {
         return (

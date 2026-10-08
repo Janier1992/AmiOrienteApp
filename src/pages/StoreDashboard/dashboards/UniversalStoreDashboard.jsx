@@ -25,6 +25,7 @@ import {
     LineChart,
     Bot,
     Gem,
+    Users2,
     CreditCard as PaymentsIcon
 } from 'lucide-react';
 import LoadingSpinner from '@/components/shared/LoadingSpinner';
@@ -50,6 +51,7 @@ const StoreCustomersTab = lazy(() => import('../views/StoreCustomersTab'));
 const DiscountsTab = lazy(() => import('../DiscountsTab'));
 const AnalyticsTab = lazy(() => import('../AnalyticsTab'));
 const SubscriptionTab = lazy(() => import('../SubscriptionTab'));
+const TeamTab = lazy(() => import('../TeamTab'));
 const PaymentsTab = lazy(() => import('../PaymentsTab'));
 const AutomationTab = lazy(() => import('../AutomationTab'));
 
@@ -155,6 +157,9 @@ const FEATURE_TABS = {
     }
 };
 
+/** Secciones que solo ve el dueño del negocio (no el equipo). */
+const OWNER_ONLY_TABS = ['pagos', 'suscripcion', 'configuracion'];
+
 /**
  * Common Tabs that all stores get
  */
@@ -188,6 +193,12 @@ const COMMON_TABS = [
         label: 'Pagos',
         icon: PaymentsIcon,
         component: PaymentsTab,
+    },
+    {
+        path: 'equipo',
+        label: 'Equipo',
+        icon: Users2,
+        component: TeamTab,
     },
     {
         path: 'suscripcion',
@@ -261,7 +272,11 @@ const UniversalStoreDashboard = () => {
         // Process Common Tabs
         // StoreConfigTab needs the full store object + setStore + user (not just
         // storeId) to pre-fill the form and actually be able to save changes.
+        // Pagos, plan y configuración del negocio son solo del dueño: las políticas de
+        // la base de datos no dejan que el equipo los modifique.
+        const isOwner = store.viewerRole === undefined || store.viewerRole === 'owner';
         const commonTabs = COMMON_TABS
+            .filter(tab => isOwner || !OWNER_ONLY_TABS.includes(tab.path))
             .filter(tab => tab.path === 'configuracion' || !disabledModules.includes(tab.path))
             .map(tab => {
                 const Element = tab.component;

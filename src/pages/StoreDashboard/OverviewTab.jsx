@@ -68,7 +68,7 @@ const OverviewTab = ({ storeId }) => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-red-500">-${Number(platform_commission).toLocaleString()}</div>
-            <p className="text-xs text-muted-foreground">Plan Gratuito (0% comisión)</p>
+            <p className="text-xs text-muted-foreground">Según tu plan (ver «Mi Plan»)</p>
           </CardContent>
         </Card>
       </div>

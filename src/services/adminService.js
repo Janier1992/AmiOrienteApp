@@ -32,6 +32,7 @@ export const adminService = {
                 created_at,
                 owner_id,
                 disabled_modules,
+                subscriptions ( plan_id, status ),
                 service_categories ( name ),
                 profiles:owner_id ( full_name, email, phone )
             `)

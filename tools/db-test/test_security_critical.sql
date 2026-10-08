@@ -168,6 +168,7 @@ DELETE FROM public.deliveries;
 
 \if :after
   \ir test_delivery_flow.sql
+  \ir test_teams_plans.sql
 \endif
 
 -- ================================= resultado =================================

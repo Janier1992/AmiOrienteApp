@@ -181,6 +181,46 @@ CREATE POLICY "Allow delivery personnel to create deliveries" ON public.deliveri
   WITH CHECK (((SELECT profiles.role FROM profiles WHERE profiles.id = auth.uid()) = 'domiciliario'));
 CREATE POLICY "Assigned delivery personnel can see their own deliveries" ON public.deliveries FOR SELECT USING (auth.uid() = delivery_person_id);
 
+
+-- ---- comisiones (estado actual: 22 % fijo dentro del trigger) y política antigua de equipo ----
+CREATE TABLE public.service_types (id uuid PRIMARY KEY DEFAULT gen_random_uuid(), name text NOT NULL, commission_rate numeric);
+INSERT INTO public.service_types(name, commission_rate) VALUES ('Productos', 0.22);
+CREATE TABLE public.order_items (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  order_id uuid NOT NULL REFERENCES public.orders(id) ON DELETE CASCADE,
+  product_id uuid NOT NULL REFERENCES public.products(id), quantity integer NOT NULL, price numeric NOT NULL
+);
+CREATE TABLE public.transactions (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  order_id uuid NOT NULL, store_id uuid NOT NULL, product_id uuid NOT NULL, service_type_id uuid NOT NULL,
+  amount numeric NOT NULL, commission_rate numeric NOT NULL, created_at timestamptz DEFAULT now(),
+  commission_fee numeric GENERATED ALWAYS AS (amount * commission_rate) STORED
+);
+CREATE FUNCTION public.handle_new_order_transaction() RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER AS $f$
+DECLARE order_store_id UUID; product_price NUMERIC; v_service_type_id UUID; commission_rate_val NUMERIC;
+BEGIN
+  SELECT o.store_id, p.price INTO order_store_id, product_price FROM public.orders o JOIN public.products p ON p.id = NEW.product_id WHERE o.id = NEW.order_id;
+  SELECT id, commission_rate INTO v_service_type_id, commission_rate_val FROM public.service_types WHERE name = 'Productos' LIMIT 1;
+  IF commission_rate_val IS NULL THEN commission_rate_val := 0.22; END IF;
+  INSERT INTO public.transactions(order_id, store_id, product_id, service_type_id, amount, commission_rate)
+  VALUES (NEW.order_id, order_store_id, NEW.product_id, v_service_type_id, product_price * NEW.quantity, commission_rate_val);
+  RETURN NEW;
+END; $f$;
+CREATE TRIGGER on_order_item_created AFTER INSERT ON public.order_items FOR EACH ROW EXECUTE FUNCTION public.handle_new_order_transaction();
+CREATE FUNCTION public.is_store_admin(store_id_to_check uuid, user_id_to_check uuid) RETURNS boolean LANGUAGE plpgsql SECURITY DEFINER AS $f$
+BEGIN RETURN EXISTS (SELECT 1 FROM store_members WHERE store_id = store_id_to_check AND user_id = user_id_to_check AND role = 'admin'); END; $f$;
+ALTER TABLE public.order_items ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Store owners can insert order items" ON public.order_items FOR INSERT TO authenticated
+  WITH CHECK (EXISTS (SELECT 1 FROM orders JOIN stores ON orders.store_id = stores.id WHERE orders.id = order_items.order_id AND stores.owner_id = auth.uid()));
+CREATE POLICY "Users can view order items related to their orders" ON public.order_items FOR SELECT
+  USING (EXISTS (SELECT 1 FROM orders WHERE orders.id = order_items.order_id AND (auth.uid() = orders.customer_id OR auth.uid() = (SELECT stores.owner_id FROM stores WHERE stores.id = orders.store_id))));
+CREATE POLICY "Store admins can manage members" ON public.store_members FOR ALL USING (is_store_admin(store_id, auth.uid()));
+CREATE POLICY "Store owners can create products for their store" ON public.products FOR INSERT
+  WITH CHECK (auth.uid() = (SELECT stores.owner_id FROM stores WHERE stores.id = products.store_id));
+CREATE POLICY "Store owners can update products in their store" ON public.products FOR UPDATE
+  USING (auth.uid() = (SELECT stores.owner_id FROM stores WHERE stores.id = products.store_id));
+ALTER TABLE public.products ENABLE ROW LEVEL SECURITY;
+
 -- Permisos por defecto de Supabase: anon y authenticated con todo; RLS es la barrera
 GRANT ALL ON ALL TABLES IN SCHEMA public TO anon, authenticated, service_role;
 GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA public TO anon, authenticated, service_role;
