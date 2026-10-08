@@ -14,6 +14,7 @@ const StoreConfigTab = ({ store: initialStore, setStore, user, onStoreCreated })
     description: '',
     logo_url: '',
     address: '',
+    hours: '',
     contact_email: '',
     contact_phone: '',
     whatsapp: '',
@@ -47,6 +48,7 @@ const StoreConfigTab = ({ store: initialStore, setStore, user, onStoreCreated })
         description: initialStore.description || '',
         logo_url: initialStore.logo_url || '',
         address: initialStore.address || '',
+        hours: initialStore.hours || '',
         contact_email: initialStore.contact_email || '',
         contact_phone: initialStore.contact_phone || '',
         whatsapp: initialStore.whatsapp || '',
@@ -152,6 +154,10 @@ const StoreConfigTab = ({ store: initialStore, setStore, user, onStoreCreated })
           <div>
             <label htmlFor="config-address" className="block text-sm font-medium text-gray-700 mb-2">Dirección</label>
             <Input id="config-address" type="text" name="address" value={storeConfig.address} onChange={handleConfigChange} />
+          </div>
+          <div>
+            <label htmlFor="config-hours" className="block text-sm font-medium text-gray-700 mb-2">Horario de Atención</label>
+            <Input id="config-hours" type="text" name="hours" value={storeConfig.hours} onChange={handleConfigChange} placeholder="Ej: Lun-Sáb 8:00 AM - 8:00 PM" />
           </div>
 
           <div className="pt-2">
