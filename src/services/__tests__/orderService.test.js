@@ -1,91 +1,79 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { orderService } from '../orderService';
 
-const mockOrderSingle = vi.fn();
-const mockInsertOrder = vi.fn(() => ({ select: () => ({ single: mockOrderSingle }) }));
-const mockInsertItems = vi.fn();
-const mockDeleteEq = vi.fn();
-const mockDelete = vi.fn(() => ({ eq: mockDeleteEq }));
+const mockRpc = vi.fn();
 
 vi.mock('@/lib/customSupabaseClient', () => ({
     supabase: {
-        from: (table) => {
-            if (table === 'orders') return { insert: (...a) => mockInsertOrder(...a), delete: () => mockDelete() };
-            if (table === 'order_items') return { insert: (...a) => mockInsertItems(...a) };
-            throw new Error(`Tabla inesperada: ${table}`);
-        },
+        rpc: (...a) => mockRpc(...a),
     },
 }));
 
 const baseOrder = {
-    customer_id: 'u1',
     store_id: 's1',
     delivery_address: 'Calle 10 #20-30',
     payment_method: 'efectivo',
 };
 const items = [
-    { product_id: 'p1', quantity: 2, price: 10000 },
-    { product_id: 'p2', quantity: 1, price: 5000 },
+    { product_id: 'p1', quantity: 2 },
+    { product_id: 'p2', quantity: 1 },
 ];
 
 describe('orderService.crearPedido', () => {
     beforeEach(() => {
         vi.clearAllMocks();
-        mockOrderSingle.mockResolvedValue({ data: { id: 'order-1' }, error: null });
-        mockInsertItems.mockResolvedValue({ error: null });
-        mockDeleteEq.mockResolvedValue({ error: null });
+        mockRpc.mockResolvedValue({ data: { id: 'order-1', total: 31000 }, error: null });
     });
 
-    it('calcula subtotal y total (tarifa de servicio + envío base)', async () => {
+    it('delega el cálculo al servidor via create_order, sin mandar precios ni totales', async () => {
         await orderService.crearPedido(baseOrder, items);
-        const payload = mockInsertOrder.mock.calls[0][0];
-        expect(payload.subtotal).toBe(25000);
-        expect(payload.service_fee).toBe(2000);
-        expect(payload.delivery_fee).toBe(4000);
-        expect(payload.total).toBe(25000 + 2000 + 4000);
+
+        expect(mockRpc).toHaveBeenCalledWith('create_order', {
+            p_store_id: 's1',
+            p_items: [
+                { product_id: 'p1', quantity: 2 },
+                { product_id: 'p2', quantity: 1 },
+            ],
+            p_delivery_address: 'Calle 10 #20-30',
+            p_payment_method: 'efectivo',
+            p_notes: null,
+            p_discount_code: null,
+            p_shipping_rate_id: null,
+            p_delivery_lat: null,
+            p_delivery_lng: null,
+        });
     });
 
-    it('usa envío, impuestos y descuento enviados, y el total nunca es negativo', async () => {
+    it('pasa el código de descuento y la tarifa de envío elegidos, si vienen', async () => {
         await orderService.crearPedido(
-            { ...baseOrder, shipping_fee: 6000, tax_amount: 1000, discount_amount: 3000 },
+            { ...baseOrder, discount_code: 'VERANO20', shipping_rate_id: 'rate-1' },
             items
         );
-        const payload = mockInsertOrder.mock.calls[0][0];
-        expect(payload.total).toBe(25000 + 2000 + 6000 + 1000 - 3000);
-
-        await orderService.crearPedido({ ...baseOrder, discount_amount: 999999 }, items);
-        expect(mockInsertOrder.mock.calls[1][0].total).toBe(0);
+        const call = mockRpc.mock.calls[0][1];
+        expect(call.p_discount_code).toBe('VERANO20');
+        expect(call.p_shipping_rate_id).toBe('rate-1');
     });
 
-    it('envío gratis (0) se respeta y no se reemplaza por la tarifa base', async () => {
-        await orderService.crearPedido({ ...baseOrder, shipping_fee: 0 }, items);
-        expect(mockInsertOrder.mock.calls[0][0].delivery_fee).toBe(0);
+    it('no envía quantity/price que el cliente pudiera manipular más allá de product_id y quantity', async () => {
+        await orderService.crearPedido(baseOrder, [{ product_id: 'p1', quantity: 2, price: 1 }]);
+        const call = mockRpc.mock.calls[0][1];
+        expect(call.p_items).toEqual([{ product_id: 'p1', quantity: 2 }]);
     });
 
-    it('el pago en efectivo entra como "Pendiente de pago en efectivo"', async () => {
-        await orderService.crearPedido(baseOrder, items);
-        expect(mockInsertOrder.mock.calls[0][0].status).toBe('Pendiente de pago en efectivo');
+    it('devuelve el pedido ya calculado por el servidor', async () => {
+        const pedido = await orderService.crearPedido(baseOrder, items);
+        expect(pedido).toEqual({ id: 'order-1', total: 31000 });
     });
 
-    it('crea los items ligados al pedido', async () => {
-        await orderService.crearPedido(baseOrder, items);
-        expect(mockInsertItems).toHaveBeenCalledWith([
-            { order_id: 'order-1', product_id: 'p1', quantity: 2, price: 10000 },
-            { order_id: 'order-1', product_id: 'p2', quantity: 1, price: 5000 },
-        ]);
-    });
-
-    it('si fallan los items, elimina el pedido y propaga el error', async () => {
-        mockInsertItems.mockResolvedValue({ error: { message: 'violación de RLS' } });
+    it('propaga el error del servidor (p.ej. stock insuficiente, cupón inválido)', async () => {
+        mockRpc.mockResolvedValue({ data: null, error: { message: 'No hay stock suficiente de "X".' } });
         await expect(orderService.crearPedido(baseOrder, items)).rejects.toThrow();
-        expect(mockDelete).toHaveBeenCalled();
-        expect(mockDeleteEq).toHaveBeenCalledWith('id', 'order-1');
     });
 
-    it('valida datos obligatorios', async () => {
-        await expect(orderService.crearPedido({ ...baseOrder, customer_id: null }, items)).rejects.toThrow();
+    it('valida datos obligatorios sin llamar al servidor', async () => {
+        await expect(orderService.crearPedido({ ...baseOrder, store_id: null }, items)).rejects.toThrow();
         await expect(orderService.crearPedido(baseOrder, [])).rejects.toThrow();
         await expect(orderService.crearPedido({ ...baseOrder, delivery_address: '' }, items)).rejects.toThrow();
-        expect(mockInsertOrder).not.toHaveBeenCalled();
+        expect(mockRpc).not.toHaveBeenCalled();
     });
 });

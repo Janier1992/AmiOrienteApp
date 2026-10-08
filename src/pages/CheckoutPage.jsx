@@ -213,51 +213,29 @@ const CheckoutPage = () => {
     setProcessing(true);
 
     try {
-      // Redimir el cupón de forma atómica (valida vigencia/límite y suma el
-      // uso en una sola operación) antes de crear ningún pedido, para evitar
-      // aplicar un descuento que ya no sea válido por una condición de carrera.
-      if (appliedCoupon) {
-        const { data: redeemed, error: redeemError } = await supabase.rpc('redeem_discount', {
-          p_code: appliedCoupon.code,
-          p_store_id: appliedCoupon.store_id,
-        });
-        if (redeemError || !redeemed || redeemed.length === 0) {
-          toast({
-            title: "Cupón no disponible",
-            description: "El código de descuento ya no está disponible. Quítalo e intenta de nuevo.",
-            variant: "destructive"
-          });
-          setProcessing(false);
-          return;
-        }
-      }
-
       const stores = Object.values(groupedItems);
       const createdOrders = [];
       const failedStores = [];
 
-      // Procesar una orden por cada tienda
+      // Procesar una orden por cada tienda. El precio, envío, impuestos,
+      // descuento y total los recalcula create_order() en el servidor a
+      // partir de precios reales — aquí solo mandamos la intención del
+      // cliente (qué producto, cuánta cantidad, qué código/tarifa eligió).
       for (const storeGroup of stores) {
         const isDiscountedStore = appliedCoupon && storeGroup.store_id === appliedCoupon.store_id;
         const shippingSelection = selectedShipping[storeGroup.store_id];
         const orderPayload = {
-          customer_id: user.id,
           store_id: storeGroup.store_id,
           delivery_address: deliveryAddress,
           payment_method: 'efectivo', // Por ahora simulación asume efectivo/contraentrega
           notes: deliveryNotes,
-          total: storeGroup.total, // El servicio recalculará fees
           discount_code: isDiscountedStore ? appliedCoupon.code : null,
-          discount_amount: isDiscountedStore ? appliedCoupon.amount : 0,
-          shipping_fee: shippingSelection?.price ?? null,
           shipping_rate_id: shippingSelection?.rateId || null,
-          tax_amount: getTaxAmount(storeGroup.store_id, storeGroup.total),
         };
 
         const orderItems = storeGroup.items.map(item => ({
           product_id: item.id,
-          quantity: item.quantity,
-          price: item.price
+          quantity: item.quantity
         }));
 
         // Un fallo en una tienda no debe ocultar ni repetir los pedidos que sí se crearon.

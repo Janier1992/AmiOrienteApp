@@ -117,39 +117,39 @@ export const orderService = {
 
     /**
      * Crea un nuevo pedido con sus items.
-     * 
+     *
+     * Delega el cálculo financiero (precios reales, envío, impuestos,
+     * cupón) a la función del servidor `create_order` (ver
+     * database_updates/20261007_server_side_order_totals.sql) — el
+     * navegador solo envía qué producto y cuánta cantidad, nunca precios
+     * ni totales, para que no puedan manipularse antes de enviarse.
+     *
      * @param {Object} datosPedido - Datos del pedido
-     * @param {string} datosPedido.customer_id - UUID del cliente
      * @param {string} datosPedido.store_id - UUID de la tienda
      * @param {string} datosPedido.delivery_address - Dirección de entrega
      * @param {number} [datosPedido.delivery_lat] - Latitud de entrega
      * @param {number} [datosPedido.delivery_lng] - Longitud de entrega
      * @param {string} [datosPedido.payment_method] - Método de pago
      * @param {string} [datosPedido.notes] - Notas adicionales
-     * @param {string} [datosPedido.discount_code] - Código de descuento aplicado
-     * @param {number} [datosPedido.discount_amount] - Monto del descuento aplicado
-     * @param {number} [datosPedido.shipping_fee] - Tarifa de envío (sobreescribe el valor por defecto)
+     * @param {string} [datosPedido.discount_code] - Código de descuento a aplicar
      * @param {string} [datosPedido.shipping_rate_id] - UUID de la tarifa de envío seleccionada
-     * @param {number} [datosPedido.tax_amount] - Monto de impuestos a aplicar
      * @param {Array} items - Array de items del pedido
      * @param {string} items[].product_id - UUID del producto
      * @param {number} items[].quantity - Cantidad
-     * @param {number} items[].price - Precio unitario
-     * @returns {Promise<Object>} Pedido creado con sus items
-     * 
+     * @returns {Promise<Object>} Pedido creado (con los totales ya calculados por el servidor)
+     *
      * @example
      * const pedido = await orderService.crearPedido({
-     *   customer_id: 'uuid-cliente',
      *   store_id: 'uuid-tienda',
      *   delivery_address: 'Calle 10 #20-30',
      *   payment_method: 'efectivo'
      * }, [
-     *   { product_id: 'uuid-producto', quantity: 2, price: 15000 }
+     *   { product_id: 'uuid-producto', quantity: 2 }
      * ]);
      */
     async crearPedido(datosPedido, items) {
         // Validaciones
-        if (!datosPedido || !datosPedido.customer_id || !datosPedido.store_id) {
+        if (!datosPedido || !datosPedido.store_id) {
             throw new Error(ERRORES.DATOS_INCOMPLETOS);
         }
         if (!items || !Array.isArray(items) || items.length === 0) {
@@ -159,75 +159,26 @@ export const orderService = {
             throw new Error('La dirección de entrega es requerida');
         }
 
-        try {
-            // Calcular totales
-            const subtotal = items.reduce((sum, item) => {
-                return sum + (Number(item.price) * Number(item.quantity));
-            }, 0);
-
-            const tarifaServicio = SERVICE_FEE;
-            const tarifaEnvio = datosPedido.shipping_fee !== undefined && datosPedido.shipping_fee !== null
-                ? Number(datosPedido.shipping_fee)
-                : DELIVERY_BASE_FEE;
-            const impuestos = Number(datosPedido.tax_amount) || 0;
-            const descuento = Number(datosPedido.discount_amount) || 0;
-            const total = Math.max(0, subtotal + tarifaServicio + tarifaEnvio + impuestos - descuento);
-
-            // Determinar estado inicial según método de pago
-            const estadoInicial = datosPedido.payment_method === 'efectivo'
-                ? 'Pendiente de pago en efectivo'
-                : 'Pendiente';
-
-            // Crear el pedido
-            const { data: nuevoPedido, error: errorPedido } = await supabase
-                .from('orders')
-                .insert({
-                    customer_id: datosPedido.customer_id,
-                    store_id: datosPedido.store_id,
-                    delivery_address: datosPedido.delivery_address,
-                    delivery_lat: datosPedido.delivery_lat,
-                    delivery_lng: datosPedido.delivery_lng,
-                    payment_method: datosPedido.payment_method || 'efectivo',
-                    notes: datosPedido.notes,
-                    subtotal,
-                    service_fee: tarifaServicio,
-                    delivery_fee: tarifaEnvio,
-                    discount_code: datosPedido.discount_code || null,
-                    discount_amount: descuento,
-                    tax_amount: impuestos,
-                    shipping_rate_id: datosPedido.shipping_rate_id || null,
-                    total,
-                    status: estadoInicial
-                })
-                .select()
-                .single();
-
-            if (errorPedido) {
-                manejarError(errorPedido, ERRORES.ERROR_CREACION);
-            }
-
-            // Crear los items del pedido
-            const itemsConPedidoId = items.map(item => ({
-                order_id: nuevoPedido.id,
+        const { data: nuevoPedido, error } = await supabase.rpc('create_order', {
+            p_store_id: datosPedido.store_id,
+            p_items: items.map(item => ({
                 product_id: item.product_id,
-                quantity: Number(item.quantity),
-                price: Number(item.price)
-            }));
+                quantity: Number(item.quantity)
+            })),
+            p_delivery_address: datosPedido.delivery_address,
+            p_payment_method: datosPedido.payment_method || 'efectivo',
+            p_notes: datosPedido.notes || null,
+            p_discount_code: datosPedido.discount_code || null,
+            p_shipping_rate_id: datosPedido.shipping_rate_id || null,
+            p_delivery_lat: datosPedido.delivery_lat ?? null,
+            p_delivery_lng: datosPedido.delivery_lng ?? null,
+        });
 
-            const { error: errorItems } = await supabase
-                .from('order_items')
-                .insert(itemsConPedidoId);
-
-            if (errorItems) {
-                // Rollback: eliminar el pedido si falló la creación de items
-                await supabase.from('orders').delete().eq('id', nuevoPedido.id);
-                manejarError(errorItems, 'Error creando items del pedido');
-            }
-
-            return nuevoPedido;
-        } catch (error) {
+        if (error) {
             manejarError(error, ERRORES.ERROR_CREACION);
         }
+
+        return nuevoPedido;
     },
 
     // ---------------------------------------------------------------------------
