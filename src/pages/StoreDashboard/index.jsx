@@ -28,10 +28,18 @@ const StoreDashboardRouter = () => {
     useEffect(() => {
         if (!user) {
             navigate('/tienda/login');
+            return;
+        }
+        // Consistente con CustomerDashboard/DeliveryDashboard: una cuenta de
+        // otro rol no debe ver "Negocio no encontrado, ¿registrar uno?" como
+        // si pudiera convertirse en tienda desde aquí.
+        if (user.user_metadata?.role && user.user_metadata.role !== 'tienda') {
+            navigate('/');
         }
     }, [user, navigate]);
 
     if (!user) return null;
+    if (user.user_metadata?.role && user.user_metadata.role !== 'tienda') return null;
 
     if (isLoadingStore) {
         return (
