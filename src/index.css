@@ -72,14 +72,20 @@
     -moz-osx-font-smoothing: grayscale;
     
     /* Beautiful Marinilla Sunset Background - Hostinger CDN */
-    background-image: url('https://horizons-cdn.hostinger.com/9a2f1d5f-26c5-4fa8-b3e7-17e2b7bc86a9/eaa5c3ede657a14fb3f5ca74349a2d50.jpg');
+    /* Foto de Marinilla (copia propia en src/assets, no depende de terceros). */
+    background-image: url('./assets/marinilla.jpg');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    background-attachment: fixed;
+    background-attachment: scroll;
     /* Color de respaldo mientras carga la foto (o si la red falla) */
     background-color: #1f4d36;
     min-height: 100vh;
+  }
+
+  /* `fixed` solo en pantallas grandes: en móviles (sobre todo iOS) lo ignoran o amplían la foto. */
+  @media (min-width: 1025px) {
+    body { background-attachment: fixed; }
   }
 
   /* Root container handles main layout but delegates background color to App.jsx for route-specific transparency */

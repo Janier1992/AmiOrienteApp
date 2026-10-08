@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import marinillaPhoto from '@/assets/marinilla.jpg';
 import { Helmet } from 'react-helmet';
 import {
   Search, MapPin, Star, Utensils, ShoppingCart, Pill, Shirt,
@@ -182,6 +183,16 @@ const HomePage = () => {
           completa y sin filtro; el contenido va en una "hoja" semitransparente
           que sube sobre ella para que el texto siempre se lea. */}
       <div className="min-h-screen flex flex-col">
+        {/* Capa fija a pantalla completa: la foto cubre cualquier tamaño (celular,
+            tableta, laptop, monitor ancho) sin depender de background-attachment. */}
+        <img
+          src={marinillaPhoto}
+          alt=""
+          aria-hidden="true"
+          fetchpriority="high"
+          decoding="async"
+          className="fixed inset-0 -z-10 h-full w-full object-cover object-[55%_50%] select-none pointer-events-none"
+        />
         <div className="pt-8 pb-28 sm:pt-12 sm:pb-40">
           <div className="max-w-5xl mx-auto px-5 sm:px-6">
             {/* Tarjeta casi invisible: apenas un velo verde muy tenue para que la
