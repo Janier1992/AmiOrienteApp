@@ -197,9 +197,8 @@ BEGIN
            ph.photo_jpeg,
            dd.payload->>'plate',
            dd.payload->>'vehicleType',
-           CASE WHEN dd.document_number IS NULL THEN NULL
-                ELSE dd.document_type || ' ' || repeat('*', char_length(dd.document_number) - least(4, char_length(dd.document_number) / 2)) || right(dd.document_number, least(4, char_length(dd.document_number) / 2))
-           END
+           -- Si no hay documento, la concatenación con NULL da NULL (no hace falta CASE).
+           dd.document_type || ' ' || repeat('*', char_length(dd.document_number) - least(4, char_length(dd.document_number) / 2)) || right(dd.document_number, least(4, char_length(dd.document_number) / 2))
       FROM public.profiles pr
       LEFT JOIN public.driver_photos ph ON ph.user_id = pr.id
       LEFT JOIN LATERAL (
