@@ -118,11 +118,12 @@ const AppContent = () => {
   }, [location.pathname, isStoreUser]);
 
   // Dynamic Background Logic
-  // El Home ahora es una página de exploración opaca (no una landing con foto
-  // de fondo translúcida), así que ya no necesita el overlay oscuro — solo
-  // las páginas de auth siguen mostrando la foto de fondo a través.
+  // Home y páginas de auth muestran la foto de fondo de Marinilla; el resto
+  // de páginas la cubren con un fondo casi opaco.
   const bgClass = useMemo(() => {
     const isAuthPage = authRoutes.some(path => location.pathname.startsWith(path));
+    // En el Home la foto de Marinilla del <body> es el fondo de la página.
+    if (location.pathname === '/') return 'bg-transparent';
     return isAuthPage
       ? 'bg-black/30'
       : 'bg-white/90 dark:bg-slate-950/90';

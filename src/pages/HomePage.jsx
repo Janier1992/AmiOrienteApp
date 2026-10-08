@@ -177,39 +177,45 @@ const HomePage = () => {
         <meta name="description" content="Restaurantes, mercados, farmacias, turismo y comercio local del Oriente Antioqueño, todo en un solo lugar." />
       </Helmet>
 
-      <div className="bg-background min-h-screen">
-        {/* Encabezado — la foto de Marinilla va sin ningún filtro encima
-            (igual que la landing original); solo el texto vive dentro de
-            una tarjeta con su propio fondo, para no tapar la imagen. */}
-        <div
-          className="relative bg-cover bg-center pt-10 pb-10 sm:pt-14 sm:pb-14"
-          style={{ backgroundImage: "url('https://horizons-cdn.hostinger.com/9a2f1d5f-26c5-4fa8-b3e7-17e2b7bc86a9/eaa5c3ede657a14fb3f5ca74349a2d50.jpg')" }}
-        >
+      {/* La foto de Marinilla es el fondo de toda la página (viene del <body>,
+          ver index.css; App.jsx deja este contenedor transparente). Arriba se ve
+          completa y sin filtro; el contenido va en una "hoja" semitransparente
+          que sube sobre ella para que el texto siempre se lea. */}
+      <div className="min-h-screen flex flex-col">
+        <div className="pt-8 pb-28 sm:pt-12 sm:pb-40">
           <div className="max-w-5xl mx-auto px-5 sm:px-6">
-            <div className="rounded-2xl bg-primary/90 backdrop-blur-[2px] p-5 shadow-xl">
-              <div className="flex items-center gap-1.5 text-primary-foreground/90 text-sm font-medium mb-3">
-                {locatingUser ? <Loader2 className="h-4 w-4 animate-spin" /> : <MapPin className="h-4 w-4" />}
-                {locationLabel}
-              </div>
-              <h1 className="text-xl sm:text-2xl font-bold text-primary-foreground mb-1">
-                {firstName ? `Hola, ${firstName}` : 'Hola'}
-              </h1>
-              <p className="text-primary-foreground/90 text-sm mb-5">¿Qué necesitas hoy en tu región?</p>
+            {/* Tarjeta casi invisible: apenas un velo verde muy tenue para que la
+                foto de Marinilla sea la protagonista; el texto es blanco fijo con sombra doble (no depende
+                del tema) y es lo que asegura la lectura. */}
+            <div className="relative overflow-hidden rounded-3xl bg-primary/10 backdrop-blur-[2px] ring-1 ring-white/25 p-5 text-white [text-shadow:0_1px_2px_rgba(0,0,0,0.7),0_2px_12px_rgba(0,0,0,0.5)]">
+              <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/20" aria-hidden="true" />
+              <div className="relative">
+                <div className="flex items-center gap-1.5 text-sm font-semibold mb-3">
+                  {locatingUser ? <Loader2 className="h-4 w-4 animate-spin" /> : <MapPin className="h-4 w-4" />}
+                  {locationLabel}
+                </div>
+                <h1 className="text-2xl sm:text-3xl font-bold mb-1">
+                  {firstName ? `Hola, ${firstName}` : 'Hola'}
+                </h1>
+                <p className="text-sm sm:text-base font-medium mb-5">¿Qué necesitas hoy en tu región?</p>
 
-              <form onSubmit={handleSearchSubmit} className="relative">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <input
-                  type="text"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  placeholder="Busca restaurantes, farmacias, tiendas..."
-                  className="w-full rounded-xl bg-white pl-11 pr-4 py-3 text-sm text-foreground shadow-sm focus:outline-none focus:ring-2 focus:ring-white/60"
-                />
-              </form>
+                <form onSubmit={handleSearchSubmit} className="relative">
+                  <Search className="absolute z-10 left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-600" />
+                  <input
+                    type="text"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    placeholder="Busca negocios o productos"
+                    aria-label="Buscar negocios o productos"
+                    className="w-full rounded-2xl bg-white/90 backdrop-blur pl-11 pr-4 py-3.5 text-sm text-slate-900 placeholder:text-slate-600 shadow-lg [text-shadow:none] focus:outline-none focus:ring-2 focus:ring-white"
+                  />
+                </form>
+              </div>
             </div>
           </div>
         </div>
 
+        <div className="flex-1 rounded-t-3xl bg-background/95 backdrop-blur-md shadow-[0_-12px_32px_-12px_rgba(0,0,0,0.35)]">
         <main className="max-w-5xl mx-auto px-5 sm:px-6 py-8 space-y-10">
           {/* Categorías */}
           <section>
@@ -254,6 +260,7 @@ const HomePage = () => {
             </div>
           </section>
         </main>
+        </div>
       </div>
     </>
   );
