@@ -99,9 +99,15 @@ const HomePage = () => {
       </Helmet>
 
       <div className="bg-background min-h-screen">
-        {/* Encabezado */}
-        <div className="bg-primary">
-          <div className="max-w-5xl mx-auto px-5 pt-6 pb-7 sm:px-6">
+        {/* Encabezado — la foto de Marinilla identifica la región, con un
+            degradado del verde de marca encima para que el texto blanco
+            tenga contraste suficiente (AA) sobre cualquier parte de la foto. */}
+        <div
+          className="relative bg-cover bg-center"
+          style={{ backgroundImage: "url('https://horizons-cdn.hostinger.com/9a2f1d5f-26c5-4fa8-b3e7-17e2b7bc86a9/eaa5c3ede657a14fb3f5ca74349a2d50.jpg')" }}
+        >
+          <div className="absolute inset-0 bg-gradient-to-b from-primary/90 via-primary/80 to-primary" />
+          <div className="relative max-w-5xl mx-auto px-5 pt-6 pb-7 sm:px-6">
             <div className="flex items-center gap-1.5 text-primary-foreground/90 text-sm font-medium mb-3">
               <MapPin className="h-4 w-4" />
               Marinilla, Antioquia
