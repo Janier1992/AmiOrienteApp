@@ -9,6 +9,7 @@
  * que subir LEGAL_VERSION (src/config/legal.js).
  */
 import { LEGAL_ENTITY, PLATFORM_NAME } from '@/config/legal';
+import { isPhotoDataUrl } from '@/lib/driverPhoto';
 
 export const DOCUMENT_TYPES = [
   { value: 'CC', label: 'Cédula de ciudadanía' },
@@ -35,6 +36,7 @@ export const DECLARATION_STATEMENTS = [
   { key: 'afiliacion', text: 'Estoy afiliado al Sistema de Seguridad Social Integral (salud, pensión y riesgos laborales) en la modalidad que me corresponde como independiente, y cumpliré los aportes a mi cargo. Entiendo que la Plataforma aplicará los aportes, reportes y retenciones que la ley y sus reglamentos pongan a su cargo respecto de los trabajadores de reparto de plataformas digitales.' },
   { key: 'informar', text: 'Me comprometo a informar cualquier cambio o vencimiento de estos documentos y a no prestar el servicio si alguno está vencido.' },
   { key: 'verificacion', text: 'Autorizo a la Plataforma a conservar esta declaración como soporte y a verificar la información declarada ante las entidades competentes cuando sea necesario.' },
+  { key: 'fotografia', text: 'Autorizo de forma expresa, libre e informada el tratamiento de mi fotografía (dato biométrico, considerado sensible) y de mis datos de identificación (nombre completo, últimos dígitos de mi documento y placa del vehículo) para que se muestren al cliente de cada pedido que atienda y a la tienda del pedido, con fines de seguridad e identificación. Sé que no estoy obligado a darla, pero que sin ella no puedo operar como domiciliario en la Plataforma.' },
 ];
 
 export const emptyDeclaration = () => ({
@@ -50,6 +52,7 @@ export const emptyDeclaration = () => ({
   health: '',
   pension: '',
   arl: '',
+  photo: null, // fotografía tomada con la cámara (data URL JPEG)
   statements: Object.fromEntries(DECLARATION_STATEMENTS.map((s) => [s.key, false])),
 });
 
@@ -58,6 +61,7 @@ const todayIso = () => new Date().toISOString().slice(0, 10);
 /** Devuelve un mensaje de error en español o null si la declaración está completa y vigente. */
 export const validateDeclaration = (values, signature, today = todayIso()) => {
   const v = values;
+  if (!isPhotoDataUrl(v.photo)) return 'Tómate la fotografía con la cámara: la verá tu cliente.';
   if (!v.documentNumber.trim() || !/^[A-Za-z0-9.\- ]{4,30}$/.test(v.documentNumber.trim())) {
     return 'Escribe tu número de documento (entre 4 y 30 caracteres).';
   }
@@ -108,6 +112,7 @@ export const buildDeclarationText = (values, { fullName, email, version, signedA
     `Yo, ${fullName.trim()}, identificado(a) con ${docLabel} No. ${v.documentNumber.trim()}, correo electrónico ${email.trim()}, declaro bajo la gravedad del juramento, que se entiende prestado con la firma de este documento, lo siguiente:`,
     ``,
     `DATOS DECLARADOS`,
+    `- Fotografía de identificación: tomada con la cámara al firmar este documento (se guarda con él)`,
     `- Medio de transporte: ${vehicle}`,
     motor ? `- Placa: ${v.plate.trim().toUpperCase()}` : null,
     motor ? `- Licencia de conducción No. ${v.licenseNumber.trim()}, vence el ${fmtDate(v.licenseExpiry)}` : null,

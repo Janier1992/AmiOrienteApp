@@ -26,10 +26,11 @@ const PrivacyPolicyPage = () => (
         <li><strong>Pedidos y transacciones:</strong> productos pedidos, direcciones de entrega, valores, método de pago, estado y calificaciones. Si usted pide productos de farmacia o veterinaria, el pedido puede dar a conocer información sobre su salud o la de su mascota; solo la usamos para atender ese pedido y usted no está obligado a suministrarla.</li>
         <li><strong>Ubicación:</strong> si usted lo autoriza en el navegador, usamos su ubicación para sugerirle negocios cercanos. Durante una entrega en curso, la ubicación del domiciliario se comparte con el cliente de ese pedido.</li>
         <li><strong>Negocios:</strong> nombre y datos comerciales, productos, horarios, datos de contacto del negocio y de su equipo.</li>
-        <li><strong>Domiciliarios:</strong> nombre, contacto, dirección y la declaración de independencia y de afiliación a seguridad social aceptada al registrarse. No almacenamos copias de documentos ni datos bancarios en la Plataforma.</li>
+        <li><strong>Domiciliarios:</strong> nombre, contacto, dirección, tipo y número de documento, <strong>fotografía de su rostro tomada con la cámara</strong>, placa del vehículo, datos de su licencia, SOAT y revisión técnico-mecánica (entidad y vencimiento), entidades de salud, pensión y riesgos laborales, y la declaración firmada (con su firma). No almacenamos copias escaneadas de documentos ni datos bancarios en la Plataforma.</li>
         <li><strong>Técnicos y de uso:</strong> tipo de dispositivo y navegador, y registros de errores. Guardamos en su dispositivo el carrito, el tema (claro u oscuro) y la sesión, para que la aplicación funcione.</li>
         <li><strong>Comunicaciones:</strong> los mensajes que nos envía por el formulario de contacto o de solicitudes.</li>
       </ul>
+      <p><strong>Fotografía del domiciliario (dato sensible).</strong> La fotografía facial es un dato biométrico y, por tanto, sensible. Se trata únicamente con la autorización expresa, previa e informada del domiciliario, que puede negarse a darla, aunque sin ella no podrá operar como domiciliario. Se usa solo para identificarlo ante el cliente y la tienda del pedido y por seguridad, no para reconocimiento facial ni otros fines.</p>
       <p>No recolectamos de forma intencional datos de menores de 18 años; la Plataforma no está dirigida a ellos. No solicitamos datos sensibles (origen racial, orientación sexual, convicciones, datos biométricos, etc.).</p>
     </LegalSection>
 
@@ -38,6 +39,7 @@ const PrivacyPolicyPage = () => (
         <li>Crear y administrar su cuenta, y verificar su identidad.</li>
         <li>Gestionar pedidos: compartir con el negocio y el domiciliario los datos necesarios para preparar y entregar.</li>
         <li>Mostrar el estado y la ubicación del pedido, y enviar avisos operativos.</li>
+        <li>Mostrar al cliente que tiene un pedido en curso la identidad del domiciliario asignado (fotografía, nombre completo, últimos dígitos del documento y placa) para su seguridad y para que pueda seguir la entrega en tiempo real.</li>
         <li>Calcular y registrar pagos, comisiones, planes y aportes que la ley ponga a cargo de la Plataforma, y cumplir obligaciones tributarias, contables y de seguridad social.</li>
         <li>Atender solicitudes, peticiones, quejas y reclamos, y prestar soporte.</li>
         <li>Prevenir fraude, garantizar la seguridad y cumplir órdenes de autoridades.</li>
@@ -52,7 +54,7 @@ const PrivacyPolicyPage = () => (
 
     <LegalSection title="5. Con quién compartimos sus datos">
       <ul className="list-disc pl-6 space-y-1">
-        <li><strong>Negocios y domiciliarios</strong> que participan en su pedido, solo con los datos necesarios (por ejemplo, nombre, teléfono y dirección de entrega).</li>
+        <li><strong>Negocios y domiciliarios</strong> que participan en su pedido, solo con los datos necesarios (por ejemplo, nombre, teléfono y dirección de entrega). A su vez, el <strong>cliente de un pedido</strong> y la tienda del pedido ven del domiciliario asignado su fotografía, nombre, documento enmascarado (solo los últimos dígitos) y placa; no ven su teléfono, dirección ni otros datos.</li>
         <li><strong>Proveedores tecnológicos (encargados del tratamiento)</strong> que nos prestan servicios de alojamiento de base de datos y autenticación, publicación del sitio, tipografías y mapas (por ejemplo, Supabase, GitHub, Google Fonts y OpenStreetMap), que pueden recibir datos técnicos como su dirección IP. Algunos tienen sus servidores fuera de Colombia, por lo que sus datos pueden ser transmitidos o transferidos al exterior; exigimos a estos proveedores niveles adecuados de seguridad y confidencialidad.</li>
         <li><strong>Autoridades</strong> cuando la ley o una orden judicial o administrativa lo exija.</li>
       </ul>

@@ -20,6 +20,13 @@ const toast = vi.fn();
 vi.mock('@/components/ui/use-toast', () => ({ toast: (...a) => toast(...a) }));
 
 // El lienzo de firma no funciona en jsdom: un botón entrega una firma de prueba.
+// La cámara no funciona en jsdom: un botón entrega una foto de prueba.
+vi.mock('@/components/delivery/PhotoCapture', () => ({
+  default: ({ onChange }) => (
+    <button type="button" onClick={() => onChange(`data:image/jpeg;base64,${'B'.repeat(2500)}`)}>Tomar foto (prueba)</button>
+  ),
+}));
+
 vi.mock('@/components/auth/SignaturePad', () => ({
   default: ({ onChange }) => (
     <button type="button" onClick={() => onChange(`data:image/png;base64,${'A'.repeat(400)}`)}>Firmar (prueba)</button>
@@ -69,6 +76,7 @@ describe('registro de domiciliario con declaración firmada', () => {
     fillEverything();
     fireEvent.change(screen.getByLabelText('Vencimiento del SOAT'), { target: { value: '2020-01-01' } });
     screen.getAllByRole('checkbox').forEach((c) => fireEvent.click(c));
+    fireEvent.click(screen.getByText('Tomar foto (prueba)'));
     fireEvent.click(screen.getByText('Firmar (prueba)'));
     fireEvent.click(screen.getByRole('button', { name: 'Crear Cuenta' }));
     await waitFor(() => expect(toast).toHaveBeenCalledWith(expect.objectContaining({ description: expect.stringMatching(/SOAT está vencido/) })));
@@ -81,15 +89,17 @@ describe('registro de domiciliario con declaración firmada', () => {
     render(<MemoryRouter><DeliveryRegister /></MemoryRouter>);
     fillEverything();
     screen.getAllByRole('checkbox').forEach((c) => fireEvent.click(c));
+    fireEvent.click(screen.getByText('Tomar foto (prueba)'));
     fireEvent.click(screen.getByText('Firmar (prueba)'));
     fireEvent.click(screen.getByRole('button', { name: 'Crear Cuenta' }));
 
     await waitFor(() => expect(mockSignUp).toHaveBeenCalled());
-    expect(mockRpc).toHaveBeenCalledWith('submit_driver_declaration', expect.objectContaining({
+    expect(mockRpc).toHaveBeenCalledWith('submit_driver_declaration_v2', expect.objectContaining({
       p_email: 'dora@correo.com',
       p_full_name: 'Dora Domi',
       p_document_number: '1037000111',
       p_legal_version: LEGAL_VERSION,
+      p_photo_jpeg: expect.stringMatching(/^data:image\/jpeg;base64,/),
     }));
     const rpcArgs = mockRpc.mock.calls[0][1];
     expect(rpcArgs.p_document_text).toContain('declaro bajo la gravedad del juramento');
@@ -103,12 +113,25 @@ describe('registro de domiciliario con declaración firmada', () => {
     });
   });
 
+  it('sin fotografía no se crea nada', async () => {
+    const { default: DeliveryRegister } = await import('../DeliveryRegister');
+    render(<MemoryRouter><DeliveryRegister /></MemoryRouter>);
+    fillEverything();
+    screen.getAllByRole('checkbox').forEach((c) => fireEvent.click(c));
+    fireEvent.click(screen.getByText('Firmar (prueba)'));
+    fireEvent.click(screen.getByRole('button', { name: 'Crear Cuenta' }));
+    await waitFor(() => expect(toast).toHaveBeenCalledWith(expect.objectContaining({ description: expect.stringMatching(/fotograf/i) })));
+    expect(mockRpc).not.toHaveBeenCalled();
+    expect(mockSignUp).not.toHaveBeenCalled();
+  });
+
   it('si el servidor rechaza la declaración no se crea la cuenta', async () => {
     mockRpc.mockResolvedValue({ data: null, error: { message: 'Firma inválida: dibuja tu firma en el recuadro.' } });
     const { default: DeliveryRegister } = await import('../DeliveryRegister');
     render(<MemoryRouter><DeliveryRegister /></MemoryRouter>);
     fillEverything();
     screen.getAllByRole('checkbox').forEach((c) => fireEvent.click(c));
+    fireEvent.click(screen.getByText('Tomar foto (prueba)'));
     fireEvent.click(screen.getByText('Firmar (prueba)'));
     fireEvent.click(screen.getByRole('button', { name: 'Crear Cuenta' }));
     await waitFor(() => expect(toast).toHaveBeenCalledWith(expect.objectContaining({ title: 'No se pudo guardar tu declaración' })));

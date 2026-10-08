@@ -27,6 +27,10 @@ En el registro el domiciliario completa y **firma digitalmente** (firma dibujada
 - Administración lo consulta en el Panel de Administración → «Declaraciones de domiciliarios» (búsqueda, ver documento, imprimir o guardar como PDF).
 - Los domiciliarios que ya tenían cuenta ven un aviso en su panel y deben firmarla para aceptar pedidos.
 - **A validar con el abogado:** la fórmula «bajo la gravedad del juramento», el valor probatorio de la firma electrónica manuscrita digitalizada (Ley 527 de 1999 y Decreto 2364 de 2012, citados sin verificar contra el texto vigente) y si conviene añadir verificación de identidad adicional (por ejemplo, código al correo o foto del documento).
+- **Fotografía obligatoria (regla de la plataforma):** el domiciliario se toma una foto con la cámara al registrarse (también puede hacerlo después desde su panel). El **cliente de cada pedido** que atienda ve su **foto, nombre completo, documento enmascarado (solo los últimos 4 dígitos) y placa**, junto al rastreo en tiempo real; la tienda del pedido y administración también lo ven. Nadie más. Migración `20261013_driver_photo.sql`.
+  - **Decisión de privacidad:** el documento se muestra enmascarado, no completo. Mostrar el número completo a cada cliente contradice el principio de necesidad y finalidad de la Ley 1581 y aumenta el riesgo de suplantación o acoso; si se quiere mostrar completo hay que cambiar `get_order_driver` y debería validarlo el abogado.
+  - **La foto facial es un dato biométrico = dato sensible** (Ley 1581, art. 5 y 6): solo con autorización expresa, previa e informada, y el titular puede negarse. Por eso va como declaración específica en el documento firmado y está en la Política de Privacidad; como es indispensable para operar, el texto lo advierte. **A validar con el abogado** (si basta la autorización o conviene un consentimiento separado).
+  - `accept_order` exige declaración firmada **y** foto.
 - La base de datos también lo exige: `accept_order` rechaza a quien no tenga declaración firmada (migración `20261012_accept_order_requires_declaration.sql`). Si la interfaz no lo sabía, abre el formulario de firma.
 
 ## 3. ⚠️ Punto que NO coincide con el modelo asumido (decidir con el abogado)
@@ -35,7 +39,7 @@ Por eso los Términos dicen que el domiciliario debe estar afiliado **y** que la
 **Pendiente técnico:** módulo que registre el ingreso de cada domiciliario por la plataforma y calcule la base de cotización (40 % de los ingresos) y los aportes, cuando el decreto quede en firme.
 
 ## 4. Lista de pendientes para la persona jurídica (antes de comercializar)
-0. Aplicar en Supabase `20261011_driver_declarations.sql` y luego `20261012_accept_order_requires_declaration.sql`. Los domiciliarios que ya existían deben firmar desde su panel antes de volver a aceptar pedidos.
+0. Aplicar en Supabase `20261011_driver_declarations.sql`, `20261012_accept_order_requires_declaration.sql` y `20261013_driver_photo.sql`. Los domiciliarios que ya existían deben firmar desde su panel antes de volver a aceptar pedidos.
 1. Completar las variables de GitHub (Settings → Secrets and variables → Actions → **Variables**): `VITE_LEGAL_NAME`, `VITE_LEGAL_NIT`, `VITE_LEGAL_ADDRESS`, `VITE_LEGAL_PHONE`, `VITE_LEGAL_EMAIL`. Volver a desplegar.
 2. Aplicar en Supabase la migración `database_updates/20261010_legal_consents.sql`.
 3. Que un abogado revise Términos y Privacidad (y suba `LEGAL_VERSION` si cambia algo).

@@ -14,6 +14,7 @@ import InProgressOrdersTab from '@/components/delivery-dashboard/InProgressOrder
 import HistoryOrdersTab from '@/components/delivery-dashboard/HistoryOrdersTab';
 import OrderDetailsModal from '@/components/delivery-dashboard/OrderDetailsModal';
 import DriverDeclarationDialog from '@/components/delivery-dashboard/DriverDeclarationDialog';
+import DriverPhotoDialog from '@/components/delivery-dashboard/DriverPhotoDialog';
 import { driverDeclarationService } from '@/services/driverDeclarationService';
 
 // Carga diferida: arrastra la librería de gráficos (recharts, ~350 kB) que solo se usa en 'Ganancias'
@@ -127,9 +128,10 @@ const DeliveryDashboard = () => {
   const [selectedOrderForDetails, setSelectedOrderForDetails] = useState(null);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  // Declaración firmada: null = aún no se sabe, true/false = firmada o pendiente
-  const [hasDeclaration, setHasDeclaration] = useState(null);
+  // Requisitos para operar: null = aún no se sabe; si no, { declaration, photo } (true = ya lo tiene)
+  const [compliance, setCompliance] = useState(null);
   const [isDeclarationOpen, setIsDeclarationOpen] = useState(false);
+  const [isPhotoOpen, setIsPhotoOpen] = useState(false);
   const locationIntervalRef = useRef(null);
 
   const fetchData = useCallback(async (currentUserId) => {
@@ -231,7 +233,7 @@ const DeliveryDashboard = () => {
   useEffect(() => {
     if (!user) return undefined;
     let active = true;
-    driverDeclarationService.tieneDeclaracion(user.id).then((signed) => active && setHasDeclaration(signed));
+    driverDeclarationService.estadoDelDomiciliario(user.id).then((state) => active && setCompliance(state));
     return () => { active = false; };
   }, [user]);
 
@@ -244,9 +246,14 @@ const DeliveryDashboard = () => {
 
   const handleAcceptOrder = async (orderId) => {
     if (!user) return;
-    if (hasDeclaration === false) {
+    if (compliance && !compliance.declaration) {
       toast({ title: "Falta tu declaración firmada", description: "Fírmala para poder aceptar pedidos.", variant: "destructive" });
       setIsDeclarationOpen(true);
+      return;
+    }
+    if (compliance && !compliance.photo) {
+      toast({ title: "Falta tu fotografía", description: "Tómatela para poder aceptar pedidos.", variant: "destructive" });
+      setIsPhotoOpen(true);
       return;
     }
     try {
@@ -259,8 +266,11 @@ const DeliveryDashboard = () => {
       console.error("Error accepting order:", error);
       // El servidor también exige la declaración firmada: si la interfaz no lo sabía, se corrige y se abre el formulario.
       if (/firmar tu declaraci/i.test(error.message || '')) {
-        setHasDeclaration(false);
+        setCompliance((c) => ({ declaration: false, photo: c?.photo ?? false }));
         setIsDeclarationOpen(true);
+      } else if (/fotograf/i.test(error.message || '')) {
+        setCompliance((c) => ({ declaration: c?.declaration ?? true, photo: false }));
+        setIsPhotoOpen(true);
       }
       toast({ title: "Error", description: error.message || "No se pudo aceptar el pedido.", variant: "destructive" });
     }
@@ -330,10 +340,16 @@ const DeliveryDashboard = () => {
             </div>
           </div>
 
-          {hasDeclaration === false && (
+          {compliance && !compliance.declaration && (
             <div role="alert" className="rounded-lg border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <span>Para aceptar pedidos debes firmar tu declaración de domiciliario independiente (documentos al día y afiliación a seguridad social).</span>
+              <span>Para aceptar pedidos debes firmar tu declaración de domiciliario independiente (documentos al día, afiliación a seguridad social y tu fotografía).</span>
               <Button size="sm" onClick={() => setIsDeclarationOpen(true)}>Firmar ahora</Button>
+            </div>
+          )}
+          {compliance && compliance.declaration && !compliance.photo && (
+            <div role="alert" className="rounded-lg border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <span>Para aceptar pedidos debes tomarte tu fotografía: tu cliente la verá junto a tu nombre y tu placa.</span>
+              <Button size="sm" onClick={() => setIsPhotoOpen(true)}>Tomar mi foto</Button>
             </div>
           )}
 
@@ -405,9 +421,14 @@ const DeliveryDashboard = () => {
           open={isDeclarationOpen}
           onOpenChange={setIsDeclarationOpen}
           user={user}
-          onSigned={() => setHasDeclaration(true)}
+          onSigned={() => setCompliance({ declaration: true, photo: true })}
         />
       )}
+      <DriverPhotoDialog
+        open={isPhotoOpen}
+        onOpenChange={setIsPhotoOpen}
+        onSaved={() => setCompliance((c) => ({ declaration: c?.declaration ?? true, photo: true }))}
+      />
     </div>
   );
 };

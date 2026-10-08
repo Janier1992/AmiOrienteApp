@@ -6,14 +6,16 @@ import {
   emptyDeclaration,
   validateDeclaration,
 } from '../driverDeclaration';
-import { buildPrintableHtml, escapeHtml, safeSignatureSrc } from '../printDocument';
+import { buildPrintableHtml, escapeHtml, safePhotoSrc, safeSignatureSrc } from '../printDocument';
 
 const SIG = `data:image/png;base64,${'A'.repeat(400)}`;
+const PHOTO = `data:image/jpeg;base64,${'B'.repeat(2500)}`;
 const TODAY = '2026-10-10';
 
 const complete = () => ({
   ...emptyDeclaration(),
   documentNumber: '1037000111',
+  photo: PHOTO,
   plate: 'ABC12D',
   licenseNumber: 'LIC-998877',
   licenseExpiry: '2028-01-01',
@@ -27,6 +29,11 @@ const complete = () => ({
 });
 
 describe('validateDeclaration', () => {
+  it('exige la fotografía tomada con la cámara', () => {
+    expect(validateDeclaration({ ...complete(), photo: null }, SIG, TODAY)).toMatch(/fotograf/i);
+    expect(validateDeclaration({ ...complete(), photo: 'data:image/svg+xml;base64,AAAA' }, SIG, TODAY)).toMatch(/fotograf/i);
+  });
+
   it('acepta una declaración completa y vigente', () => {
     expect(validateDeclaration(complete(), SIG, TODAY)).toBeNull();
   });
@@ -98,8 +105,12 @@ describe('impresión segura', () => {
 
   it('solo acepta una firma PNG en base64', () => {
     expect(safeSignatureSrc(SIG)).toBe(SIG);
+    // eslint-disable-next-line no-script-url
     expect(safeSignatureSrc('javascript:alert(1)')).toBe('');
     expect(safeSignatureSrc('data:text/html;base64,AAAA')).toBe('');
     expect(safeSignatureSrc(`${SIG}" onerror="x`)).toBe('');
+    expect(safePhotoSrc(PHOTO)).toBe(PHOTO);
+    expect(safePhotoSrc(`${PHOTO}" onerror="x`)).toBe('');
+    expect(safePhotoSrc(SIG)).toBe('');
   });
 });

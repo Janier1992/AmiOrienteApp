@@ -1,5 +1,6 @@
 import { supabase } from '@/lib/customSupabaseClient';
 import { LEGAL_VERSION } from '@/config/legal';
+import { isPhotoDataUrl } from '@/lib/driverPhoto';
 import { buildDeclarationPayload, buildDeclarationText, validateDeclaration } from '@/lib/driverDeclaration';
 
 /**
@@ -18,7 +19,7 @@ export const driverDeclarationService = {
     if (!fullName?.trim()) throw new Error('Escribe tu nombre completo.');
 
     const text = buildDeclarationText(values, { fullName, email, version: LEGAL_VERSION });
-    const { data, error: rpcError } = await supabase.rpc('submit_driver_declaration', {
+    const { data, error: rpcError } = await supabase.rpc('submit_driver_declaration_v2', {
       p_email: email,
       p_full_name: fullName,
       p_document_type: values.documentType,
@@ -27,20 +28,31 @@ export const driverDeclarationService = {
       p_document_text: text,
       p_signature_png: signature,
       p_legal_version: LEGAL_VERSION,
+      p_photo_jpeg: values.photo,
     });
     if (rpcError) throw new Error(rpcError.message || 'No se pudo guardar la declaración.');
     return data;
   },
 
-  /** ¿El domiciliario ya firmó? (para el aviso de su panel) */
-  async tieneDeclaracion(userId) {
-    const { data, error } = await supabase
-      .from('driver_declarations')
-      .select('id')
-      .eq('user_id', userId)
-      .limit(1);
-    if (error) return null; // desconocido: no bloqueamos por un fallo de red
-    return (data || []).length > 0;
+  /**
+   * Lo que le falta al domiciliario para poder aceptar pedidos.
+   * Devuelve { declaration, photo } (true = ya lo tiene) o null si no se pudo saber
+   * (no se bloquea por un fallo de red: el servidor igual lo exige).
+   */
+  async estadoDelDomiciliario(userId) {
+    const [decl, photo] = await Promise.all([
+      supabase.from('driver_declarations').select('id').eq('user_id', userId).limit(1),
+      supabase.from('driver_photos').select('user_id').eq('user_id', userId).limit(1),
+    ]);
+    if (decl.error || photo.error) return null;
+    return { declaration: (decl.data || []).length > 0, photo: (photo.data || []).length > 0 };
+  },
+
+  /** Agrega o cambia la fotografía de perfil (domiciliario con sesión). */
+  async actualizarFoto(photo) {
+    if (!isPhotoDataUrl(photo)) throw new Error('Tómate la fotografía con la cámara.');
+    const { error } = await supabase.rpc('update_driver_photo', { p_photo_jpeg: photo });
+    if (error) throw new Error(error.message || 'No se pudo guardar la fotografía.');
   },
 
   /** Solo administración (RLS): declaraciones más recientes primero. */

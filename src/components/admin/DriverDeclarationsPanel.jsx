@@ -57,6 +57,7 @@ export const DriverDeclarationsPanel = () => {
       title: 'Declaración y compromiso de domiciliario independiente',
       text: d.document_text,
       signatureSrc: d.signature_png,
+      photoSrc: d.photo_jpeg,
       footerLines: [
         `Firmante: ${d.full_name} · ${d.document_type} ${d.document_number} · ${d.email}`,
         `Firmado: ${fmt(d.signed_at)} · Versión de los Términos: ${d.legal_version}`,
@@ -120,6 +121,9 @@ export const DriverDeclarationsPanel = () => {
           </DialogHeader>
           {selected && (
             <div className="space-y-4">
+              {selected.photo_jpeg && (
+                <img src={selected.photo_jpeg} alt={`Fotografía de ${selected.full_name}`} className="h-28 w-28 rounded-full border object-cover" />
+              )}
               <pre className="whitespace-pre-wrap rounded-md border bg-muted/30 p-4 text-sm font-sans">{selected.document_text}</pre>
               {safeSignatureSrc(selected.signature_png) && (
                 <div>

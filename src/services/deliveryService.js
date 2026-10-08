@@ -272,6 +272,18 @@ export const deliveryService = {
     }
   },
 
+  /**
+   * Quién entrega este pedido: nombre, foto, placa y documento enmascarado.
+   * Lo ve el cliente del pedido (y la tienda y administración). Devuelve null si
+   * aún no hay domiciliario asignado.
+   */
+  async obtenerDomiciliarioDelPedido(idPedido) {
+    validarId(idPedido, 'ID del pedido');
+    const { data, error } = await supabase.rpc('get_order_driver', { p_order_id: idPedido });
+    if (error) manejarError(error, 'No se pudo cargar al domiciliario');
+    return Array.isArray(data) ? data[0] || null : data || null;
+  },
+
   /** Alias para compatibilidad */
   async acceptDelivery(orderId, userId) {
     return this.aceptarEntrega(orderId, userId);

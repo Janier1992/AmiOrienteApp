@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Package, Truck, CheckCircle, XCircle, Clock } from 'lucide-react';
 import OrderDetailsModal from './OrderDetailsModal';
+import DriverCard from '@/components/customer-dashboard/DriverCard';
 import OrderTrackingMap from './OrderTrackingMap';
 import { Button } from '@/components/ui/button';
 
@@ -55,7 +56,8 @@ export const OrdersTab = ({ orders }) => {
             </div>
 
             {isActive && order.status === 'En curso' && order.deliveries && (
-                <div className="mt-6 border-t pt-4">
+                <div className="mt-6 border-t pt-4 space-y-4">
+                     <DriverCard orderId={order.id} />
                      <p className="text-xs font-bold text-muted-foreground uppercase mb-3 flex items-center gap-2">
                         <Truck className="h-3 w-3" /> Rastreo en Tiempo Real
                      </p>

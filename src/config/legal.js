@@ -11,7 +11,7 @@
  * hay que subir LEGAL_VERSION: los registros guardan qué versión aceptó cada
  * persona (tabla legal_consents).
  */
-export const LEGAL_VERSION = '2026-10-09';
+export const LEGAL_VERSION = '2026-10-13';
 
 const PENDING = '[POR DEFINIR]';
 const env = import.meta.env;
