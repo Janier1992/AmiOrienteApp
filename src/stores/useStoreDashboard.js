@@ -26,6 +26,7 @@
 
 import { create } from 'zustand';
 import { storeService } from '@/services/storeService';
+import { orderService } from '@/services/orderService';
 
 // =============================================================================
 // CONFIGURACIÓN
@@ -352,6 +353,19 @@ export const useStoreDashboard = create((set, get) => ({
       console.error("[useStoreDashboard] Error actualizando pedido:", error);
       throw error;
     }
+  },
+
+  /**
+   * Cancela un pedido (devuelve el inventario y avisa al cliente).
+   * @param {string} orderId
+   * @param {string|null} reason
+   */
+  cancelOrder: async (orderId, reason = null) => {
+    if (!orderId) throw new Error('ID requerido');
+    await orderService.cancelarPedido(orderId, reason);
+    set(state => ({
+      orders: state.orders.map(o => (o.id === orderId ? { ...o, status: 'Cancelado', cancellation_reason: reason } : o))
+    }));
   },
 
   /**

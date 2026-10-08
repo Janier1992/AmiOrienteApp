@@ -61,16 +61,20 @@ const OrderTrackingMap = ({ delivery }) => {
     };
   }, [delivery]);
   
-  if (!delivery?.delivery_coords || !delivery?.pickup_coords) {
-    return <div className="text-center text-sm text-muted-foreground">No hay información de ubicación disponible para este pedido.</div>;
-  }
-
-  const pickupPosition = [delivery.pickup_coords[0], delivery.pickup_coords[1]];
-  const deliveryPosition = [delivery.delivery_coords[0], delivery.delivery_coords[1]];
+  const hasDeliveryCoords = Array.isArray(delivery?.delivery_coords) && delivery.delivery_coords.length >= 2;
+  const hasPickupCoords = Array.isArray(delivery?.pickup_coords) && delivery.pickup_coords.length >= 2;
   const personPosition = deliveryPersonLocation ? [deliveryPersonLocation.lat, deliveryPersonLocation.lng] : null;
 
+  // Basta con saber dónde va el domiciliario o dónde se entrega; la recogida es opcional.
+  if (!hasDeliveryCoords && !personPosition) {
+    return <div className="text-center text-sm text-muted-foreground">Aún no tenemos la ubicación de tu domiciliario. Aparecerá aquí cuando comience a moverse.</div>;
+  }
+
+  const pickupPosition = hasPickupCoords ? [delivery.pickup_coords[0], delivery.pickup_coords[1]] : null;
+  const deliveryPosition = hasDeliveryCoords ? [delivery.delivery_coords[0], delivery.delivery_coords[1]] : null;
+
   const centerPosition = personPosition || deliveryPosition;
-  const routePositions = personPosition ? [personPosition, deliveryPosition] : [];
+  const routePositions = personPosition && deliveryPosition ? [personPosition, deliveryPosition] : [];
 
   return (
     <div className="h-64 w-full rounded-lg overflow-hidden border">
@@ -79,12 +83,16 @@ const OrderTrackingMap = ({ delivery }) => {
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-        <Marker position={pickupPosition}>
-          <Popup>Punto de Recogida</Popup>
-        </Marker>
-        <Marker position={deliveryPosition}>
-          <Popup>Tu Ubicación</Popup>
-        </Marker>
+        {pickupPosition && (
+          <Marker position={pickupPosition}>
+            <Popup>Punto de Recogida</Popup>
+          </Marker>
+        )}
+        {deliveryPosition && (
+          <Marker position={deliveryPosition}>
+            <Popup>Tu Ubicación</Popup>
+          </Marker>
+        )}
         {personPosition && (
           <Marker position={personPosition} icon={deliveryPersonIcon}>
             <Popup>Domiciliario</Popup>

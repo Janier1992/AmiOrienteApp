@@ -163,6 +163,10 @@ DELETE FROM public.deliveries;
   INSERT INTO public.driver_declarations (user_id, email, full_name, document_type, document_number, payload, document_text, signature_png, document_hash, legal_version, claimed_at)
   SELECT id, email, 'Domi', 'CC', '1' || right(id::text, 4), '{}'::jsonb, repeat('texto ', 40), 'data:image/png;base64,' || repeat('A', 400), repeat('0', 64), 'test', now()
     FROM public.profiles WHERE id IN ('00000000-0000-0000-0000-0000000000d1', '00000000-0000-0000-0000-0000000000d2');
+  SELECT test.run('FOTO un domiciliario con declaración pero SIN foto no puede aceptar -> bloqueado', 'authenticated', '00000000-0000-0000-0000-0000000000d1',
+    $q$ SELECT public.accept_order('00000000-0000-0000-0000-00000000f003', '00000000-0000-0000-0000-0000000000d1') $q$, true);
+  INSERT INTO public.driver_photos (user_id, photo_jpeg)
+  SELECT id, 'data:image/jpeg;base64,' || repeat('A', 2500) FROM public.profiles WHERE id IN ('00000000-0000-0000-0000-0000000000d1', '00000000-0000-0000-0000-0000000000d2');
   SELECT test.run('LEGÍTIMO domiciliario D1 acepta un pedido listo', 'authenticated', '00000000-0000-0000-0000-0000000000d1',
     $q$ SELECT public.accept_order('00000000-0000-0000-0000-00000000f003', '00000000-0000-0000-0000-0000000000d1') $q$, false);
   SELECT test.assert('LEGÍTIMO la entrega queda Asignada a D1 y el pedido En curso',
@@ -180,6 +184,8 @@ DELETE FROM public.deliveries;
   \ir test_teams_plans.sql
   \ir test_legal_consents.sql
   \ir test_driver_declarations.sql
+  \ir test_driver_photo.sql
+  \ir test_cancel_order.sql
 \endif
 
 -- ================================= resultado =================================

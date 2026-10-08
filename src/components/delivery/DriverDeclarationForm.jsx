@@ -3,6 +3,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import SignaturePad from '@/components/auth/SignaturePad';
+import PhotoCapture from '@/components/delivery/PhotoCapture';
 import {
   DECLARATION_STATEMENTS,
   DOCUMENT_TYPES,
@@ -36,6 +37,11 @@ const DriverDeclarationForm = ({ fullName, value, onChange, signature, onSignatu
         Este documento queda firmado y guardado como soporte para el equipo de administración. Completa tus datos reales:
         tus documentos deben estar vigentes.
       </p>
+
+      <div className="space-y-2">
+        <Label>Tu fotografía</Label>
+        <PhotoCapture value={value.photo} onChange={(photo) => onChange({ ...value, photo })} />
+      </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
         <Field id="dd-doctype" label="Tipo de documento">

@@ -1,4 +1,5 @@
 import React from 'react';
+import DriverCard from '@/components/customer-dashboard/DriverCard';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 
 const OrderDetailsModal = ({ order, isOpen, onClose }) => (
@@ -10,6 +11,7 @@ const OrderDetailsModal = ({ order, isOpen, onClose }) => (
           Realizado el {new Date(order?.created_at).toLocaleString()} en {order?.stores?.name}.
         </DialogDescription>
       </DialogHeader>
+      {order && ['En curso', 'Entregado'].includes(order.status) && <DriverCard orderId={order.id} />}
       <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2">
         {order?.order_items.map(item => (
           <div key={item.id} className="flex items-center justify-between">

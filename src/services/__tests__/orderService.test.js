@@ -77,3 +77,20 @@ describe('orderService.crearPedido', () => {
         expect(mockRpc).not.toHaveBeenCalled();
     });
 });
+
+describe('orderService.cancelarPedido', () => {
+    const id = '11111111-1111-1111-1111-111111111111';
+    beforeEach(() => { vi.clearAllMocks(); });
+
+    it('cancela por la función cancel_order del servidor (que valida permisos y devuelve inventario)', async () => {
+        mockRpc.mockResolvedValue({ data: null, error: null });
+        const r = await orderService.cancelarPedido(id, 'Me equivoqué');
+        expect(mockRpc).toHaveBeenCalledWith('cancel_order', { p_order_id: id, p_reason: 'Me equivoqué' });
+        expect(r.status).toBe('Cancelado');
+    });
+
+    it('propaga el mensaje del servidor cuando no se puede cancelar', async () => {
+        mockRpc.mockResolvedValue({ data: null, error: { message: 'El pedido ya va en camino.' } });
+        await expect(orderService.cancelarPedido(id)).rejects.toThrow('El pedido ya va en camino.');
+    });
+});

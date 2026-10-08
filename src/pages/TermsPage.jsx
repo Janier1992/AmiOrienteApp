@@ -108,6 +108,7 @@ const TermsPage = () => (
           plazos que estas establezcan.
         </li>
         <li>Debe entregar el pedido completo, en buen estado y de forma segura, y dar un trato respetuoso. No puede abrir, consumir ni alterar los productos ni cobrar valores distintos a los informados por la Plataforma.</li>
+        <li>Para operar debe tomarse una <strong>fotografía</strong> con la cámara al registrarse. El cliente de cada pedido que atienda verá su fotografía, nombre completo, los últimos dígitos de su documento y la placa de su vehículo, para su seguridad y para poder seguir la entrega. La fotografía es un dato sensible que se trata con su autorización expresa, como explica la Política de Privacidad.</li>
         <li>La ubicación del domiciliario se comparte con el cliente solo durante el pedido en curso, como explica la Política de Privacidad.</li>
         <li>La Plataforma puede suspender el acceso por incumplimientos graves, fraude o quejas comprobadas, garantizando que pueda dar su versión.</li>
       </ul>

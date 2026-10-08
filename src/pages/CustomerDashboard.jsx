@@ -184,7 +184,7 @@ const CustomerDashboard = () => {
       <main className="flex-1 p-4 md:p-8 overflow-y-auto max-h-screen mt-14 md:mt-0">
         <div className="max-w-5xl mx-auto space-y-6">
           <TeamMembershipBanner userId={user.id} />
-          {activeTab === 'pedidos' && <OrdersTab orders={orders} />}
+          {activeTab === 'pedidos' && <OrdersTab orders={orders} onOrdersChanged={() => refreshOrders(user.id)} />}
           {activeTab === 'perfil' && profile && (
             <ProfileTab
               profile={{ ...profile, email: user.email }}
