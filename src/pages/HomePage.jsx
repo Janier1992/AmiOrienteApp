@@ -138,23 +138,24 @@ const HomePage = () => {
       </Helmet>
 
       <div className="bg-background min-h-screen">
-        {/* Encabezado — la foto de Marinilla identifica la región, con un
-            degradado del verde de marca encima para que el texto blanco
-            tenga contraste suficiente (AA) sobre cualquier parte de la foto. */}
+        {/* Encabezado — la foto de Marinilla identifica la región. El
+            degradado se deja liviano a propósito para que la foto se vea
+            clara; el texto se mantiene legible con sombra propia en vez de
+            oscurecer toda la imagen. */}
         <div
           className="relative bg-cover bg-center"
           style={{ backgroundImage: "url('https://horizons-cdn.hostinger.com/9a2f1d5f-26c5-4fa8-b3e7-17e2b7bc86a9/eaa5c3ede657a14fb3f5ca74349a2d50.jpg')" }}
         >
-          <div className="absolute inset-0 bg-gradient-to-b from-primary/75 via-primary/70 to-primary/95" />
+          <div className="absolute inset-0 bg-gradient-to-b from-primary/45 via-primary/35 to-primary/85" />
           <div className="relative max-w-5xl mx-auto px-5 pt-6 pb-7 sm:px-6">
-            <div className="flex items-center gap-1.5 text-primary-foreground/90 text-sm font-medium mb-3">
+            <div className="flex items-center gap-1.5 text-primary-foreground/90 text-sm font-medium mb-3 [text-shadow:0_1px_4px_rgba(0,0,0,0.5)]">
               <MapPin className="h-4 w-4" />
               Marinilla, Antioquia
             </div>
-            <h1 className="text-xl sm:text-2xl font-bold text-primary-foreground mb-1 [text-shadow:0_1px_3px_rgba(0,0,0,0.25)]">
+            <h1 className="text-xl sm:text-2xl font-bold text-primary-foreground mb-1 [text-shadow:0_2px_6px_rgba(0,0,0,0.5)]">
               {firstName ? `Hola, ${firstName}` : 'Hola'}
             </h1>
-            <p className="text-primary-foreground/90 text-sm mb-5 [text-shadow:0_1px_2px_rgba(0,0,0,0.2)]">¿Qué necesitas hoy en tu región?</p>
+            <p className="text-primary-foreground/90 text-sm mb-5 [text-shadow:0_1px_4px_rgba(0,0,0,0.45)]">¿Qué necesitas hoy en tu región?</p>
 
             <form onSubmit={handleSearchSubmit} className="relative">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
