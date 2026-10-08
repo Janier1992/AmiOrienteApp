@@ -68,10 +68,10 @@ const AgroProductCard = ({ product, onEdit, onDelete }) => {
                     <div className="flex justify-between items-start mb-1">
                         <h3 className="font-bold text-slate-900 line-clamp-2 text-lg leading-tight">{product.name}</h3>
                     </div>
-                    <p className="text-xs text-green-600 font-medium mb-1 uppercase tracking-wide">
+                    <p className="text-xs text-green-700 font-medium mb-1 uppercase tracking-wide">
                         {product.category || 'General'}
                     </p>
-                    <p className="text-xs text-gray-400 mb-2">Lote: {displayBatch}</p>
+                    <p className="text-xs text-gray-500 mb-2">Lote: {displayBatch}</p>
                 </div>
 
                 <div className="flex items-center justify-between mt-2 pt-2 border-t border-green-50">
@@ -238,7 +238,7 @@ const AgroCropsView = () => {
         <div className="space-y-6">
             <div className="bg-green-50 border border-green-100 p-6 rounded-2xl">
                 <h1 className="text-3xl font-extrabold text-green-900 flex items-center gap-3">
-                    <Sprout className="h-8 w-8 text-green-600" />
+                    <Sprout className="h-8 w-8 text-green-700" />
                     Gestión de Cosechas
                 </h1>
                 <p className="text-green-700 mt-2">Registra tus cultivos disponibles, asigna lotes y gestiona tu inventario agrícola.</p>
@@ -246,7 +246,7 @@ const AgroCropsView = () => {
 
             <div className="flex flex-col md:flex-row justify-between items-center gap-4 bg-white p-2 rounded-2xl shadow-sm border border-gray-100">
                 <div className="relative w-full md:w-96">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
                     <Input
                         placeholder="Buscar cultivo o lote..."
                         className="pl-10 bg-gray-50 border-transparent focus:bg-white transition-colors"
@@ -272,7 +272,7 @@ const AgroCropsView = () => {
                     <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
                         <DialogTrigger asChild>
                             <Button
-                                className="bg-green-600 text-white hover:bg-green-700 rounded-full px-6 shadow-green-200 shadow-lg"
+                                className="bg-green-700 text-white hover:bg-green-800 rounded-full px-6 shadow-green-200 shadow-lg"
                                 onClick={openCreateModal}
                             >
                                 <Plus className="h-4 w-4 mr-2" /> Nueva Cosecha
@@ -334,7 +334,7 @@ const AgroCropsView = () => {
                                     <Label htmlFor="description">Descripción Adicional</Label>
                                     <Textarea id="description" name="description" value={formData.description} onChange={handleInputChange} rows={3} placeholder="Detalles sobre la calidad, fecha de cosecha, etc." />
                                 </div>
-                                <Button type="submit" className="w-full bg-green-600 text-white hover:bg-green-700 font-bold" disabled={isSubmitting}>
+                                <Button type="submit" className="w-full bg-green-700 text-white hover:bg-green-800 font-bold" disabled={isSubmitting}>
                                     {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : (editingProduct ? "Guardar Cambios" : "Registrar Cosecha")}
                                 </Button>
                             </form>
@@ -357,7 +357,7 @@ const AgroCropsView = () => {
                     <div className="col-span-full py-12 text-center bg-gray-50 rounded-xl border-dashed border-2 border-gray-200">
                         <Sprout className="h-12 w-12 text-gray-300 mx-auto mb-3" />
                         <p className="text-gray-500 font-medium">No has registrado ninguna cosecha aún.</p>
-                        <Button variant="link" onClick={openCreateModal} className="text-green-600">
+                        <Button variant="link" onClick={openCreateModal} className="text-green-700">
                             Registrar mi primera cosecha
                         </Button>
                     </div>

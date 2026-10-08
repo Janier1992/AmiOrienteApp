@@ -17,7 +17,7 @@ const OrderDetailsModal = ({ order, open, onOpenChange }) => (
               <img src={item.products?.image_url || 'https://placehold.co/64'} alt={item.products?.name} className="w-16 h-16 rounded-md object-cover" />
               <div>
                 <p className="font-semibold">{item.products?.name}</p>
-                <p className="text-sm text-gray-500">Cantidad: {item.quantity}</p>
+                <p className="text-sm text-muted-foreground">Cantidad: {item.quantity}</p>
               </div>
             </div>
             <p className="font-semibold">${(item.price * item.quantity).toLocaleString()}</p>

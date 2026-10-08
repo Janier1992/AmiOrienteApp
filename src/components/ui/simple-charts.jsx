@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 export const BarChart = ({ data, categories, index, colors, valueFormatter, className }) => {
   const [hoveredIndex, setHoveredIndex] = useState(null);
   
-  if (!data || data.length === 0) return <div className="h-[300px] flex items-center justify-center text-gray-400">Sin datos</div>;
+  if (!data || data.length === 0) return <div className="h-[300px] flex items-center justify-center text-gray-500">Sin datos</div>;
 
   const maxValue = Math.max(...data.map(item => item[categories[0]])) || 1;
 
@@ -64,7 +64,7 @@ export const BarChart = ({ data, categories, index, colors, valueFormatter, clas
 export const LineChart = ({ data, categories, index, valueFormatter, className }) => {
     const [hoveredPoint, setHoveredPoint] = useState(null);
 
-    if (!data || data.length === 0) return <div className="h-[300px] flex items-center justify-center text-gray-400">Sin datos</div>;
+    if (!data || data.length === 0) return <div className="h-[300px] flex items-center justify-center text-gray-500">Sin datos</div>;
 
     const maxValue = Math.max(...data.map(item => item[categories[0]])) || 1;
     

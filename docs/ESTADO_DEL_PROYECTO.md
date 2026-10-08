@@ -43,6 +43,7 @@ Auditoría en `docs/AUDITORIA_SUPABASE_2026-10-07.md`. Las correcciones están e
 6. **Datos de ejemplo**: el directorio muestra negocios de muestra si la plataforma aún no tiene tiendas.
 7. **Normativa colombiana** (plataformas de domicilio y venta): pendiente de definir con el propietario. Al hacerlo, revisar también `TermsPage` y `PrivacyPolicyPage`: siguen llamando a la plataforma «Domicilios MiOriente» y los términos dicen que los pagos se procesan con Stripe, lo cual hoy no es cierto (todo es efectivo/transferencia).
 8. ~~Planes y comisiones~~ (unificados en la tabla `plans`; falta que el propietario confirme los valores).
-9. **Contraste de color (WCAG AA).** El texto blanco sobre el verde primario (`--primary`, `src/index.css`) da ~3,4:1; AA pide 4,5:1 en texto normal. Oscurecer un poco el verde lo resuelve (afecta la identidad de marca: decisión del propietario).
-10. **Modo oscuro** en páginas públicas: algunas pantallas (p. ej. Servicios) tienen fondos fijos claros; el tema por defecto es claro.
+9. ~~Contraste de color (WCAG AA)~~ (hecho: verde primario `142 64% 28%`, texto secundario y destructivo oscurecidos; auditoría axe `color-contrast` con 0 hallazgos en ~50 pantallas en tema claro y oscuro).
+10. ~~Modo oscuro~~ (hecho: tokens oscuros con verde claro y texto oscuro sobre él; Términos/Privacidad y los paneles de cliente y domiciliario ya usan tokens del tema). El panel de negocio sigue siempre en tema claro.
+11. **Foto de Marinilla**: es el fondo del Home (viene de una URL externa de Hostinger; conviene descargarla a `public/` y servirla desde la propia app para que cargue siempre y funcione sin conexión).
 11. Plan de Supabase de pago antes del primer cliente (respaldos, límites, rendimiento).

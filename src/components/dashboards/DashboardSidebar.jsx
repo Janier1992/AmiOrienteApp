@@ -28,7 +28,7 @@ export const DashboardSidebar = ({ title, navItems }) => {
 
       {/* Nav Items */}
       <div className="flex-1 overflow-y-auto py-6 px-3 space-y-1 scrollbar-thin scrollbar-thumb-slate-200">
-        <div className="px-3 mb-2 text-xs font-bold text-slate-400 uppercase tracking-widest">
+        <div className="px-3 mb-2 text-xs font-bold text-slate-500 uppercase tracking-widest">
           Gestión
         </div>
         {navItems.map(item => {
@@ -45,11 +45,11 @@ export const DashboardSidebar = ({ title, navItems }) => {
               className={cn(
                 "group flex items-center px-3 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 relative overflow-hidden",
                 isActive
-                  ? "bg-green-600 text-white shadow-lg shadow-green-200/50"
+                  ? "bg-green-700 text-white shadow-lg shadow-green-200/50"
                   : "text-slate-600 hover:bg-green-50 hover:text-green-700"
               )}
             >
-              <item.icon className={cn("h-5 w-5 mr-3 flex-shrink-0 transition-colors duration-200", isActive ? "text-white" : "text-slate-400 group-hover:text-green-600")} />
+              <item.icon className={cn("h-5 w-5 mr-3 flex-shrink-0 transition-colors duration-200", isActive ? "text-white" : "text-slate-500 group-hover:text-green-600")} />
               <span className="truncate flex-1 z-10 relative">{item.label}</span>
               {isActive && <ChevronRight className="h-4 w-4 text-white/80" />}
             </Link>

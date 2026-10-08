@@ -91,7 +91,7 @@ const OrderConfirmationPage = () => {
                       </div>
                     )}
                     {Number(order.discount_amount) > 0 && (
-                      <div className="flex justify-between text-green-600">
+                      <div className="flex justify-between text-green-700 dark:text-green-400">
                         <span>Descuento {order.discount_code ? `(${order.discount_code})` : ''}</span>
                         <span>-${Number(order.discount_amount).toLocaleString()}</span>
                       </div>

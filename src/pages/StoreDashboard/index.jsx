@@ -74,7 +74,7 @@ const StoreDashboardRouter = () => {
                         No se encontró un negocio asociado a tu cuenta. ¿Deseas registrar uno nuevo?
                     </p>
                     <div className="space-y-3">
-                        <Button onClick={() => navigate('/tienda/registro')} className="w-full bg-green-600 hover:bg-green-700">
+                        <Button onClick={() => navigate('/tienda/registro')} className="w-full bg-green-700 hover:bg-green-800">
                             Registrar Negocio
                         </Button>
                         <Button onClick={() => signOut()} variant="outline" className="w-full">

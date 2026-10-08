@@ -86,7 +86,7 @@ export const PWAInstallPrompt = () => {
               </div>
               <button
                 onClick={handleDismiss}
-                className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                className="text-slate-500 hover:text-slate-600 dark:hover:text-slate-200"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -107,7 +107,7 @@ export const PWAInstallPrompt = () => {
             ) : (
               <Button
                 onClick={handleInstallClick}
-                className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold shadow-lg shadow-green-600/20"
+                className="w-full bg-green-700 hover:bg-green-800 text-white font-semibold shadow-lg shadow-green-600/20"
               >
                 <Download className="mr-2 h-4 w-4" />
                 Instalar Ahora

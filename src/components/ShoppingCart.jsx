@@ -31,18 +31,18 @@ const ShoppingCart = ({ isCartOpen, setIsCartOpen }) => {
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-            className="absolute right-0 top-0 h-full w-full max-w-md bg-white shadow-2xl flex flex-col"
+            className="absolute right-0 top-0 h-full w-full max-w-md bg-card shadow-2xl flex flex-col"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between p-6 border-b">
-              <h2 className="text-2xl font-bold text-gray-800">Carrito de Compras</h2>
+              <h2 className="text-2xl font-bold text-foreground">Carrito de Compras</h2>
               <Button onClick={() => setIsCartOpen(false)} variant="ghost" size="icon">
                 <X />
               </Button>
             </div>
             <div className="flex-grow p-6 overflow-y-auto space-y-4">
               {items.length === 0 ? (
-                <div className="text-center text-gray-500 h-full flex flex-col items-center justify-center">
+                <div className="text-center text-muted-foreground h-full flex flex-col items-center justify-center">
                   <ShoppingCartIcon size={48} className="mb-4" />
                   <p>Tu carrito está vacío.</p>
                 </div>
@@ -51,14 +51,14 @@ const ShoppingCart = ({ isCartOpen, setIsCartOpen }) => {
                   <div key={item.id} className="flex items-start gap-4 p-3 rounded-lg border">
                     <img src={item.image_url || "https://images.unsplash.com/photo-1571302171879-0965db383dc4"} alt={item.name} className="w-20 h-20 object-cover rounded-md" />
                     <div className="flex-grow">
-                      <h3 className="font-semibold text-gray-800">{item.name}</h3>
-                      <p className="text-sm text-gray-600 font-bold">
+                      <h3 className="font-semibold text-foreground">{item.name}</h3>
+                      <p className="text-sm text-muted-foreground font-bold">
                         ${item.price.toLocaleString()}
                       </p>
                       <div className="flex items-center border rounded-md mt-2">
-                        <Button onClick={() => updateQuantity(item.id, Math.max(1, item.quantity - 1))} size="sm" variant="ghost" className="px-2 text-gray-600 hover:bg-gray-100"><Minus size={16}/></Button>
-                        <span className="px-3 text-gray-800">{item.quantity}</span>
-                        <Button onClick={() => updateQuantity(item.id, item.quantity + 1)} size="sm" variant="ghost" className="px-2 text-gray-600 hover:bg-gray-100"><Plus size={16}/></Button>
+                        <Button onClick={() => updateQuantity(item.id, Math.max(1, item.quantity - 1))} size="sm" variant="ghost" className="px-2 text-muted-foreground hover:bg-gray-100"><Minus size={16}/></Button>
+                        <span className="px-3 text-foreground">{item.quantity}</span>
+                        <Button onClick={() => updateQuantity(item.id, item.quantity + 1)} size="sm" variant="ghost" className="px-2 text-muted-foreground hover:bg-gray-100"><Plus size={16}/></Button>
                       </div>
                     </div>
                     <div className="flex flex-col items-end gap-2">
@@ -71,15 +71,15 @@ const ShoppingCart = ({ isCartOpen, setIsCartOpen }) => {
             </div>
             {items.length > 0 && (
               <div className="p-6 border-t bg-gray-50">
-                <div className="flex justify-between items-center mb-2 text-gray-600">
+                <div className="flex justify-between items-center mb-2 text-muted-foreground">
                   <span>Subtotal</span>
                   <span>${getCartTotal().toLocaleString()}</span>
                 </div>
-                 <div className="flex justify-between items-center mb-4 text-gray-600">
+                 <div className="flex justify-between items-center mb-4 text-muted-foreground">
                   <span>Envío</span>
                   <span>$5,000</span>
                 </div>
-                <div className="flex justify-between items-center mb-4 text-gray-800">
+                <div className="flex justify-between items-center mb-4 text-foreground">
                   <span className="text-lg font-medium">Total</span>
                   <span className="text-2xl font-bold">${(getCartTotal() + 5000).toLocaleString()}</span>
                 </div>

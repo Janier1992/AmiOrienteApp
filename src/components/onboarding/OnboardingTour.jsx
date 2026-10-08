@@ -182,7 +182,7 @@ export function OnboardingTour() {
                                 <Button
                                     size="sm"
                                     onClick={isLastStep ? () => stopGuide(true) : nextStep}
-                                    className={isLastStep ? "bg-green-600 hover:bg-green-700" : ""}
+                                    className={isLastStep ? "bg-green-700 hover:bg-green-800" : ""}
                                 >
                                     {isLastStep ? '¡Entendido!' : 'Siguiente'}
                                     {!isLastStep && <ChevronRight className="h-4 w-4 ml-1" />}

@@ -128,7 +128,7 @@ export const BulkUploadTab = ({ onProductsUploaded, storeId }) => {
         </Alert>
 
         <div className="flex flex-col items-center justify-center border-2 border-dashed border-gray-200 rounded-lg p-8 bg-gray-50/50 hover:bg-gray-50 transition-colors">
-          <Upload className="h-10 w-10 text-gray-400 mb-4" />
+          <Upload className="h-10 w-10 text-gray-500 mb-4" />
 
           <div className="flex gap-4 mb-4">
             <label htmlFor="file-upload" className="cursor-pointer">

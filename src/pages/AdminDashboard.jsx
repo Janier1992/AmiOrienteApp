@@ -162,7 +162,7 @@ const AdminDashboard = () => {
                             <CardTitle className="text-sm font-medium">Activos</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold text-green-600">{stats.active}</div>
+                            <div className="text-2xl font-bold text-green-700">{stats.active}</div>
                         </CardContent>
                     </Card>
                     <Card>

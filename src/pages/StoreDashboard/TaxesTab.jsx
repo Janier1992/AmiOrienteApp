@@ -90,7 +90,7 @@ export const TaxesTab = ({ storeId }) => {
         </div>
         {taxes.length === 0 && !loading && (
           <div className="text-center py-10 border-dashed border-2 rounded-lg">
-            <Landmark className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+            <Landmark className="h-12 w-12 text-gray-500 mx-auto mb-4" />
             <p>Aún no has configurado ninguna tasa de impuesto.</p>
           </div>
         )}

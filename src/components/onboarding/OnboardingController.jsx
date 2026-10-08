@@ -65,11 +65,11 @@ export function OnboardingWelcome() {
                 <div className="flex flex-col gap-4 py-4">
                     <div className="space-y-2">
                         <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300">
-                            <CheckCircle2 className="h-4 w-4 text-green-500" />
+                            <CheckCircle2 className="h-4 w-4 text-green-700" />
                             <span>Aprende a navegar la plataforma en &lt; 1 min</span>
                         </div>
                         <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300">
-                            <CheckCircle2 className="h-4 w-4 text-green-500" />
+                            <CheckCircle2 className="h-4 w-4 text-green-700" />
                             <span>Conoce las funciones exclusivas</span>
                         </div>
                     </div>

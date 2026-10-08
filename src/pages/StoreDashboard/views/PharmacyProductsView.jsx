@@ -57,11 +57,11 @@ const PharmacyProductCard = ({ product, onEdit, onDelete }) => {
             <CardContent className="p-4 flex-1 flex flex-col gap-3">
                 <div className="grid grid-cols-2 gap-2 text-xs">
                     <div className="bg-gray-50 p-2 rounded border border-gray-100">
-                        <span className="text-gray-400 block mb-1">Lote</span>
+                        <span className="text-gray-500 block mb-1">Lote</span>
                         <span className="font-mono text-slate-700">{meta.batchNumber || 'N/A'}</span>
                     </div>
                     <div className={`p-2 rounded border ${isExpired ? 'bg-red-50 border-red-200' : (isRisk ? 'bg-orange-50 border-orange-200' : 'bg-green-50 border-green-200')}`}>
-                        <span className={`block mb-1 ${isExpired ? 'text-red-400' : 'text-gray-400'}`}>Vence</span>
+                        <span className={`block mb-1 ${isExpired ? 'text-red-400' : 'text-gray-500'}`}>Vence</span>
                         <span className={`font-bold ${isExpired ? 'text-red-700' : 'text-slate-700'}`}>
                             {meta.expirationDate || 'N/A'}
                         </span>
@@ -71,13 +71,13 @@ const PharmacyProductCard = ({ product, onEdit, onDelete }) => {
                 <div className="mt-auto pt-2 flex items-center justify-between">
                     <div>
                         <span className="text-lg font-bold text-blue-900">${Number(product.price).toLocaleString()}</span>
-                        <p className="text-xs text-slate-400">Stock: {product.stock}</p>
+                        <p className="text-xs text-slate-500">Stock: {product.stock}</p>
                     </div>
                     <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-blue-600" onClick={() => onEdit(product)}>
+                        <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-500 hover:text-blue-600" onClick={() => onEdit(product)}>
                             <Pencil className="h-4 w-4" />
                         </Button>
-                        <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-red-600" onClick={() => onDelete(product.id)}>
+                        <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-500 hover:text-red-600" onClick={() => onDelete(product.id)}>
                             <Trash2 className="h-4 w-4" />
                         </Button>
                     </div>

@@ -62,7 +62,7 @@ const OrderTrackingMap = ({ delivery }) => {
   }, [delivery]);
   
   if (!delivery?.delivery_coords || !delivery?.pickup_coords) {
-    return <div className="text-center text-sm text-gray-500">No hay información de ubicación disponible para este pedido.</div>;
+    return <div className="text-center text-sm text-muted-foreground">No hay información de ubicación disponible para este pedido.</div>;
   }
 
   const pickupPosition = [delivery.pickup_coords[0], delivery.pickup_coords[1]];

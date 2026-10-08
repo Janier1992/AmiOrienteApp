@@ -127,7 +127,7 @@ const DiscountsTab = ({ storeId }) => {
         </div>
         {discounts.length === 0 && !loading && (
           <div className="text-center py-10 border-dashed border-2 rounded-lg">
-            <Percent className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+            <Percent className="h-12 w-12 text-gray-500 mx-auto mb-4" />
             <p>Aún no has creado ningún código de descuento.</p>
           </div>
         )}

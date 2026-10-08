@@ -6,9 +6,9 @@ import { Truck, Eye } from 'lucide-react';
 const AvailableOrdersTab = ({ isConnected, orders, onAcceptOrder, onViewDetails, onConnect }) => {
   if (orders.length === 0) {
     return (
-      <div className="text-center py-12 bg-slate-100 rounded-lg">
-        <Truck className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-        <p className="text-gray-500 font-medium">No hay pedidos disponibles por ahora.</p>
+      <div className="text-center py-12 bg-muted rounded-lg">
+        <Truck className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+        <p className="text-muted-foreground font-medium">No hay pedidos disponibles por ahora.</p>
       </div>
     );
   }
@@ -28,9 +28,9 @@ const AvailableOrdersTab = ({ isConnected, orders, onAcceptOrder, onViewDetails,
           <div className="flex justify-between items-start">
             <div>
               <p className="font-bold">Pedido #{order.id.substring(0, 8)}</p>
-              <p className="text-sm text-gray-600">De: <span className="font-semibold">{order.stores?.name || 'N/A'}</span></p>
-              <p className="text-sm text-gray-600">Cliente: <span className="font-semibold">{order.profiles?.full_name || 'N/A'}</span></p>
-              <p className="text-lg font-bold text-green-600 mt-1">${Number(order.total).toLocaleString()}</p>
+              <p className="text-sm text-muted-foreground">De: <span className="font-semibold">{order.stores?.name || 'N/A'}</span></p>
+              <p className="text-sm text-muted-foreground">Cliente: <span className="font-semibold">{order.profiles?.full_name || 'N/A'}</span></p>
+              <p className="text-lg font-bold text-green-700 dark:text-green-400 mt-1">${Number(order.total).toLocaleString()}</p>
               {order.status === 'Pendiente de pago en efectivo' && <p className="text-xs font-semibold text-white bg-blue-600 px-2 py-1 rounded-full inline-block mt-2">Pago en Efectivo</p>}
             </div>
             <div className="flex flex-col items-end gap-2">
