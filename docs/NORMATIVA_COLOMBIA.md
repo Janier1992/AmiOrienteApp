@@ -27,7 +27,7 @@ En el registro el domiciliario completa y **firma digitalmente** (firma dibujada
 - Administración lo consulta en el Panel de Administración → «Declaraciones de domiciliarios» (búsqueda, ver documento, imprimir o guardar como PDF).
 - Los domiciliarios que ya tenían cuenta ven un aviso en su panel y deben firmarla para aceptar pedidos.
 - **A validar con el abogado:** la fórmula «bajo la gravedad del juramento», el valor probatorio de la firma electrónica manuscrita digitalizada (Ley 527 de 1999 y Decreto 2364 de 2012, citados sin verificar contra el texto vigente) y si conviene añadir verificación de identidad adicional (por ejemplo, código al correo o foto del documento).
-- **Pendiente técnico:** impedir también en la base de datos (`accept_order`) que acepte pedidos quien no haya firmado; hoy se exige en la interfaz.
+- La base de datos también lo exige: `accept_order` rechaza a quien no tenga declaración firmada (migración `20261012_accept_order_requires_declaration.sql`). Si la interfaz no lo sabía, abre el formulario de firma.
 
 ## 3. ⚠️ Punto que NO coincide con el modelo asumido (decidir con el abogado)
 La Ley 2466 de 2025 (art. 27) asigna, para repartidores **independientes** de plataformas, **60 % de salud y pensión a la plataforma, 40 % al repartidor, y 100 % de riesgos laborales a la plataforma**. El **Decreto 0991 de 2026** (4 de agosto de 2026) obliga a las plataformas a **afiliar, retener y pagar** esos aportes por la PILA, con **12 meses** para adecuar sistemas, y aclara que no crea subordinación. El gremio Alianza In anunció demanda y pidió derogarlo: **su estado actual está sin verificar** (hasta ahora hay dos fuentes que dan el número de forma distinta, 0991 y 099).
@@ -35,7 +35,7 @@ Por eso los Términos dicen que el domiciliario debe estar afiliado **y** que la
 **Pendiente técnico:** módulo que registre el ingreso de cada domiciliario por la plataforma y calcule la base de cotización (40 % de los ingresos) y los aportes, cuando el decreto quede en firme.
 
 ## 4. Lista de pendientes para la persona jurídica (antes de comercializar)
-0. Aplicar en Supabase `database_updates/20261011_driver_declarations.sql` (sin ella el registro de domiciliarios falla al firmar).
+0. Aplicar en Supabase `20261011_driver_declarations.sql` y luego `20261012_accept_order_requires_declaration.sql`. Los domiciliarios que ya existían deben firmar desde su panel antes de volver a aceptar pedidos.
 1. Completar las variables de GitHub (Settings → Secrets and variables → Actions → **Variables**): `VITE_LEGAL_NAME`, `VITE_LEGAL_NIT`, `VITE_LEGAL_ADDRESS`, `VITE_LEGAL_PHONE`, `VITE_LEGAL_EMAIL`. Volver a desplegar.
 2. Aplicar en Supabase la migración `database_updates/20261010_legal_consents.sql`.
 3. Que un abogado revise Términos y Privacidad (y suba `LEGAL_VERSION` si cambia algo).

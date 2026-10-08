@@ -257,6 +257,11 @@ const DeliveryDashboard = () => {
       setActiveTab('curso');
     } catch (error) {
       console.error("Error accepting order:", error);
+      // El servidor también exige la declaración firmada: si la interfaz no lo sabía, se corrige y se abre el formulario.
+      if (/firmar tu declaraci/i.test(error.message || '')) {
+        setHasDeclaration(false);
+        setIsDeclarationOpen(true);
+      }
       toast({ title: "Error", description: error.message || "No se pudo aceptar el pedido.", variant: "destructive" });
     }
   };

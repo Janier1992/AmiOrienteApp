@@ -50,7 +50,7 @@ SELECT test.run('DECL el administrador ve las declaraciones', 'authenticated', '
 SELECT test.run('DECL el domiciliario ve la suya', 'authenticated', :'dd1',
   $q$ DO $d$ BEGIN IF (SELECT count(*) FROM public.driver_declarations) <> 1 THEN RAISE EXCEPTION 'no ve solo la suya'; END IF; END $d$ $q$, false);
 SELECT test.run('DECL otro domiciliario NO ve las ajenas', 'authenticated', '00000000-0000-0000-0000-0000000000d2',
-  $q$ DO $d$ BEGIN IF EXISTS (SELECT 1 FROM public.driver_declarations) THEN RAISE EXCEPTION 've ajenas'; END IF; END $d$ $q$, false);
+  $q$ DO $d$ BEGIN IF EXISTS (SELECT 1 FROM public.driver_declarations WHERE user_id IS DISTINCT FROM '00000000-0000-0000-0000-0000000000d2') THEN RAISE EXCEPTION 've ajenas'; END IF; END $d$ $q$, false);
 SELECT test.run('DECL un cliente NO ve ninguna', 'authenticated', '00000000-0000-0000-0000-0000000000c1',
   $q$ DO $d$ BEGIN IF EXISTS (SELECT 1 FROM public.driver_declarations) THEN RAISE EXCEPTION 've ajenas'; END IF; END $d$ $q$, false);
 SELECT test.run('DECL anon no puede leer la tabla', 'anon', NULL, 'SELECT * FROM public.driver_declarations', true);
