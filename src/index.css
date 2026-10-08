@@ -72,7 +72,9 @@
     -moz-osx-font-smoothing: grayscale;
     
     /* Beautiful Marinilla Sunset Background - Hostinger CDN */
-    background-image: url('https://horizons-cdn.hostinger.com/9a2f1d5f-26c5-4fa8-b3e7-17e2b7bc86a9/eaa5c3ede657a14fb3f5ca74349a2d50.jpg');
+    /* Foto de Marinilla: primero la copia propia (public/marinilla.jpg, no depende de
+       terceros ni de bloqueadores); si no existe, la dirección externa de respaldo. */
+    background-image: url('/marinilla.jpg'), url('https://horizons-cdn.hostinger.com/9a2f1d5f-26c5-4fa8-b3e7-17e2b7bc86a9/eaa5c3ede657a14fb3f5ca74349a2d50.jpg');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
