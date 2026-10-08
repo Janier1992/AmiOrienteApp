@@ -67,11 +67,40 @@ const OrderConfirmationPage = () => {
               {loading ? (
                 <p className="text-muted-foreground">Cargando detalles del pedido...</p>
               ) : order ? (
-                <div className="text-left bg-muted p-4 rounded-lg border border-border">
+                <div className="text-left bg-muted p-4 rounded-lg border border-border space-y-1">
                   <p className="text-foreground"><strong>Número de Pedido:</strong> #{order.id.substring(0, 8)}</p>
                   <p className="text-foreground"><strong>Tienda:</strong> {order.stores.name}</p>
-                  <p className="text-foreground"><strong>Total:</strong> ${Number(order.total).toLocaleString()}</p>
                   <p className="text-foreground"><strong>Estado:</strong> {order.status}</p>
+                  <div className="border-t border-border mt-3 pt-3 space-y-1 text-sm">
+                    <div className="flex justify-between text-muted-foreground">
+                      <span>Subtotal</span>
+                      <span>${Number(order.subtotal).toLocaleString()}</span>
+                    </div>
+                    <div className="flex justify-between text-muted-foreground">
+                      <span>Servicio</span>
+                      <span>${Number(order.service_fee).toLocaleString()}</span>
+                    </div>
+                    <div className="flex justify-between text-muted-foreground">
+                      <span>Domicilio</span>
+                      <span>${Number(order.delivery_fee).toLocaleString()}</span>
+                    </div>
+                    {Number(order.tax_amount) > 0 && (
+                      <div className="flex justify-between text-muted-foreground">
+                        <span>Impuestos</span>
+                        <span>${Number(order.tax_amount).toLocaleString()}</span>
+                      </div>
+                    )}
+                    {Number(order.discount_amount) > 0 && (
+                      <div className="flex justify-between text-green-600">
+                        <span>Descuento {order.discount_code ? `(${order.discount_code})` : ''}</span>
+                        <span>-${Number(order.discount_amount).toLocaleString()}</span>
+                      </div>
+                    )}
+                    <div className="flex justify-between font-bold text-foreground pt-1 border-t border-border">
+                      <span>Total</span>
+                      <span>${Number(order.total).toLocaleString()}</span>
+                    </div>
+                  </div>
                 </div>
               ) : (
                  <p className="text-destructive">No se pudieron cargar los detalles del pedido.</p>
