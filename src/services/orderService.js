@@ -308,39 +308,16 @@ export const orderService = {
         validarId(idPedido, 'ID del pedido');
 
         try {
-            // Verificar estado actual
-            const { data: pedido, error: errorConsulta } = await supabase
-                .from('orders')
-                .select('status')
-                .eq('id', idPedido)
-                .single();
-
-            if (errorConsulta) {
-                manejarError(errorConsulta, ERRORES.PEDIDO_NO_ENCONTRADO);
+            // Las reglas (quién puede cancelar y en qué estado) y la devolución del inventario
+            // las aplica la base de datos en cancel_order.
+            const { error } = await supabase.rpc('cancel_order', {
+                p_order_id: idPedido,
+                p_reason: motivo,
+            });
+            if (error) {
+                manejarError(error, 'Error cancelando pedido');
             }
-
-            const estadosNoCancelables = ['En curso', 'Entregado', 'Cancelado'];
-            if (estadosNoCancelables.includes(pedido.status)) {
-                throw new Error(`No se puede cancelar un pedido en estado "${pedido.status}"`);
-            }
-
-            // Cancelar
-            const { data: pedidoCancelado, error: errorUpdate } = await supabase
-                .from('orders')
-                .update({
-                    status: 'Cancelado',
-                    cancellation_reason: motivo,
-                    cancelled_at: new Date().toISOString()
-                })
-                .eq('id', idPedido)
-                .select()
-                .single();
-
-            if (errorUpdate) {
-                manejarError(errorUpdate, 'Error cancelando pedido');
-            }
-
-            return pedidoCancelado;
+            return { id: idPedido, status: 'Cancelado', cancellation_reason: motivo };
         } catch (error) {
             manejarError(error, 'Error al cancelar el pedido');
         }

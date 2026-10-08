@@ -7,18 +7,41 @@ import OrderDetailsModal from './OrderDetailsModal';
 import DriverCard from '@/components/customer-dashboard/DriverCard';
 import OrderTrackingMap from './OrderTrackingMap';
 import { Button } from '@/components/ui/button';
+import CancelOrderDialog from '@/components/shared/CancelOrderDialog';
+import { toast } from '@/components/ui/use-toast';
+import { orderService } from '@/services/orderService';
+import { CUSTOMER_CANCELABLE_STATUSES, isActiveOrder } from '@/lib/orderRules';
 
-export const OrdersTab = ({ orders }) => {
+export const OrdersTab = ({ orders, onOrdersChanged }) => {
   const [selectedOrder, setSelectedOrder] = useState(null);
+  const [orderToCancel, setOrderToCancel] = useState(null);
 
-  const activeOrders = orders.filter(o => ['Pendiente', 'Pendiente de pago en efectivo', 'En curso'].includes(o.status));
-  const pastOrders = orders.filter(o => ['Entregado', 'Cancelado'].includes(o.status));
+  const handleCancel = async (reason) => {
+    try {
+      await orderService.cancelarPedido(orderToCancel.id, reason);
+      toast({ title: 'Pedido cancelado', description: 'El negocio fue avisado.' });
+      setOrderToCancel(null);
+      if (onOrdersChanged) await onOrdersChanged();
+    } catch (e) {
+      toast({ title: 'No se pudo cancelar', description: e.message, variant: 'destructive' });
+    }
+  };
+
+  const activeOrders = orders.filter(isActiveOrder);
+  const pastOrders = orders.filter(o => !isActiveOrder(o));
 
   const getStatusInfo = (status) => {
     switch (status) {
+      case 'Nuevo':
       case 'Pendiente':
       case 'Pendiente de pago en efectivo':
-        return { icon: <Clock className="h-4 w-4" />, color: 'bg-yellow-100 text-yellow-800', text: 'Preparando' };
+        return { icon: <Clock className="h-4 w-4" />, color: 'bg-yellow-100 text-yellow-800', text: 'Enviado al negocio' };
+      case 'Confirmado':
+        return { icon: <CheckCircle className="h-4 w-4" />, color: 'bg-blue-100 text-blue-800', text: 'Confirmado' };
+      case 'En preparación':
+        return { icon: <Package className="h-4 w-4" />, color: 'bg-purple-100 text-purple-800', text: 'Preparando' };
+      case 'Listo para recogida':
+        return { icon: <Package className="h-4 w-4" />, color: 'bg-indigo-100 text-indigo-800', text: 'Listo, esperando domiciliario' };
       case 'En curso':
         return { icon: <Truck className="h-4 w-4" />, color: 'bg-blue-100 text-blue-800', text: 'En Camino' };
       case 'Entregado':
@@ -54,6 +77,18 @@ export const OrdersTab = ({ orders }) => {
                     </div>
                 )}
             </div>
+
+            {isActive && CUSTOMER_CANCELABLE_STATUSES.includes(order.status) && (
+                <div className="mt-4 flex justify-end">
+                    <Button variant="outline" size="sm" className="text-red-600" onClick={(e) => { e.stopPropagation(); setOrderToCancel(order); }}>
+                        Cancelar pedido
+                    </Button>
+                </div>
+            )}
+
+            {order.status === 'Cancelado' && order.cancellation_reason && (
+                <p className="mt-3 text-sm text-muted-foreground">Motivo: {order.cancellation_reason}</p>
+            )}
 
             {isActive && order.status === 'En curso' && order.deliveries && (
                 <div className="mt-6 border-t pt-4 space-y-4">
@@ -98,6 +133,14 @@ export const OrdersTab = ({ orders }) => {
             </TabsContent>
         </Tabs>
       </CardContent>
+
+      <CancelOrderDialog
+        order={orderToCancel}
+        isOpen={!!orderToCancel}
+        audience="cliente"
+        onClose={() => setOrderToCancel(null)}
+        onConfirm={handleCancel}
+      />
 
       {selectedOrder && (
         <OrderDetailsModal

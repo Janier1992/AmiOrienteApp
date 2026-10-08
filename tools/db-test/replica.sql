@@ -221,6 +221,8 @@ CREATE POLICY "Store owners can update products in their store" ON public.produc
   USING (auth.uid() = (SELECT stores.owner_id FROM stores WHERE stores.id = products.store_id));
 ALTER TABLE public.products ENABLE ROW LEVEL SECURITY;
 
+CREATE PUBLICATION supabase_realtime;
+
 -- Permisos por defecto de Supabase: anon y authenticated con todo; RLS es la barrera
 GRANT ALL ON ALL TABLES IN SCHEMA public TO anon, authenticated, service_role;
 GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA public TO anon, authenticated, service_role;

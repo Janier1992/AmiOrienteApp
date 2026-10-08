@@ -12,7 +12,7 @@
 set -u
 cd "$(dirname "$0")/../.."
 DIR=tools/db-test
-MIGRATIONS="database_updates/20261008_security_critical_fixes.sql database_updates/20261008_delivery_status_rpc.sql database_updates/20261009_teams_plans_commissions.sql database_updates/20261010_legal_consents.sql database_updates/20261011_driver_declarations.sql database_updates/20261012_accept_order_requires_declaration.sql database_updates/20261013_driver_photo.sql"
+MIGRATIONS="database_updates/20261008_security_critical_fixes.sql database_updates/20261008_delivery_status_rpc.sql database_updates/20261009_teams_plans_commissions.sql database_updates/20261010_legal_consents.sql database_updates/20261011_driver_declarations.sql database_updates/20261012_accept_order_requires_declaration.sql database_updates/20261013_driver_photo.sql database_updates/20261014_cancel_order_and_realtime.sql"
 PSQL="psql -q -v ON_ERROR_STOP=0"
 fails=0
 

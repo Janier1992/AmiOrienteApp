@@ -51,6 +51,14 @@ export const DashboardSidebar = ({ title, navItems }) => {
             >
               <item.icon className={cn("h-5 w-5 mr-3 flex-shrink-0 transition-colors duration-200", isActive ? "text-white" : "text-slate-500 group-hover:text-green-600")} />
               <span className="truncate flex-1 z-10 relative">{item.label}</span>
+              {item.badge > 0 && (
+                <span
+                  aria-label={`${item.badge} por atender`}
+                  className="z-10 ml-2 inline-flex min-w-[1.25rem] items-center justify-center rounded-full bg-amber-500 px-1.5 text-xs font-bold text-slate-900"
+                >
+                  {item.badge}
+                </span>
+              )}
               {isActive && <ChevronRight className="h-4 w-4 text-white/80" />}
             </Link>
           );

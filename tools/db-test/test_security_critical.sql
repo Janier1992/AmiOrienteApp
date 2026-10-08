@@ -185,6 +185,7 @@ DELETE FROM public.deliveries;
   \ir test_legal_consents.sql
   \ir test_driver_declarations.sql
   \ir test_driver_photo.sql
+  \ir test_cancel_order.sql
 \endif
 
 -- ================================= resultado =================================

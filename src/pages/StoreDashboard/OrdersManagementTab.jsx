@@ -9,10 +9,13 @@ import { toast } from '@/components/ui/use-toast';
 import { Package, User, Clock, MapPin, Trash2, Pencil } from 'lucide-react';
 import { useStoreDashboard } from '@/stores/useStoreDashboard';
 import LoadingSpinner from '@/components/shared/LoadingSpinner';
+import CancelOrderDialog from '@/components/shared/CancelOrderDialog';
+import { STORE_CANCELABLE_STATUSES } from '@/lib/orderRules';
 
 const OrdersTab = ({ storeId, terminology = {} }) => {
   // Using granular loading state
-  const { orders, fetchOrders, updateOrderStatus, isLoadingOrders, deleteOrder } = useStoreDashboard();
+  const { orders, fetchOrders, updateOrderStatus, isLoadingOrders, deleteOrder, cancelOrder } = useStoreDashboard();
+  const [orderToCancel, setOrderToCancel] = useState(null);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
 
@@ -29,6 +32,17 @@ const OrdersTab = ({ storeId, terminology = {} }) => {
       if (selectedOrder?.id === orderId) setIsDetailsOpen(false);
     } catch (e) {
       toast({ title: "Error al eliminar", variant: "destructive" });
+    }
+  };
+
+  const handleCancel = async (reason) => {
+    try {
+      await cancelOrder(orderToCancel.id, reason);
+      toast({ title: `${T.order} cancelado` });
+      if (selectedOrder?.id === orderToCancel.id) setSelectedOrder({ ...selectedOrder, status: 'Cancelado' });
+      setOrderToCancel(null);
+    } catch (e) {
+      toast({ title: 'No se pudo cancelar', description: e.message, variant: 'destructive' });
     }
   };
 
@@ -144,6 +158,9 @@ const OrdersTab = ({ storeId, terminology = {} }) => {
                             Listo
                           </Button>
                         )}
+                        {STORE_CANCELABLE_STATUSES.includes(order.status) && (
+                          <Button size="sm" variant="outline" className="h-8 text-red-600" onClick={() => setOrderToCancel(order)}>Cancelar</Button>
+                        )}
                       </div>
                     </CardContent>
                   </Card>
@@ -220,6 +237,10 @@ const OrdersTab = ({ storeId, terminology = {} }) => {
                           </Button>
                         )}
 
+                        {STORE_CANCELABLE_STATUSES.includes(order.status) && (
+                          <Button size="sm" variant="outline" className="h-7 text-xs text-red-600" onClick={(e) => { e.stopPropagation(); setOrderToCancel(order); }}>Cancelar</Button>
+                        )}
+
                         {/* Edit Action */}
                         <Button size="sm" variant="outline" className="h-7 w-7 p-0" aria-label="Ver detalles del pedido" onClick={(e) => { e.stopPropagation(); openDetails(order); }}>
                           <Pencil className="h-4 w-4" />
@@ -237,6 +258,14 @@ const OrdersTab = ({ storeId, terminology = {} }) => {
             </div>
           </div>
         )}
+
+        <CancelOrderDialog
+          order={orderToCancel}
+          isOpen={!!orderToCancel}
+          audience="negocio"
+          onClose={() => setOrderToCancel(null)}
+          onConfirm={handleCancel}
+        />
 
         <Dialog open={isDetailsOpen} onOpenChange={setIsDetailsOpen}>
           <DialogContent className="max-w-2xl">

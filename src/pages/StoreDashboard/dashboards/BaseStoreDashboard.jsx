@@ -12,6 +12,7 @@ const SupportTab = lazy(() => import('../views/SupportTab'));
  * @property {React.ReactNode} element - Componente a renderizar
  * @property {string} label - Etiqueta para la sidebar
  * @property {import('lucide-react').Icon} icon - Icono para la sidebar
+ * @property {number} [badge] - Contador que se muestra junto a la etiqueta en la sidebar
  * @property {boolean} [hidden] - Si es true, no aparece en sidebar pero la ruta existe
  * @property {boolean} [bottom] - Si es true, aparece al final de la sidebar (ej: config)
  */
@@ -24,8 +25,9 @@ const SupportTab = lazy(() => import('../views/SupportTab'));
  * @param {import('@/services/storeService').Store} props.store
  * @param {DashboardTabConfig[]} props.tabs
  * @param {string} [props.title] - Título opcional (por defecto usa store.name)
+ * @param {React.ReactNode} [props.banner] - Contenido que se muestra sobre las secciones
  */
-const BaseStoreDashboard = ({ store, tabs, title }) => {
+const BaseStoreDashboard = ({ store, tabs, title, banner = null }) => {
     // Every vertical gets a "Soporte" tab automatically, so stores can
     // report a problem straight to the platform admin without each
     // dashboard having to wire it in individually.
@@ -46,6 +48,7 @@ const BaseStoreDashboard = ({ store, tabs, title }) => {
             label: tab.label,
             icon: tab.icon,
             path: tab.path,
+            badge: tab.badge,
             // You might want to handle 'bottom' grouping logic in DashboardLayout/Sidebar if needed
         }));
 
@@ -54,6 +57,7 @@ const BaseStoreDashboard = ({ store, tabs, title }) => {
             title={title || store?.name || 'Dashboard'}
             navItems={navItems}
         >
+            {banner}
             <Suspense fallback={<div className="h-full flex items-center justify-center"><LoadingSpinner /></div>}>
                 <Routes>
                     {allTabs.map((tab) => (

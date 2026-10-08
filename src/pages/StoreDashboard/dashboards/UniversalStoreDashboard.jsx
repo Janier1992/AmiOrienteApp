@@ -29,6 +29,8 @@ import {
     CreditCard as PaymentsIcon
 } from 'lucide-react';
 import LoadingSpinner from '@/components/shared/LoadingSpinner';
+import OrderAlertsBar from '@/components/shared/OrderAlertsBar';
+import { useNewOrderAlerts } from '@/hooks/use-new-order-alerts';
 
 // Lazy Load Views
 const OverviewTab = lazy(() => import('../OverviewTab'));
@@ -218,6 +220,8 @@ const COMMON_TABS = [
 const UniversalStoreDashboard = () => {
     const { store, isLoading, setStore } = useStoreDashboard();
     const { user } = useAuth();
+    // Avisos de pedidos nuevos/cancelados mientras el panel esté abierto, en cualquier sección.
+    const alerts = useNewOrderAlerts(store?.id);
 
     // Derive Configuration
     const dashboardConfig = useMemo(() => {
@@ -301,14 +305,28 @@ const UniversalStoreDashboard = () => {
         ];
     }, [dashboardConfig, store, setStore, user]);
 
+    const tabsWithBadge = useMemo(
+        () => tabs.map(tab => (['pedidos', 'pedidos-mayorista'].includes(tab.path) ? { ...tab, badge: alerts.pendingCount } : tab)),
+        [tabs, alerts.pendingCount]
+    );
+
     if (isLoading) return <LoadingSpinner />;
     if (!store) return <div>No se encontró la tienda.</div>;
 
     return (
         <BaseStoreDashboard
             store={store}
-            tabs={tabs}
+            tabs={tabsWithBadge}
             title={`Dashboard - ${store.name}`}
+            banner={(
+                <OrderAlertsBar
+                    pendingCount={alerts.pendingCount}
+                    soundOn={alerts.soundOn}
+                    onToggleSound={alerts.toggleSound}
+                    permission={alerts.permission}
+                    onEnableNotifications={alerts.enableNotifications}
+                />
+            )}
         />
     );
 };
