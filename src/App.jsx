@@ -135,8 +135,9 @@ const AppContent = () => {
       {!hideHeader && <SiteHeader />}
 
       <main className={`flex-grow ${showBottomNav ? 'pb-20 md:pb-0' : ''}`}>
-        {/* key: al navegar a otra ruta el error de la anterior no se arrastra */}
-        <ErrorBoundary key={location.pathname}>
+        {/* resetKey (no `key`): limpia el error al navegar sin remontar todo
+            el árbol de rutas en cada click de pestaña (ver ErrorBoundary). */}
+        <ErrorBoundary resetKey={location.pathname}>
           <Suspense fallback={<PageSkeleton />}>
             <Routes>
               <Route path="/" element={<HomePage />} />

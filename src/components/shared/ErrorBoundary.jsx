@@ -17,6 +17,16 @@ class ErrorBoundary extends React.Component {
     console.error("Uncaught error:", error, errorInfo);
   }
 
+  componentDidUpdate(prevProps) {
+    // Se limpia el error al navegar (resetKey cambia, p.ej. la ruta) sin
+    // desmontar el árbol completo — antes se forzaba con key={pathname} en
+    // el padre, lo que remontaba TODO en cada click de pestaña dentro de un
+    // mismo panel (recarga visible de datos y "parpadeo" en cada navegación).
+    if (this.state.hasError && prevProps.resetKey !== this.props.resetKey) {
+      this.setState({ hasError: false, error: null });
+    }
+  }
+
   handleReset = () => {
     this.setState({ hasError: false, error: null });
     window.location.reload();
