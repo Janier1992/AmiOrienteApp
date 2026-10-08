@@ -106,12 +106,16 @@ const RoleCard = ({ icon: Icon, title, description, link }) => (
   </Link>
 );
 
+const DEFAULT_LOCATION = 'Marinilla, Antioquia';
+
 const HomePage = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [nearbyStores, setNearbyStores] = useState([]);
   const [loadingStores, setLoadingStores] = useState(true);
+  const [locationLabel, setLocationLabel] = useState(DEFAULT_LOCATION);
+  const [locatingUser, setLocatingUser] = useState(false);
 
   const firstName = user?.user_metadata?.full_name?.split(' ')[0];
 
@@ -123,6 +127,42 @@ const HomePage = () => {
       setLoadingStores(false);
     };
     loadNearby();
+  }, []);
+
+  // Geolocalización real del navegador + geocodificación inversa (Nominatim/
+  // OpenStreetMap, gratuita, sin API key) para mostrar la ubicación real de
+  // quien abre la app. Si no hay permiso o falla, se queda en el municipio
+  // base de la plataforma — nunca se inventa un lugar.
+  useEffect(() => {
+    if (!navigator.geolocation) return;
+
+    setLocatingUser(true);
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        try {
+          const { latitude, longitude } = position.coords;
+          const res = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=12&addressdetails=1`,
+            { headers: { 'Accept-Language': 'es' } }
+          );
+          const data = await res.json();
+          const addr = data?.address || {};
+          const place = addr.city || addr.town || addr.village || addr.municipality || addr.county;
+          if (place) {
+            setLocationLabel(addr.state ? `${place}, ${addr.state}` : place);
+          }
+        } catch (error) {
+          console.warn('No se pudo determinar la ubicación legible:', error);
+        } finally {
+          setLocatingUser(false);
+        }
+      },
+      () => {
+        // Permiso denegado o no disponible: se mantiene DEFAULT_LOCATION.
+        setLocatingUser(false);
+      },
+      { timeout: 8000 }
+    );
   }, []);
 
   const handleSearchSubmit = (e) => {
@@ -138,35 +178,35 @@ const HomePage = () => {
       </Helmet>
 
       <div className="bg-background min-h-screen">
-        {/* Encabezado — la foto de Marinilla identifica la región. El
-            degradado se deja liviano a propósito para que la foto se vea
-            clara; el texto se mantiene legible con sombra propia en vez de
-            oscurecer toda la imagen. */}
+        {/* Encabezado — la foto de Marinilla va sin ningún filtro encima
+            (igual que la landing original); solo el texto vive dentro de
+            una tarjeta con su propio fondo, para no tapar la imagen. */}
         <div
-          className="relative bg-cover bg-center"
+          className="relative bg-cover bg-center pt-10 pb-10 sm:pt-14 sm:pb-14"
           style={{ backgroundImage: "url('https://horizons-cdn.hostinger.com/9a2f1d5f-26c5-4fa8-b3e7-17e2b7bc86a9/eaa5c3ede657a14fb3f5ca74349a2d50.jpg')" }}
         >
-          <div className="absolute inset-0 bg-gradient-to-b from-primary/45 via-primary/35 to-primary/85" />
-          <div className="relative max-w-5xl mx-auto px-5 pt-6 pb-7 sm:px-6">
-            <div className="flex items-center gap-1.5 text-primary-foreground/90 text-sm font-medium mb-3 [text-shadow:0_1px_4px_rgba(0,0,0,0.5)]">
-              <MapPin className="h-4 w-4" />
-              Marinilla, Antioquia
-            </div>
-            <h1 className="text-xl sm:text-2xl font-bold text-primary-foreground mb-1 [text-shadow:0_2px_6px_rgba(0,0,0,0.5)]">
-              {firstName ? `Hola, ${firstName}` : 'Hola'}
-            </h1>
-            <p className="text-primary-foreground/90 text-sm mb-5 [text-shadow:0_1px_4px_rgba(0,0,0,0.45)]">¿Qué necesitas hoy en tu región?</p>
+          <div className="max-w-5xl mx-auto px-5 sm:px-6">
+            <div className="rounded-2xl bg-primary/90 backdrop-blur-[2px] p-5 shadow-xl">
+              <div className="flex items-center gap-1.5 text-primary-foreground/90 text-sm font-medium mb-3">
+                {locatingUser ? <Loader2 className="h-4 w-4 animate-spin" /> : <MapPin className="h-4 w-4" />}
+                {locationLabel}
+              </div>
+              <h1 className="text-xl sm:text-2xl font-bold text-primary-foreground mb-1">
+                {firstName ? `Hola, ${firstName}` : 'Hola'}
+              </h1>
+              <p className="text-primary-foreground/90 text-sm mb-5">¿Qué necesitas hoy en tu región?</p>
 
-            <form onSubmit={handleSearchSubmit} className="relative">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <input
-                type="text"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Busca restaurantes, farmacias, tiendas..."
-                className="w-full rounded-xl bg-white pl-11 pr-4 py-3 text-sm text-foreground shadow-sm focus:outline-none focus:ring-2 focus:ring-white/60"
-              />
-            </form>
+              <form onSubmit={handleSearchSubmit} className="relative">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <input
+                  type="text"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  placeholder="Busca restaurantes, farmacias, tiendas..."
+                  className="w-full rounded-xl bg-white pl-11 pr-4 py-3 text-sm text-foreground shadow-sm focus:outline-none focus:ring-2 focus:ring-white/60"
+                />
+              </form>
+            </div>
           </div>
         </div>
 
