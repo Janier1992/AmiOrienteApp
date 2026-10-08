@@ -154,6 +154,15 @@ UPDATE public.orders SET status='Listo para recogida' WHERE id='00000000-0000-00
 DELETE FROM public.deliveries;
 
 \if :after
+  SELECT test.run('DECL un domiciliario SIN declaración firmada no puede aceptar -> bloqueado', 'authenticated', '00000000-0000-0000-0000-0000000000d1',
+    $q$ SELECT public.accept_order('00000000-0000-0000-0000-00000000f003', '00000000-0000-0000-0000-0000000000d1') $q$, true);
+  SELECT test.assert('DECL ...y el pedido no cambió', (SELECT status FROM public.orders WHERE id='00000000-0000-0000-0000-00000000f003')='Listo para recogida');
+  SELECT test.run('DECL el administrador tampoco puede asignarle un pedido sin declaración', 'authenticated', '00000000-0000-0000-0000-0000000000a1',
+    $q$ SELECT public.accept_order('00000000-0000-0000-0000-00000000f003', '00000000-0000-0000-0000-0000000000d1') $q$, true);
+  -- Las declaraciones de D1 y D2 (como las crearía submit_driver_declaration con sesión)
+  INSERT INTO public.driver_declarations (user_id, email, full_name, document_type, document_number, payload, document_text, signature_png, document_hash, legal_version, claimed_at)
+  SELECT id, email, 'Domi', 'CC', '1' || right(id::text, 4), '{}'::jsonb, repeat('texto ', 40), 'data:image/png;base64,' || repeat('A', 400), repeat('0', 64), 'test', now()
+    FROM public.profiles WHERE id IN ('00000000-0000-0000-0000-0000000000d1', '00000000-0000-0000-0000-0000000000d2');
   SELECT test.run('LEGÍTIMO domiciliario D1 acepta un pedido listo', 'authenticated', '00000000-0000-0000-0000-0000000000d1',
     $q$ SELECT public.accept_order('00000000-0000-0000-0000-00000000f003', '00000000-0000-0000-0000-0000000000d1') $q$, false);
   SELECT test.assert('LEGÍTIMO la entrega queda Asignada a D1 y el pedido En curso',
