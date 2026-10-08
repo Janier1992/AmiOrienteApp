@@ -271,6 +271,16 @@ const HomePage = () => {
             </div>
           </section>
         </main>
+
+        <footer className="max-w-5xl mx-auto px-5 sm:px-6 pb-24 md:pb-10 pt-2 text-xs text-muted-foreground">
+          <nav aria-label="Información legal" className="flex flex-wrap gap-x-5 gap-y-2">
+            <Link to="/terminos" className="hover:text-primary hover:underline">Términos y Condiciones</Link>
+            <Link to="/privacidad" className="hover:text-primary hover:underline">Privacidad y tratamiento de datos</Link>
+            <Link to="/datos-personales" className="hover:text-primary hover:underline">Mis datos personales</Link>
+            <Link to="/precios" className="hover:text-primary hover:underline">Planes para negocios</Link>
+            <Link to="/contacto" className="hover:text-primary hover:underline">Contacto</Link>
+          </nav>
+        </footer>
         </div>
       </div>
     </>

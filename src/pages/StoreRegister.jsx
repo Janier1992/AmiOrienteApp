@@ -9,6 +9,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useAuth } from '@/contexts/SupabaseAuthContext';
 import { supabase } from '@/lib/customSupabaseClient';
 import { toast } from '@/components/ui/use-toast';
+import LegalConsent from '@/components/auth/LegalConsent';
+import { LEGAL_VERSION } from '@/config/legal';
 import { Loader2, Home } from 'lucide-react';
 import { buildAuthRedirectUrl, isExistingUserResponse } from '@/lib/authRoutes';
 import { getPasswordError, PASSWORD_HINT } from '@/lib/passwordPolicy';
@@ -19,6 +21,7 @@ const StoreRegister = () => {
   const [storeName, setStoreName] = useState('');
   const [address, setAddress] = useState('');
   const [loading, setLoading] = useState(false);
+  const [acceptedLegal, setAcceptedLegal] = useState(false);
   const navigate = useNavigate();
   const { signUp, user } = useAuth();
   const location = useLocation();
@@ -71,6 +74,11 @@ const StoreRegister = () => {
   const handleRegister = async (e) => {
     e.preventDefault();
 
+    if (!acceptedLegal) {
+      toast({ title: "Falta tu autorización", description: "Debes aceptar los Términos y la Política de Privacidad para registrar el negocio.", variant: "destructive" });
+      return;
+    }
+
     const passwordError = getPasswordError(password);
     if (passwordError) {
       toast({ title: "Contraseña insegura", description: passwordError, variant: "destructive" });
@@ -85,6 +93,8 @@ const StoreRegister = () => {
       const { user: newUser, session, error } = await signUp(email, password, {
         data: {
           role: 'tienda',
+          accepted_terms: true,
+          legal_version: LEGAL_VERSION,
           store_name: storeName,
           address: address,
           category: serviceType, // Display Category (e.g. 'Cultivador')
@@ -224,7 +234,8 @@ const StoreRegister = () => {
               />
               <p className="text-xs text-muted-foreground mt-1">{PASSWORD_HINT}</p>
             </div>
-            <Button type="submit" className="w-full" disabled={loading}>
+            <LegalConsent accepted={acceptedLegal} onAcceptedChange={setAcceptedLegal} />
+            <Button type="submit" className="w-full" disabled={loading || !acceptedLegal}>
               {loading ? (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               ) : (

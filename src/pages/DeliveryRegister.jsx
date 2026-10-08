@@ -5,7 +5,9 @@ import React, { useState } from 'react';
     import { Input } from '@/components/ui/input';
     import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
     import { Truck, ArrowLeft, User, Mail, Phone, Lock, MapPin } from 'lucide-react';
-    import { toast } from '@/components/ui/use-toast';
+import LegalConsent from '@/components/auth/LegalConsent';
+import { LEGAL_VERSION } from '@/config/legal';
+import { toast } from '@/components/ui/use-toast';
     import { useAuth } from '@/contexts/SupabaseAuthContext';
     import { getPasswordError, PASSWORD_HINT } from '@/lib/passwordPolicy';
     import { buildAuthRedirectUrl, getHomeRouteForUser, isExistingUserResponse } from '@/lib/authRoutes';
@@ -19,6 +21,8 @@ import React, { useState } from 'react';
         password: ''
       });
       const [loading, setLoading] = useState(false);
+      const [acceptedLegal, setAcceptedLegal] = useState(false);
+      const [driverDeclared, setDriverDeclared] = useState(false);
       const navigate = useNavigate();
       const { signUp } = useAuth();
       
@@ -42,6 +46,15 @@ import React, { useState } from 'react';
           return;
         }
 
+        if (!acceptedLegal || !driverDeclared) {
+          toast({
+            title: "Falta tu autorización",
+            description: "Debes aceptar los Términos, la Política de Privacidad y la declaración de trabajador independiente.",
+            variant: "destructive"
+          });
+          return;
+        }
+
         const passwordError = getPasswordError(formData.password);
         if (passwordError) {
           toast({
@@ -58,7 +71,10 @@ import React, { useState } from 'react';
             full_name: formData.name,
             phone: formData.phone,
             address: formData.address,
-            role: 'domiciliario'
+            role: 'domiciliario',
+            accepted_terms: true,
+            driver_independent_declared: true,
+            legal_version: LEGAL_VERSION
           },
           emailRedirectTo: buildAuthRedirectUrl('/auth/confirm')
         });
@@ -136,7 +152,8 @@ import React, { useState } from 'react';
                   </div>
 
                   <p className="text-xs text-muted-foreground -mt-2">{PASSWORD_HINT}</p>
-                  <Button type="submit" className="w-full" disabled={loading}>
+                  <LegalConsent driver accepted={acceptedLegal} onAcceptedChange={setAcceptedLegal} driverDeclared={driverDeclared} onDriverDeclaredChange={setDriverDeclared} />
+                  <Button type="submit" className="w-full" disabled={loading || !acceptedLegal || !driverDeclared}>
                     {loading ? 'Creando cuenta...' : 'Crear Cuenta'}
                   </Button>
                 </form>

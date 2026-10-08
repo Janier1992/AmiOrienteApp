@@ -9,6 +9,12 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { User, Mail, MessageSquare, Phone } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
 import { supabase } from '@/lib/customSupabaseClient';
+import { Link } from 'react-router-dom';
+import { LEGAL_ENTITY, isLegalEntityConfigured } from '@/config/legal';
+
+// Con los datos de la persona jurídica definidos (VITE_LEGAL_*) se muestran esos; mientras tanto, los de respaldo.
+const CONTACT_PHONE = isLegalEntityConfigured ? LEGAL_ENTITY.phone : '3005051518';
+const CONTACT_EMAIL = isLegalEntityConfigured ? LEGAL_ENTITY.email : 'jamosquera051@gmail.com';
 
 const ContactPage = () => {
   const [formData, setFormData] = useState({
@@ -155,7 +161,7 @@ const ContactPage = () => {
                     </div>
                     <div>
                       <p className="font-semibold">Teléfono</p>
-                      <a href="tel:3005051518" className="text-muted-foreground hover:text-primary">3005051518</a>
+                      <a href={`tel:${CONTACT_PHONE.replace(/\s/g, '')}`} className="text-muted-foreground hover:text-primary">{CONTACT_PHONE}</a>
                     </div>
                   </div>
 
@@ -165,9 +171,16 @@ const ContactPage = () => {
                     </div>
                     <div>
                       <p className="font-semibold">Correo electrónico</p>
-                      <a href="mailto:jamosquera051@gmail.com" className="text-muted-foreground hover:text-primary">jamosquera051@gmail.com</a>
+                      <a href={`mailto:${CONTACT_EMAIL}`} className="text-muted-foreground hover:text-primary">{CONTACT_EMAIL}</a>
                     </div>
                   </div>
+
+                  <p className="text-xs text-muted-foreground">
+                    Para consultar, actualizar o suprimir tus datos personales usa el{' '}
+                    <Link to="/datos-personales" className="text-primary underline">formulario de solicitudes</Link>. Consulta también los{' '}
+                    <Link to="/terminos" className="text-primary underline">Términos</Link> y la{' '}
+                    <Link to="/privacidad" className="text-primary underline">Política de Privacidad</Link>.
+                  </p>
                 </CardContent>
               </Card>
             </motion.div>
