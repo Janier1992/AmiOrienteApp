@@ -21,11 +21,11 @@ Documento de traspaso: qué funciona, cómo se verificó y qué falta para comer
 - Accesibilidad: auditoría automática (axe-core, WCAG A) sobre 25 pantallas sin violaciones críticas pendientes (salvo `aria-controls` de las pestañas de Radix, comportamiento conocido de la librería).
 - Lista de deseos: corazón en productos y detalle (la tabla `wishlist` y su política RLS ya existen en la base).
 
-## ⚠️ Hallazgos de la auditoría real de Supabase
-Ver **`docs/AUDITORIA_SUPABASE_2026-10-07.md`**. Resumen: hay vulnerabilidades críticas (cualquiera puede
-registrarse o volverse administrador; un cliente puede editar el total de su pedido) y varias consultas
-del código usan columnas que no existen (directorio de negocios y panel del domiciliario fallan contra
-la base real). Las pruebas de este repo usan un Supabase simulado, por eso no lo detectaban.
+## Seguridad y base de datos (octubre 2026)
+Auditoría en `docs/AUDITORIA_SUPABASE_2026-10-07.md`. Las correcciones están en `database_updates/` y **deben aplicarse en Supabase en este orden** (todas idempotentes; hacer backup antes):
+`20261007_*` (columnas faltantes, RLS de domiciliario, `create_order`, endurecimiento por lotes, stock, TRUNCATE) → `20261008_security_critical_fixes.sql` (A1–A4) → `20261008_delivery_status_rpc.sql`.
+- Flujo del domiciliario: aceptar usa `accept_order` y avanzar/cerrar usa `update_delivery_status` (ambas RPC validan en el servidor; el pedido pasa a "En curso" y "Entregado" junto con la entrega).
+- `bash tools/db-test/run.sh` prueba las migraciones críticas y el flujo del domiciliario contra una réplica local de PostgreSQL (no contra tu Supabase real).
 
 ## Pendiente para comercializar
 1. **Totales del pedido en el servidor (seguridad).** `orderService.crearPedido` calcula subtotal, envío, impuestos y descuento en el navegador; un usuario podría manipular el total. Solución: función SQL `create_order` (SECURITY DEFINER) que lea precios/tarifas de las tablas y valide cupones; el cliente solo envía producto y cantidad. Requiere el esquema real y pruebas contra la base.
