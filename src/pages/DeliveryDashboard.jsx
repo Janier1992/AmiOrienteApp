@@ -13,6 +13,8 @@ import AvailableOrdersTab from '@/components/delivery-dashboard/AvailableOrdersT
 import InProgressOrdersTab from '@/components/delivery-dashboard/InProgressOrdersTab';
 import HistoryOrdersTab from '@/components/delivery-dashboard/HistoryOrdersTab';
 import OrderDetailsModal from '@/components/delivery-dashboard/OrderDetailsModal';
+import DriverDeclarationDialog from '@/components/delivery-dashboard/DriverDeclarationDialog';
+import { driverDeclarationService } from '@/services/driverDeclarationService';
 
 // Carga diferida: arrastra la librería de gráficos (recharts, ~350 kB) que solo se usa en 'Ganancias'
 const EarningsTab = lazy(() => import('@/components/delivery-dashboard/EarningsTab'));
@@ -125,6 +127,9 @@ const DeliveryDashboard = () => {
   const [selectedOrderForDetails, setSelectedOrderForDetails] = useState(null);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  // Declaración firmada: null = aún no se sabe, true/false = firmada o pendiente
+  const [hasDeclaration, setHasDeclaration] = useState(null);
+  const [isDeclarationOpen, setIsDeclarationOpen] = useState(false);
   const locationIntervalRef = useRef(null);
 
   const fetchData = useCallback(async (currentUserId) => {
@@ -223,6 +228,13 @@ const DeliveryDashboard = () => {
     };
   }, [isConnected, sendLocation]);
 
+  useEffect(() => {
+    if (!user) return undefined;
+    let active = true;
+    driverDeclarationService.tieneDeclaracion(user.id).then((signed) => active && setHasDeclaration(signed));
+    return () => { active = false; };
+  }, [user]);
+
   const handleConnect = () => setIsConnected(!isConnected);
 
   const handleLogout = async () => {
@@ -232,6 +244,11 @@ const DeliveryDashboard = () => {
 
   const handleAcceptOrder = async (orderId) => {
     if (!user) return;
+    if (hasDeclaration === false) {
+      toast({ title: "Falta tu declaración firmada", description: "Fírmala para poder aceptar pedidos.", variant: "destructive" });
+      setIsDeclarationOpen(true);
+      return;
+    }
     try {
       await deliveryService.aceptarEntrega(orderId, user.id);
       await fetchData(user.id);
@@ -308,6 +325,13 @@ const DeliveryDashboard = () => {
             </div>
           </div>
 
+          {hasDeclaration === false && (
+            <div role="alert" className="rounded-lg border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <span>Para aceptar pedidos debes firmar tu declaración de domiciliario independiente (documentos al día y afiliación a seguridad social).</span>
+              <Button size="sm" onClick={() => setIsDeclarationOpen(true)}>Firmar ahora</Button>
+            </div>
+          )}
+
           <Card className="bg-card text-card-foreground border-border w-full">
             <CardContent className="p-0 sm:p-6">
               {loading ? <div className="flex items-center justify-center p-8"><Loader2 className="animate-spin h-8 w-8 text-primary" /></div> : (
@@ -371,6 +395,14 @@ const DeliveryDashboard = () => {
         open={isDetailsModalOpen}
         onOpenChange={setIsDetailsModalOpen}
       />
+      {user && (
+        <DriverDeclarationDialog
+          open={isDeclarationOpen}
+          onOpenChange={setIsDeclarationOpen}
+          user={user}
+          onSigned={() => setHasDeclaration(true)}
+        />
+      )}
     </div>
   );
 };

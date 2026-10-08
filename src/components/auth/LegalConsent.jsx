@@ -4,12 +4,10 @@ import { Checkbox } from '@/components/ui/checkbox';
 
 /**
  * Casillas de aceptación legal para los registros.
- * - Siempre: Términos + Política de Privacidad y Tratamiento de Datos (Ley 1581 de 2012).
- * - Domiciliarios (`driver`): además, la declaración de trabajador independiente y de
- *   afiliación a seguridad social.
+ * - Términos + Política de Privacidad y Tratamiento de Datos (Ley 1581 de 2012).
  * La aceptación se guarda en el servidor (tabla legal_consents) con la versión vigente.
  */
-const LegalConsent = ({ accepted, onAcceptedChange, driver = false, driverDeclared, onDriverDeclaredChange }) => (
+const LegalConsent = ({ accepted, onAcceptedChange }) => (
   <div className="space-y-3 rounded-lg border border-border bg-muted/40 p-3 text-sm">
     <div className="flex items-start gap-3">
       <Checkbox
@@ -27,22 +25,6 @@ const LegalConsent = ({ accepted, onAcceptedChange, driver = false, driverDeclar
       </label>
     </div>
 
-    {driver && (
-      <div className="flex items-start gap-3">
-        <Checkbox
-          id="legal-driver"
-          checked={driverDeclared}
-          onCheckedChange={(v) => onDriverDeclaredChange(v === true)}
-          className="mt-0.5"
-          aria-required="true"
-        />
-        <label htmlFor="legal-driver" className="cursor-pointer">
-          Declaro que presto el servicio como <strong>trabajador independiente</strong> con mis propios medios, que cuento con
-          licencia, SOAT y los documentos del vehículo que use, y que estoy afiliado (o me afiliaré antes de operar) a
-          salud, pensión y riesgos laborales, conforme a los Términos.
-        </label>
-      </div>
-    )}
   </div>
 );
 
