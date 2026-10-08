@@ -170,6 +170,7 @@ DELETE FROM public.deliveries;
   \ir test_delivery_flow.sql
   \ir test_teams_plans.sql
   \ir test_legal_consents.sql
+  \ir test_driver_declarations.sql
 \endif
 
 -- ================================= resultado =================================

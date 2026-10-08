@@ -7,6 +7,9 @@ import React, { useState } from 'react';
     import { Truck, ArrowLeft, User, Mail, Phone, Lock, MapPin } from 'lucide-react';
 import LegalConsent from '@/components/auth/LegalConsent';
 import { LEGAL_VERSION } from '@/config/legal';
+import DriverDeclarationForm from '@/components/delivery/DriverDeclarationForm';
+import { driverDeclarationService } from '@/services/driverDeclarationService';
+import { emptyDeclaration, validateDeclaration } from '@/lib/driverDeclaration';
 import { toast } from '@/components/ui/use-toast';
     import { useAuth } from '@/contexts/SupabaseAuthContext';
     import { getPasswordError, PASSWORD_HINT } from '@/lib/passwordPolicy';
@@ -22,7 +25,8 @@ import { toast } from '@/components/ui/use-toast';
       });
       const [loading, setLoading] = useState(false);
       const [acceptedLegal, setAcceptedLegal] = useState(false);
-      const [driverDeclared, setDriverDeclared] = useState(false);
+      const [declaration, setDeclaration] = useState(emptyDeclaration);
+      const [signature, setSignature] = useState(null);
       const navigate = useNavigate();
       const { signUp } = useAuth();
       
@@ -46,12 +50,18 @@ import { toast } from '@/components/ui/use-toast';
           return;
         }
 
-        if (!acceptedLegal || !driverDeclared) {
+        if (!acceptedLegal) {
           toast({
             title: "Falta tu autorización",
-            description: "Debes aceptar los Términos, la Política de Privacidad y la declaración de trabajador independiente.",
+            description: "Debes aceptar los Términos y la Política de Privacidad para crear la cuenta.",
             variant: "destructive"
           });
+          return;
+        }
+
+        const declarationError = validateDeclaration(declaration, signature);
+        if (declarationError) {
+          toast({ title: "Revisa tu declaración", description: declarationError, variant: "destructive" });
           return;
         }
 
@@ -66,6 +76,22 @@ import { toast } from '@/components/ui/use-toast';
         }
 
         setLoading(true);
+        // 1) Se firma y guarda la declaración (queda como soporte para administración);
+        // 2) al crear la cuenta, el servidor la vincula con este identificador y el correo.
+        let declarationId;
+        try {
+          declarationId = await driverDeclarationService.firmar({
+            email: formData.email,
+            fullName: formData.name,
+            values: declaration,
+            signature,
+          });
+        } catch (err) {
+          setLoading(false);
+          toast({ title: "No se pudo guardar tu declaración", description: err.message, variant: "destructive" });
+          return;
+        }
+
         const { user: newUser, session, error } = await signUp(formData.email, formData.password, {
           data: {
             full_name: formData.name,
@@ -74,6 +100,7 @@ import { toast } from '@/components/ui/use-toast';
             role: 'domiciliario',
             accepted_terms: true,
             driver_independent_declared: true,
+            declaration_id: declarationId,
             legal_version: LEGAL_VERSION
           },
           emailRedirectTo: buildAuthRedirectUrl('/auth/confirm')
@@ -111,7 +138,7 @@ import { toast } from '@/components/ui/use-toast';
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="w-full max-w-md"
+            className="w-full max-w-2xl"
           >
             <div className="text-center mb-8">
               <Link to="/" className="inline-flex items-center text-primary hover:text-primary/80 transition-colors font-semibold">
@@ -152,8 +179,9 @@ import { toast } from '@/components/ui/use-toast';
                   </div>
 
                   <p className="text-xs text-muted-foreground -mt-2">{PASSWORD_HINT}</p>
-                  <LegalConsent driver accepted={acceptedLegal} onAcceptedChange={setAcceptedLegal} driverDeclared={driverDeclared} onDriverDeclaredChange={setDriverDeclared} />
-                  <Button type="submit" className="w-full" disabled={loading || !acceptedLegal || !driverDeclared}>
+                  <DriverDeclarationForm fullName={formData.name} value={declaration} onChange={setDeclaration} signature={signature} onSignatureChange={setSignature} />
+                  <LegalConsent accepted={acceptedLegal} onAcceptedChange={setAcceptedLegal} />
+                  <Button type="submit" className="w-full" disabled={loading || !acceptedLegal || !signature}>
                     {loading ? 'Creando cuenta...' : 'Crear Cuenta'}
                   </Button>
                 </form>

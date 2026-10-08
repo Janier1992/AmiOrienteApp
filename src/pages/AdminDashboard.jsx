@@ -21,6 +21,7 @@ import { adminService } from '@/services/adminService';
 import { useAuth } from '@/contexts/SupabaseAuthContext';
 import LoadingSpinner from '@/components/shared/LoadingSpinner';
 import { SupportTicketsPanel } from '@/components/admin/SupportTicketsPanel';
+import DriverDeclarationsPanel from '@/components/admin/DriverDeclarationsPanel';
 import { getStoreTypeConfig } from '@/config/storeTypes';
 import { FEATURE_MODULE_LABELS, COMMON_MODULE_LABELS } from '@/config/dashboardModules';
 import { planService } from '@/services/planService';
@@ -270,6 +271,8 @@ const AdminDashboard = () => {
                 </Card>
 
                 <SupportTicketsPanel />
+
+                <DriverDeclarationsPanel />
             </div>
 
             <Dialog open={!!moduleEditingStore} onOpenChange={(open) => !open && setModuleEditingStore(null)}>

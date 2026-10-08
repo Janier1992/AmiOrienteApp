@@ -83,15 +83,4 @@ describe('autorización en los registros', () => {
     const meta = mockSignUp.mock.calls[0][2].data;
     expect(meta).toMatchObject({ role: 'cliente', accepted_terms: true, legal_version: LEGAL_VERSION });
   });
-
-  it('el domiciliario debe aceptar además la declaración de independencia', async () => {
-    const { default: DeliveryRegister } = await import('../DeliveryRegister');
-    wrap(<DeliveryRegister />);
-    const button = screen.getByRole('button', { name: 'Crear Cuenta' });
-    const [terms, declaration] = screen.getAllByRole('checkbox');
-    fireEvent.click(terms);
-    expect(button.disabled).toBe(true);
-    fireEvent.click(declaration);
-    expect(button.disabled).toBe(false);
-  });
 });
