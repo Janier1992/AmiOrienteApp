@@ -184,11 +184,11 @@ const HomePage = () => {
       <div className="min-h-screen flex flex-col">
         <div className="pt-8 pb-28 sm:pt-12 sm:pb-40">
           <div className="max-w-5xl mx-auto px-5 sm:px-6">
-            {/* Tarjeta "de vidrio": el verde es solo un velo difuminado para que la
-                foto se vea a través; el texto es blanco fijo con sombra (no depende
-                del tema) y un degradado oscuro suave abajo asegura la lectura. */}
-            <div className="relative overflow-hidden rounded-3xl bg-primary/30 backdrop-blur-md ring-1 ring-white/30 shadow-2xl p-5 text-white [text-shadow:0_1px_3px_rgba(0,0,0,0.55)]">
-              <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/10 via-black/10 to-black/35" aria-hidden="true" />
+            {/* Tarjeta casi invisible: apenas un velo verde muy tenue para que la
+                foto de Marinilla sea la protagonista; el texto es blanco fijo con sombra doble (no depende
+                del tema) y es lo que asegura la lectura. */}
+            <div className="relative overflow-hidden rounded-3xl bg-primary/10 backdrop-blur-[2px] ring-1 ring-white/25 p-5 text-white [text-shadow:0_1px_2px_rgba(0,0,0,0.7),0_2px_12px_rgba(0,0,0,0.5)]">
+              <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/20" aria-hidden="true" />
               <div className="relative">
                 <div className="flex items-center gap-1.5 text-sm font-semibold mb-3">
                   {locatingUser ? <Loader2 className="h-4 w-4 animate-spin" /> : <MapPin className="h-4 w-4" />}
