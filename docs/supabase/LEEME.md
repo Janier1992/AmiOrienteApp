@@ -20,3 +20,9 @@ Los hallazgos reales de seguridad y los desajustes entre el código y la base es
 2. En los resultados usa *Copy → Copy as JSON* (o descarga el CSV). No contiene datos de usuarios.
 3. Para actualizar el verificador de consultas del código, vuelca la sección `columnas` en
    `tools/schema-check/schema.py` y ejecuta `python3 tools/schema-check/check.py`.
+
+
+## Saber qué migraciones están aplicadas
+`03_verificar_migraciones.sql` es de solo lectura: lista cada migración de `database_updates/` con `true` (ya aplicada) o `false` (falta). Pégalo completo en el SQL Editor.
+
+**Al ejecutar una migración:** abre el archivo `.sql` de `database_updates/`, copia **todo** su contenido (desde la primera línea hasta `COMMIT;`) y ejecútalo de una vez. Si la copia se corta, el editor mostrará errores de sintaxis en líneas de comentario; vuelve a copiar el archivo completo. Los archivos `.md` son documentación, no se ejecutan.

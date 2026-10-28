@@ -2,7 +2,10 @@
 
 Fuente: resultado de `docs/supabase/02_auditoria_esquema.sql` ejecutado en el proyecto real
 (37 tablas, todas con RLS activo y con al menos una política; ninguna sin RLS).
-**Nada de lo de abajo está corregido todavía**: es el punto de partida para continuar.
+> **Este archivo es un informe, no un script SQL: no se ejecuta en el SQL Editor.**
+> Estado actual: los hallazgos críticos ya se corrigieron con las migraciones de `database_updates/` (ver `docs/ESTADO_DEL_PROYECTO.md`). Para saber cuáles están aplicadas en tu Supabase, ejecuta `docs/supabase/03_verificar_migraciones.sql`.
+>
+> Lo que sigue es el diagnóstico original del 7 de octubre de 2026.
 
 Leyenda: 🔴 crítico · 🟠 alto · 🟡 medio · 🔵 mejora
 

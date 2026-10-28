@@ -123,9 +123,15 @@ const HomePage = () => {
   useEffect(() => {
     const loadNearby = async () => {
       setLoadingStores(true);
-      const { data } = await customerService.getStores({ page: 1, limit: 8 });
-      setNearbyStores(data || []);
-      setLoadingStores(false);
+      try {
+        const { data } = await customerService.getStores({ page: 1, limit: 8 });
+        setNearbyStores(data || []);
+      } catch {
+        // El error ya se registra en el servicio; el Home simplemente no muestra el bloque.
+        setNearbyStores([]);
+      } finally {
+        setLoadingStores(false);
+      }
     };
     loadNearby();
   }, []);

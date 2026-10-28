@@ -62,6 +62,8 @@ const ProductsPage = () => {
   const [products, setProducts] = useState([]);
   const [storeName, setStoreName] = useState("Todos los Productos");
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
+  const [reloadKey, setReloadKey] = useState(0);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [searchParams] = useSearchParams();
   // Permite llegar con una búsqueda ya escrita (ej. el buscador del Home: /productos?buscar=arepas)
@@ -73,6 +75,7 @@ const ProductsPage = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       setLoading(true);
+      setLoadError(false);
 
       // Simplified query to avoid complex joins that might be missing foreign keys in Supabase schema
       // We will fetch products first, then fetch store details if needed
@@ -93,6 +96,8 @@ const ProductsPage = () => {
       if (productsError) {
         console.error("Error fetching products:", productsError);
         toast({ title: "Error", description: "No se pudieron cargar los productos." });
+        setLoadError(true);
+        setProducts([]);
         setLoading(false);
         return;
       }
@@ -128,7 +133,7 @@ const ProductsPage = () => {
     };
 
     fetchProducts();
-  }, [storeId]);
+  }, [storeId, reloadKey]);
 
 
   return (
@@ -164,6 +169,13 @@ const ProductsPage = () => {
             <div className="text-center flex justify-center items-center py-12">
               <Loader2 className="animate-spin h-8 w-8 text-primary" />
               <p className="ml-2 text-foreground">Cargando productos...</p>
+            </div>
+          ) : loadError ? (
+            <div className="text-center py-12" role="alert">
+              <Package className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-foreground">No pudimos cargar los productos</h3>
+              <p className="text-muted-foreground">Revisa tu conexión e inténtalo de nuevo.</p>
+              <Button variant="outline" className="mt-3" onClick={() => setReloadKey(k => k + 1)}>Reintentar</Button>
             </div>
           ) : products.length === 0 ? (
             <div className="text-center py-12">
