@@ -119,11 +119,6 @@ export const customerService = {
     }
   },
 
-  /** Alias para compatibilidad */
-  async getProfile(userId) {
-    return this.obtenerPerfil(userId);
-  },
-
   // ---------------------------------------------------------------------------
   // OPERACIONES DE PEDIDOS
   // ---------------------------------------------------------------------------
@@ -204,11 +199,6 @@ export const customerService = {
     } catch (error) {
       manejarError(error, ERRORES.PEDIDOS_NO_CARGADOS);
     }
-  },
-
-  /** Alias para compatibilidad - usado en useClientStore */
-  async getActiveOrders(userId) {
-    return this.obtenerPedidosActivos(userId);
   },
 
   /**

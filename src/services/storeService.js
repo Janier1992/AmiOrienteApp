@@ -270,14 +270,6 @@ export const storeService = {
     }
   },
 
-  /**
-   * Alias para compatibilidad con código existente.
-   * @deprecated Usar obtenerTiendaPorPropietario en su lugar
-   */
-  async getStoreByOwner(ownerId) {
-    return this.obtenerTiendaPorPropietario(ownerId);
-  },
-
   // ---------------------------------------------------------------------------
   // OPERACIONES DE ESTADÍSTICAS
   // ---------------------------------------------------------------------------
@@ -309,11 +301,6 @@ export const storeService = {
     } catch (error) {
       manejarErrorSupabase(error, ERROR_ESTADISTICAS_NO_CARGADAS);
     }
-  },
-
-  /** Alias para compatibilidad */
-  async getStoreStats(storeId) {
-    return this.obtenerEstadisticasTienda(storeId);
   },
 
   /**
@@ -361,11 +348,6 @@ export const storeService = {
       console.error('[storeService] Error en obtenerIngresosMensuales:', error);
       return []; // Retornar array vacío en caso de error para no romper gráficos
     }
-  },
-
-  /** Alias para compatibilidad */
-  async getMonthlyIncome(storeId) {
-    return this.obtenerIngresosMensuales(storeId);
   },
 
   // ---------------------------------------------------------------------------
