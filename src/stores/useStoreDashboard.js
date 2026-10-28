@@ -166,11 +166,6 @@ export const useStoreDashboard = create((set, get) => ({
     }
   },
 
-  /** Wrapper para transacción POS */
-  createPOSTransaction: async (payload) => {
-    return storeService.createPOSTransaction(payload);
-  },
-
   /**
    * Limpia el error actual.
    */

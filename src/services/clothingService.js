@@ -1,13 +1,15 @@
+import { storeService } from './storeService';
 
 /**
- * @deprecated
- * This service is deprecated. Its functionality has been moved to 'storeService.js'.
- * Please use 'storeService' instead.
- * 
- * Logic moved:
- * - Variant Parsing -> Automatically handled in storeService.obtenerProductos / crearProducto
+ * Productos de la tienda de ropa. Las variantes (talla/color) las codifica y
+ * decodifica `storeService`, por lo que aquí solo se delega.
  */
 export const clothingService = {
-    getClothingProducts: () => { throw new Error("Deprecated. Use storeService.obtenerProductos"); },
-    saveClothingProduct: () => { throw new Error("Deprecated. Use storeService.crearProducto (supports variants internally)"); },
+  getClothingProducts: (storeId) => storeService.obtenerProductos(storeId),
+
+  /** Crea el producto, o lo actualiza si trae `id`. */
+  saveClothingProduct: ({ id, ...producto }) =>
+    id ? storeService.actualizarProducto(id, producto) : storeService.crearProducto(producto),
+
+  deleteClothingProduct: (id) => storeService.eliminarProducto(id),
 };

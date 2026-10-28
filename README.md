@@ -60,16 +60,15 @@ src/
 │   ├── DeliveryDashboard.jsx # Panel para repartidores
 │   └── ...
 │
-├── services/            # Capa de Lógica de Negocio (¡CRÍTICO!)
-│   ├── authService.js   # Login, Registro, Roles
-│   ├── deliveryService.js # Lógica de repartidores (Aceptar pedidos, Rutas)
-│   ├── orderService.js  # Creación y gestión de pedidos
-│   └── storeService.js  # CRUD de tiendas y productos
+├── services/            # Acceso a datos y reglas de negocio de cada dominio (¡CRÍTICO!)
+│   ├── customerService.js # Perfil, pedidos y direcciones del cliente
+│   ├── deliveryService.js # Repartidores: pedidos disponibles, aceptar, entregar, ubicación
+│   ├── orderService.js  # Creación, cancelación y totales de pedidos
+│   ├── storeService.js  # Tiendas, productos, pedidos y operación del negocio
+│   └── ...              # Planes, equipo, caja, declaración del domiciliario, por nicho
 │
-├── stores/              # Gestores de Estado Global (Zustand)
-│   ├── useAuth.js       # Estado del usuario logueado
-│   ├── useCartStore.js  # Estado del carrito de compras
-│   └── useStoreDashboard.js # Estado de la tienda activa
+├── contexts/            # Sesión (SupabaseAuthContext), carrito y tema
+├── stores/              # Estado global (Zustand): carrito por nicho y panel de la tienda
 │
 └── main.jsx             # Punto de entrada de la aplicación
 ```

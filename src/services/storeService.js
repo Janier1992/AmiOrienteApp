@@ -26,6 +26,7 @@
  */
 
 import { supabase } from '@/lib/customSupabaseClient';
+import { crearManejadorDeErrores } from '@/lib/serviceError';
 
 /**
  * @typedef {Object} Store
@@ -84,33 +85,38 @@ function validarId(id, nombreCampo = 'ID') {
   }
 }
 
-/**
- * Maneja errores de Supabase y los transforma en mensajes amigables.
- * 
- * @param {Error} error - Error original de Supabase
- * @param {string} mensajeContexto - Contexto del error para logging
- * @throws {Error} Error con mensaje amigable en español
- */
-function manejarErrorSupabase(error, mensajeContexto) {
-  console.error(`[storeService] ${mensajeContexto}:`, error);
+/** Códigos de PostgREST/PostgreSQL que se traducen a un mensaje amigable. */
+const MENSAJES_POR_CODIGO = {
+  PGRST116: 'No se encontraron resultados',
+  23503: 'Referencia a un registro que no existe',
+  23505: 'Ya existe un registro con esos datos',
+};
 
-  // Errores comunes de Supabase
-  if (error.code === 'PGRST116') {
-    throw new Error('No se encontraron resultados');
-  }
-  if (error.code === '23503') {
-    throw new Error('Referencia a un registro que no existe');
-  }
-  if (error.code === '23505') {
-    throw new Error('Ya existe un registro con esos datos');
-  }
-
-  throw new Error(error.message || mensajeContexto);
-}
+/** Registra el error y lanza un mensaje legible (ver `src/lib/serviceError.js`). */
+const manejarErrorSupabase = crearManejadorDeErrores('storeService', {
+  traducirCodigo: (error) => MENSAJES_POR_CODIGO[error?.code],
+});
 
 // =============================================================================
 // SERVICIO PRINCIPAL DE TIENDA
 // =============================================================================
+
+/**
+ * Prepara los campos de un producto para guardarlo. Las variantes (tallas/colores
+ * de ropa) no tienen columna propia: se serializan al final de la descripción como
+ * `VARIANTS_JSON: [...]` y el stock pasa a ser la suma de sus cantidades.
+ * Si no hay variantes, los campos se devuelven sin tocar.
+ */
+const prepararProducto = ({ variants, description, ...campos }) => {
+  if (!Array.isArray(variants) || variants.length === 0) {
+    return description === undefined ? campos : { ...campos, description };
+  }
+  return {
+    ...campos,
+    description: `${description || ''}\n\nVARIANTS_JSON: ${JSON.stringify(variants)}`,
+    stock: variants.reduce((suma, v) => suma + (Number(v.qty) || 0), 0),
+  };
+};
 
 // Helper for Variants (Clothing)
 const parseVariants = (product) => {
@@ -270,14 +276,6 @@ export const storeService = {
     }
   },
 
-  /**
-   * Alias para compatibilidad con código existente.
-   * @deprecated Usar obtenerTiendaPorPropietario en su lugar
-   */
-  async getStoreByOwner(ownerId) {
-    return this.obtenerTiendaPorPropietario(ownerId);
-  },
-
   // ---------------------------------------------------------------------------
   // OPERACIONES DE ESTADÍSTICAS
   // ---------------------------------------------------------------------------
@@ -309,11 +307,6 @@ export const storeService = {
     } catch (error) {
       manejarErrorSupabase(error, ERROR_ESTADISTICAS_NO_CARGADAS);
     }
-  },
-
-  /** Alias para compatibilidad */
-  async getStoreStats(storeId) {
-    return this.obtenerEstadisticasTienda(storeId);
   },
 
   /**
@@ -363,11 +356,6 @@ export const storeService = {
     }
   },
 
-  /** Alias para compatibilidad */
-  async getMonthlyIncome(storeId) {
-    return this.obtenerIngresosMensuales(storeId);
-  },
-
   // ---------------------------------------------------------------------------
   // OPERACIONES DE PRODUCTOS
   // ---------------------------------------------------------------------------
@@ -391,10 +379,6 @@ export const storeService = {
         .select('*')
         .eq('store_id', idTienda)
         .order('created_at', { ascending: false });
-
-      if (error) {
-        manejarErrorSupabase(error, ERROR_PRODUCTOS_NO_CARGADOS);
-      }
 
       if (error) {
         manejarErrorSupabase(error, ERROR_PRODUCTOS_NO_CARGADOS);
@@ -436,24 +420,9 @@ export const storeService = {
       throw new Error('Los datos del producto son requeridos');
     }
 
-    // Handle Variants (Clothing)
-    const { variants, description, ...fields } = datosProducto;
-    let finalDescription = description || '';
-    let totalStock = fields.stock;
-
-    if (variants && Array.isArray(variants) && variants.length > 0) {
-      const variantsJson = JSON.stringify(variants);
-      finalDescription = `${description || ''}\n\nVARIANTS_JSON: ${variantsJson}`;
-      totalStock = variants.reduce((sum, v) => sum + (Number(v.qty) || 0), 0);
-    }
+    const payload = prepararProducto(datosProducto);
 
     try {
-      const payload = {
-        ...fields,
-        description: finalDescription,
-        stock: totalStock
-      };
-
       const { data: productoCreado, error } = await supabase
         .from('products')
         .insert(payload)
@@ -483,7 +452,7 @@ export const storeService = {
     try {
       const { data: productoActualizado, error } = await supabase
         .from('products')
-        .update(actualizaciones)
+        .update(prepararProducto(actualizaciones))
         .eq('id', idProducto)
         .select()
         .single();
@@ -492,7 +461,7 @@ export const storeService = {
         manejarErrorSupabase(error, 'Error actualizando producto');
       }
 
-      return productoActualizado;
+      return parseVariants(productoActualizado);
     } catch (error) {
       manejarErrorSupabase(error, 'Error actualizando producto');
     }
@@ -749,38 +718,6 @@ export const storeService = {
       .eq('id', tableId);
     if (error) throw error;
   },
-
-  // Optimized POS Transaction (Moved from restaurantService)
-  async createPOSTransaction({ orderPayload, items }) {
-    // 1. Create Order
-    const { data: orderData, error: orderError } = await supabase
-      .from('orders')
-      .insert(orderPayload)
-      .select()
-      .single();
-
-    if (orderError) throw orderError;
-
-    // 2. Create Order Items
-    const orderItems = items.map(item => ({
-      order_id: orderData.id,
-      product_id: item.id,
-      quantity: item.qty,
-      price: item.price
-    }));
-
-    const { error: itemsError } = await supabase
-      .from('order_items')
-      .insert(orderItems);
-
-    if (itemsError) {
-      console.error("Error creating items", itemsError);
-      // Optional: Delete order if items fail?
-      throw itemsError;
-    }
-
-    return orderData;
-  }
 };
 
 // =============================================================================

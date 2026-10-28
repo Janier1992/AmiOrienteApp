@@ -32,6 +32,7 @@
  */
 
 import { supabase } from '@/lib/customSupabaseClient';
+import { crearManejadorDeErrores } from '@/lib/serviceError';
 
 // =============================================================================
 // CONSTANTES DEL MÓDULO
@@ -77,16 +78,8 @@ function validarId(id, nombreCampo = 'ID') {
   }
 }
 
-/**
- * Maneja errores y los registra en consola.
- * 
- * @param {Error} error - Error original
- * @param {string} contexto - Mensaje de contexto
- */
-function manejarError(error, contexto) {
-  console.error(`[deliveryService] ${contexto}:`, error);
-  throw new Error(error.message || contexto);
-}
+/** Registra el error y lanza un mensaje legible (ver `src/lib/serviceError.js`). */
+const manejarError = crearManejadorDeErrores('deliveryService');
 
 // =============================================================================
 // SERVICIO PRINCIPAL DE DOMICILIARIO
@@ -155,16 +148,6 @@ export const deliveryService = {
     }
   },
 
-  /** Alias para compatibilidad - usado en useDeliveryStore */
-  async getAvailableDeliveries() {
-    return this.obtenerPedidosDisponibles();
-  },
-
-  /** Alias alternativo */
-  async getAvailableOrders() {
-    return this.obtenerPedidosDisponibles();
-  },
-
   // ---------------------------------------------------------------------------
   // ENTREGA ACTUAL
   // ---------------------------------------------------------------------------
@@ -218,11 +201,6 @@ export const deliveryService = {
       console.error('[deliveryService] Error inesperado:', error);
       return null;
     }
-  },
-
-  /** Alias para compatibilidad */
-  async getCurrentDelivery(userId) {
-    return this.obtenerEntregaActual(userId);
   },
 
   // ---------------------------------------------------------------------------
@@ -284,11 +262,6 @@ export const deliveryService = {
     return Array.isArray(data) ? data[0] || null : data || null;
   },
 
-  /** Alias para compatibilidad */
-  async acceptDelivery(orderId, userId) {
-    return this.aceptarEntrega(orderId, userId);
-  },
-
   /**
    * Actualiza el estado de una entrega.
    * 
@@ -330,11 +303,6 @@ export const deliveryService = {
     } catch (error) {
       manejarError(error, ERRORES.ERROR_ACTUALIZACION);
     }
-  },
-
-  /** Alias para compatibilidad */
-  async updateDeliveryStatus(orderId, newStatus) {
-    return this.actualizarEstadoEntrega(orderId, newStatus);
   },
 
   // ---------------------------------------------------------------------------
@@ -387,11 +355,6 @@ export const deliveryService = {
     } catch (error) {
       console.error('[deliveryService] Error inesperado en ubicación:', error);
     }
-  },
-
-  /** Alias para compatibilidad */
-  async updateLocation(userId, lat, lng) {
-    return this.actualizarUbicacion(userId, lat, lng);
   },
 
   // ---------------------------------------------------------------------------
