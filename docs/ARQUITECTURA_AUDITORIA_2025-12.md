@@ -1,3 +1,5 @@
+> **Documento histórico (diciembre 2025).** Muchas de sus recomendaciones ya se aplicaron; el estado vigente está en `docs/ESTADO_DEL_PROYECTO.md`.
+
 # Auditoría Arquitectónica y Plan de Refactorización - AmiOriente
 
 **Fecha:** 13 de Diciembre, 2025

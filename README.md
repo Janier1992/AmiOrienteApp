@@ -169,12 +169,15 @@ npm run lint   # ESLint (debe terminar sin errores)
 npm test       # Pruebas unitarias (Vitest)
 npm run build  # Compilación de producción
 ```
+Los tres comandos corren solos en cada pull request (`.github/workflows/ci.yml`). Las funciones de base de datos (permisos, pedidos, cancelación, domiciliarios) se prueban con `bash tools/db-test/run.sh` contra una réplica local de PostgreSQL.
+
+Documentación del proyecto: `docs/ESTADO_DEL_PROYECTO.md` (estado y pendientes), `docs/NORMATIVA_COLOMBIA.md` (marco legal), `docs/AUDITORIA_SUPABASE_2026-10-07.md` (auditoría de seguridad) y `docs/manual-usuario/` (manual de usuario).
 
 ### Despliegue en GitHub Pages
 El despliegue es automático: cada push a `main` ejecuta `.github/workflows/deploy.yml`, que corre lint, tests y build y publica `dist/`.
 1.  En GitHub → *Settings → Secrets and variables → Actions* define `VITE_SUPABASE_URL` y `VITE_SUPABASE_ANON_KEY`.
 2.  La app usa `HashRouter`, por lo que funciona bajo el subdirectorio `/AmiOrienteApp/` sin configuración extra.
-3.  En Supabase → *Authentication → URL Configuration* agrega la URL publicada (por ejemplo `https://janier1992.github.io/AmiOrienteApp/`) a *Redirect URLs*; si no, los enlaces de confirmación de correo y de recuperación de contraseña no funcionarán.
+3.  En Supabase → *Authentication → URL Configuration* agrega cada URL publicada (por ejemplo `https://janier1992.github.io/AmiOrienteApp/` y `https://ami-oriente-app.vercel.app/`) a *Redirect URLs*; si no, los enlaces de confirmación de correo y de recuperación de contraseña no funcionarán.
 
 ---
 
@@ -235,4 +238,4 @@ Para lograr la máxima visibilidad en el Oriente Antioqueño, se ejecutará la s
 
 ---
 **Desarrollado con ❤️ por el Equipo de Tecnología de SynFlowIA**
-*Última actualización: Octubre 2026*
+*Última actualización: 28 de octubre de 2026*
