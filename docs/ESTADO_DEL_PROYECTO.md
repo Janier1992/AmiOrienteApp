@@ -46,9 +46,10 @@ Auditoría en `docs/AUDITORIA_SUPABASE_2026-10-07.md`. Las correcciones están e
 - La base rechaza `accept_order` si falta cualquiera de las dos cosas.
 
 ## Calidad automática
-- `npm run lint`, `npm test` (222 pruebas) y `npm run build` corren en cada pull request (`.github/workflows/ci.yml`) y de nuevo antes de cada despliegue.
+- En cada pull request corre el CI (`.github/workflows/ci.yml`) con tres revisiones: **verificar** (lint, `npm test`, compilación y alerta de seguridad bloqueante para vulnerabilidades altas en producción), **base-de-datos** (`tools/db-test/run.sh` contra un PostgreSQL desechable) y **secretos** (búsqueda de claves subidas por error). El despliegue repite lint, pruebas y compilación.
 - Dependencias de producción: 0 alertas altas (`npm audit --omit=dev`). Quedan 5 moderadas; la de `react-router` (redirección abierta con barra invertida) solo se corrige pasando a la versión 7 (migración mayor, pendiente). Mientras tanto, `src/lib/authRoutes.js` solo acepta rutas internas en `?redirect=` y rechaza `//` y `/\\`.
-- Servicios con pruebas: pedidos, entrega, caja, equipo, planes y declaraciones del domiciliario. **Sin pruebas todavía:** clientes, negocios, administración, autenticación y los servicios por nicho.
+- Servicios con pruebas: pedidos, entrega, caja, equipo, planes, declaraciones del domiciliario y autenticación. **Sin pruebas todavía:** negocios, administración, clientes (parcial) y los servicios por nicho.
+- Convenciones y flujo de trabajo: `CONTRIBUTING.md` y plantilla de pull request. Encabezados de seguridad en `vercel.json` (la política de contenido está en modo «solo reporte» hasta revisar la consola en producción).
 
 ## Diagnóstico: la app no carga datos
 Si en la consola del navegador aparecen muchos `net::ERR_FAILED` hacia `*.supabase.co`, el navegador no logra ni conectarse (no es un error de permisos ni de código). Revisar, en este orden:

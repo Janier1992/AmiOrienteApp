@@ -34,6 +34,41 @@ jobs:
           VITE_SUPABASE_URL: https://ci.invalid
           VITE_SUPABASE_ANON_KEY: ci
       - name: Alertas de seguridad en dependencias de producción
-        # Informativo: avisa de vulnerabilidades altas nuevas sin bloquear el cambio.
+        # Bloquea si aparece una vulnerabilidad alta o crítica en lo que llega a producción.
         run: npm audit --omit=dev --audit-level=high
-        continue-on-error: true
+
+  base-de-datos:
+    # Prueba las migraciones SQL (permisos, pedidos, cancelación, domiciliarios) contra un
+    # PostgreSQL desechable; nunca toca el Supabase real.
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      PGHOST: localhost
+      PGPORT: "5432"
+      PGUSER: postgres
+      PGPASSWORD: postgres
+    steps:
+      - uses: actions/checkout@v4
+      - name: Pruebas de base de datos
+        run: bash tools/db-test/run.sh
+
+  secretos:
+    # Busca claves o credenciales subidas por error al repositorio.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

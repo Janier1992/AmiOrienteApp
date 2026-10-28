@@ -171,7 +171,7 @@ npm run build  # Compilación de producción
 ```
 Los tres comandos corren solos en cada pull request (`.github/workflows/ci.yml`). Las funciones de base de datos (permisos, pedidos, cancelación, domiciliarios) se prueban con `bash tools/db-test/run.sh` contra una réplica local de PostgreSQL.
 
-Documentación del proyecto: `docs/ESTADO_DEL_PROYECTO.md` (estado y pendientes), `docs/NORMATIVA_COLOMBIA.md` (marco legal), `docs/AUDITORIA_SUPABASE_2026-10-07.md` (auditoría de seguridad) y `docs/manual-usuario/` (manual de usuario).
+Para colaborar: `CONTRIBUTING.md` (flujo, convenciones, cómo escribir migraciones SQL). Documentación del proyecto: `docs/ESTADO_DEL_PROYECTO.md` (estado y pendientes), `docs/NORMATIVA_COLOMBIA.md` (marco legal), `docs/AUDITORIA_SUPABASE_2026-10-07.md` (auditoría de seguridad) y `docs/manual-usuario/` (manual de usuario).
 
 ### Despliegue en GitHub Pages
 El despliegue es automático: cada push a `main` ejecuta `.github/workflows/deploy.yml`, que corre lint, tests y build y publica `dist/`.
