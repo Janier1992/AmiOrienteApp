@@ -67,7 +67,7 @@ const OverviewTab = ({ storeId }) => {
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-red-500">-${Number(platform_commission).toLocaleString()}</div>
+            <div className="text-2xl font-bold text-red-500">{Number(platform_commission) > 0 ? '-' : ''}${Number(platform_commission).toLocaleString()}</div>
             <p className="text-xs text-muted-foreground">Según tu plan (ver «Mi Plan»)</p>
           </CardContent>
         </Card>

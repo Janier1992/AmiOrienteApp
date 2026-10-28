@@ -103,6 +103,7 @@ const AgroCropsView = () => {
     } = useAgroStore();
     const { store } = useStoreDashboard(); // Keep generic store only for store.id
     const [searchTerm, setSearchTerm] = useState('');
+    const [categoryFilter, setCategoryFilter] = useState('all');
 
     const [isAddOpen, setIsAddOpen] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -123,7 +124,9 @@ const AgroCropsView = () => {
         if (store?.id) fetchProducts(store.id);
     }, [store?.id, fetchProducts]);
 
-    const filteredProducts = products.filter(p => p.name.toLowerCase().includes(searchTerm.toLowerCase()));
+    const filteredProducts = products.filter(p =>
+        p.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+        (categoryFilter === 'all' || p.category === categoryFilter));
 
     const openCreateModal = () => {
         setEditingProduct(null);
@@ -256,7 +259,7 @@ const AgroCropsView = () => {
                 </div>
 
                 <div className="flex gap-2 w-full md:w-auto">
-                    <Select defaultValue="all" onValueChange={(v) => console.log(v)}>
+                    <Select value={categoryFilter} onValueChange={setCategoryFilter}>
                         <SelectTrigger className="w-[150px] rounded-full bg-gray-50 border-transparent">
                             <SelectValue placeholder="Tipo de Cultivo" />
                         </SelectTrigger>

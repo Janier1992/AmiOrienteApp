@@ -31,7 +31,6 @@ export function usePWAInstall() {
       // Stash the event so it can be triggered later.
       setDeferredPrompt(e);
       setIsInstallable(true);
-      console.log('📱 PWA: Capture beforeinstallprompt event');
     };
 
     // Handle appinstalled (Success)
@@ -39,7 +38,6 @@ export function usePWAInstall() {
       setIsInstallable(false);
       setDeferredPrompt(null);
       setIsStandalone(true);
-      console.log('📱 PWA: App installed successfully');
     };
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
@@ -54,7 +52,6 @@ export function usePWAInstall() {
 
   const promptInstall = useCallback(async () => {
     if (!deferredPrompt) {
-      console.log('📱 PWA: No deferred prompt available');
       return;
     }
 
@@ -62,8 +59,7 @@ export function usePWAInstall() {
     deferredPrompt.prompt();
 
     // Wait for the user to respond to the prompt
-    const { outcome } = await deferredPrompt.userChoice;
-    console.log(`📱 PWA: User response to install prompt: ${outcome}`);
+    await deferredPrompt.userChoice;
 
     // We've used the prompt, and can't use it again, throw it away
     setDeferredPrompt(null);

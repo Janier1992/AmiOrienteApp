@@ -1,7 +1,7 @@
 # Estado del proyecto AmiOriente
 
 Documento de traspaso: qué funciona, cómo se verificó y qué falta para comercializar.
-Última revisión: octubre 2026.
+Última revisión: 28 de octubre de 2026.
 
 ## Cómo se verifica
 - `npm run lint`, `npm test`, `npm run build` (también corren en el CI antes de desplegar).
@@ -23,9 +23,11 @@ Documento de traspaso: qué funciona, cómo se verificó y qué falta para comer
 
 ## Seguridad y base de datos (octubre 2026)
 Auditoría en `docs/AUDITORIA_SUPABASE_2026-10-07.md`. Las correcciones están en `database_updates/` y **deben aplicarse en Supabase en este orden** (todas idempotentes; hacer backup antes):
-`20261007_*` (columnas faltantes, RLS de domiciliario, `create_order`, endurecimiento por lotes, stock, TRUNCATE) → `20261008_security_critical_fixes.sql` (A1–A4) → `20261008_delivery_status_rpc.sql` → `20261009_teams_plans_commissions.sql`.
-- Flujo del domiciliario: aceptar usa `accept_order` y avanzar/cerrar usa `update_delivery_status` (ambas RPC validan en el servidor; el pedido pasa a "En curso" y "Entregado" junto con la entrega).
-- `bash tools/db-test/run.sh` prueba las migraciones críticas y el flujo del domiciliario contra una réplica local de PostgreSQL (no contra tu Supabase real).
+`20261007_*` (columnas faltantes, RLS de domiciliario, `create_order`, endurecimiento por lotes, stock, TRUNCATE) → `20261008_security_critical_fixes.sql` → `20261008_delivery_status_rpc.sql` → `20261009_teams_plans_commissions.sql` → `20261010_legal_consents.sql` → `20261011_driver_declarations.sql` → `20261012_accept_order_requires_declaration.sql` → `20261013_driver_photo.sql` → `20261014_cancel_order_and_realtime.sql`.
+- El total del pedido, la comisión y el rol se calculan o protegen en el servidor (`create_order`, disparadores `protect_*`); el navegador no puede alterarlos.
+- Flujo del domiciliario: aceptar usa `accept_order` (exige declaración firmada y fotografía) y avanzar/cerrar usa `update_delivery_status`.
+- Cancelar usa `cancel_order`: valida quién y en qué estado, y devuelve el inventario una sola vez. La tabla `orders` debe estar en la publicación `supabase_realtime` (la migración lo asegura).
+- `bash tools/db-test/run.sh` prueba las migraciones contra una réplica local de PostgreSQL (**no** contra tu Supabase real): 173 verificaciones.
 
 ## Equipos, planes y comisiones (octubre 2026)
 - **Planes**: tabla `plans` (Básico gratis + 10 %, Profesional $59.900 + 0 %, Empresarial a convenir). Precios y comisiones son una decisión de negocio **por confirmar**: se cambian con un `UPDATE` (ejemplos al final de la migración). La página de precios, «Mi Plan» y el Panel de Administración leen de esa tabla (`src/config/plans.js` solo es respaldo).
@@ -34,16 +36,31 @@ Auditoría en `docs/AUDITORIA_SUPABASE_2026-10-07.md`. Las correcciones están e
 - **Cambio de plan**: manual por el administrador de la plataforma (Panel de Administración) hasta que existan pagos en línea; el negocio lo solicita desde «Mi Plan» (se crea un ticket de soporte).
 - Pendiente de esta área: invitaciones para correos sin cuenta, permisos más finos por rol (hoy los colaboradores operan pedidos/productos/mesas/habitaciones; otras tablas siguen solo para el dueño) y cobro automático de la suscripción.
 
+## Avisos de pedidos y cancelación (octubre 2026)
+- El panel del negocio avisa de cada pedido nuevo con mensaje, sonido y notificación del navegador, y muestra un contador en «Pedidos». Usa Realtime y, como respaldo, consulta cada 30 segundos (`src/hooks/use-new-order-alerts.js`).
+- El cliente puede cancelar hasta «Confirmado»; el negocio, hasta «Listo para recogida». Las reglas de la interfaz están en `src/lib/orderRules.js` y las definitivas en `cancel_order`.
+- Eliminar un pedido solo está disponible para los ya cancelados.
+
+## Domiciliarios: declaración y fotografía (octubre 2026)
+- Firman una declaración digital (se guarda inmodificable, con su huella) y se toman una fotografía obligatoria. El cliente ve foto, nombre, documento enmascarado, placa y el mapa en tiempo real (`get_order_driver`).
+- La base rechaza `accept_order` si falta cualquiera de las dos cosas.
+
+## Calidad automática
+- `npm run lint`, `npm test` (222 pruebas) y `npm run build` corren en cada pull request (`.github/workflows/ci.yml`) y de nuevo antes de cada despliegue.
+- Dependencias de producción: 0 alertas altas (`npm audit --omit=dev`). Quedan 5 moderadas; la de `react-router` (redirección abierta con barra invertida) solo se corrige pasando a la versión 7 (migración mayor, pendiente). Mientras tanto, `src/lib/authRoutes.js` solo acepta rutas internas en `?redirect=` y rechaza `//` y `/\\`.
+- Servicios con pruebas: pedidos, entrega, caja, equipo, planes y declaraciones del domiciliario. **Sin pruebas todavía:** clientes, negocios, administración, autenticación y los servicios por nicho.
+
 ## Pendiente para comercializar
-1. **Totales del pedido en el servidor (seguridad).** `orderService.crearPedido` calcula subtotal, envío, impuestos y descuento en el navegador; un usuario podría manipular el total. Solución: función SQL `create_order` (SECURITY DEFINER) que lea precios/tarifas de las tablas y valide cupones; el cliente solo envía producto y cantidad. Requiere el esquema real y pruebas contra la base.
-2. **Auditar RLS tabla por tabla** (lectura pública de `stores`/`products`, pedidos visibles para domiciliarios, aislamiento entre tiendas) y exportar el esquema completo a una migración base: hoy solo existen parches en `database_updates/`.
-3. **Pagos en línea.** Todo se registra como efectivo/contraentrega. La pestaña Pagos anuncia Bold como próxima integración.
-4. **Cupón consumido antes de crear el pedido** (`redeem_discount`): si el pedido falla, el cupón ya se gastó. Resolver al mover la creación del pedido al servidor.
-5. ~~Equipo de trabajo~~ (hecho; ver sección arriba).
-6. ~~Datos de ejemplo~~ (hecho: el directorio y turismo muestran solo datos reales, con mensajes claros si no hay; los de ejemplo solo con `VITE_DEMO_MODE=true`, para presentaciones).
-7. **Normativa colombiana**: textos y mecanismos base implementados (ver `docs/NORMATIVA_COLOMBIA.md`); faltan los datos de la persona jurídica, la migración `20261010_legal_consents.sql`, la revisión de un abogado y definir el cumplimiento de la Ley 2466/Decreto 0991 con los domiciliarios.
-8. ~~Planes y comisiones~~ (unificados en la tabla `plans`; falta que el propietario confirme los valores).
-9. ~~Contraste de color (WCAG AA)~~ (hecho: verde primario `142 64% 28%`, texto secundario y destructivo oscurecidos; auditoría axe `color-contrast` con 0 hallazgos en ~50 pantallas en tema claro y oscuro).
-10. ~~Modo oscuro~~ (hecho: tokens oscuros con verde claro y texto oscuro sobre él; Términos/Privacidad y los paneles de cliente y domiciliario ya usan tokens del tema). El panel de negocio sigue siempre en tema claro.
-11. **Foto de Marinilla**: es el fondo del Home (viene de una URL externa de Hostinger; conviene descargarla a `public/` y servirla desde la propia app para que cargue siempre y funcione sin conexión).
-11. Plan de Supabase de pago antes del primer cliente (respaldos, límites, rendimiento).
+Ordenado por prioridad. Los cuatro primeros dependen de decisiones o trámites del propietario, no de código.
+1. **Persona jurídica**: razón social, NIT, dirección, teléfono y correo (variables `VITE_LEGAL_*` en el hosting; hoy los Términos y la Política muestran «pendiente»).
+2. **Revisión de un abogado** de los Términos, la Política de privacidad, la declaración del domiciliario, el consentimiento de la fotografía y el cumplimiento de la Ley 2466 / Decreto 0991 sobre seguridad social de repartidores. Ver `docs/NORMATIVA_COLOMBIA.md`.
+3. **Pagos en línea** (Bold u otra pasarela) y cobro automático de los planes. Hoy todo es efectivo/transferencia.
+4. **Supabase de pago** (copias de seguridad, sin pausa por inactividad, correos de confirmación sin límite del plan gratuito).
+5. **Prueba de punta a punta con cuentas reales** (cliente, negocio, domiciliario, administrador): las pruebas actuales usan una réplica local y un Supabase simulado.
+6. Cargar los primeros negocios, productos y sitios turísticos reales; confirmar precios y comisiones de los planes.
+7. Monitoreo de errores y un responsable de soporte.
+8. RNBD ante la SIC y consulta a la DIAN (facturación y retenciones).
+9. Pruebas de los servicios restantes, consolidar `database_updates/` en una migración base y migrar `react-router` a la versión 7.
+10. Consentimientos de las cuentas creadas antes de las autorizaciones (pedirlos al volver a entrar).
+11. Cupón consumido antes de crear el pedido (`redeem_discount`): si el pedido falla, el cupón ya se gastó.
+12. Permisos del equipo más finos por tabla e invitaciones a correos sin cuenta.

@@ -1,0 +1,39 @@
+name: CI
+
+# Revisa cada cambio antes de fusionarlo (el despliegue solo corre al llegar a main).
+on:
+  pull_request:
+  push:
+    branches-ignore: ["main"]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+      - run: npm ci
+      - name: Lint
+        run: npm run lint
+      - name: Pruebas
+        run: npm test
+      - name: Compilación
+        run: npm run build
+        env:
+          # Valores de relleno: la compilación no se conecta a Supabase.
+          VITE_SUPABASE_URL: https://ci.invalid
+          VITE_SUPABASE_ANON_KEY: ci
+      - name: Alertas de seguridad en dependencias de producción
+        # Informativo: avisa de vulnerabilidades altas nuevas sin bloquear el cambio.
+        run: npm audit --omit=dev --audit-level=high
+        continue-on-error: true
