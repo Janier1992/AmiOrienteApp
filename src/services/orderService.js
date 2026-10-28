@@ -40,6 +40,7 @@
 
 import { supabase } from '@/lib/customSupabaseClient';
 import { SERVICE_FEE, DELIVERY_BASE_FEE } from '@/lib/constants';
+import { crearManejadorDeErrores } from '@/lib/serviceError';
 
 // =============================================================================
 // CONSTANTES DEL MÓDULO
@@ -94,16 +95,8 @@ function esTransicionValida(estadoActual, nuevoEstado) {
     return transicionesPermitidas && transicionesPermitidas.includes(nuevoEstado);
 }
 
-/**
- * Maneja errores de Supabase.
- * 
- * @param {Error} error - Error original
- * @param {string} contexto - Mensaje de contexto
- */
-function manejarError(error, contexto) {
-    console.error(`[orderService] ${contexto}:`, error);
-    throw new Error(error.message || contexto);
-}
+/** Registra el error y lanza un mensaje legible (ver `src/lib/serviceError.js`). */
+const manejarError = crearManejadorDeErrores('orderService');
 
 // =============================================================================
 // SERVICIO PRINCIPAL DE PEDIDOS

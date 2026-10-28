@@ -32,6 +32,7 @@
  */
 
 import { supabase } from '@/lib/customSupabaseClient';
+import { crearManejadorDeErrores } from '@/lib/serviceError';
 
 // =============================================================================
 // CONSTANTES DEL MÓDULO
@@ -77,16 +78,8 @@ function validarId(id, nombreCampo = 'ID') {
   }
 }
 
-/**
- * Maneja errores y los registra en consola.
- * 
- * @param {Error} error - Error original
- * @param {string} contexto - Mensaje de contexto
- */
-function manejarError(error, contexto) {
-  console.error(`[deliveryService] ${contexto}:`, error);
-  throw new Error(error.message || contexto);
-}
+/** Registra el error y lanza un mensaje legible (ver `src/lib/serviceError.js`). */
+const manejarError = crearManejadorDeErrores('deliveryService');
 
 // =============================================================================
 // SERVICIO PRINCIPAL DE DOMICILIARIO

@@ -26,6 +26,7 @@
  */
 
 import { supabase } from '@/lib/customSupabaseClient';
+import { crearManejadorDeErrores } from '@/lib/serviceError';
 
 // =============================================================================
 // CONSTANTES DEL MÓDULO
@@ -67,16 +68,8 @@ function validarIdUsuario(idUsuario) {
   }
 }
 
-/**
- * Maneja errores de Supabase y los transforma en mensajes amigables.
- * 
- * @param {Error} error - Error original
- * @param {string} contexto - Mensaje de contexto
- */
-function manejarError(error, contexto) {
-  console.error(`[customerService] ${contexto}:`, error);
-  throw new Error(error.message || contexto);
-}
+/** Registra el error y lanza un mensaje legible (ver `src/lib/serviceError.js`). */
+const manejarError = crearManejadorDeErrores('customerService');
 
 // =============================================================================
 // SERVICIO PRINCIPAL DE CLIENTE

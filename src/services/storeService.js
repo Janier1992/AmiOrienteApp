@@ -26,6 +26,7 @@
  */
 
 import { supabase } from '@/lib/customSupabaseClient';
+import { crearManejadorDeErrores } from '@/lib/serviceError';
 
 /**
  * @typedef {Object} Store
@@ -84,29 +85,17 @@ function validarId(id, nombreCampo = 'ID') {
   }
 }
 
-/**
- * Maneja errores de Supabase y los transforma en mensajes amigables.
- * 
- * @param {Error} error - Error original de Supabase
- * @param {string} mensajeContexto - Contexto del error para logging
- * @throws {Error} Error con mensaje amigable en español
- */
-function manejarErrorSupabase(error, mensajeContexto) {
-  console.error(`[storeService] ${mensajeContexto}:`, error);
+/** Códigos de PostgREST/PostgreSQL que se traducen a un mensaje amigable. */
+const MENSAJES_POR_CODIGO = {
+  PGRST116: 'No se encontraron resultados',
+  23503: 'Referencia a un registro que no existe',
+  23505: 'Ya existe un registro con esos datos',
+};
 
-  // Errores comunes de Supabase
-  if (error.code === 'PGRST116') {
-    throw new Error('No se encontraron resultados');
-  }
-  if (error.code === '23503') {
-    throw new Error('Referencia a un registro que no existe');
-  }
-  if (error.code === '23505') {
-    throw new Error('Ya existe un registro con esos datos');
-  }
-
-  throw new Error(error.message || mensajeContexto);
-}
+/** Registra el error y lanza un mensaje legible (ver `src/lib/serviceError.js`). */
+const manejarErrorSupabase = crearManejadorDeErrores('storeService', {
+  traducirCodigo: (error) => MENSAJES_POR_CODIGO[error?.code],
+});
 
 // =============================================================================
 // SERVICIO PRINCIPAL DE TIENDA
