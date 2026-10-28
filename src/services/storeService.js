@@ -101,6 +101,23 @@ const manejarErrorSupabase = crearManejadorDeErrores('storeService', {
 // SERVICIO PRINCIPAL DE TIENDA
 // =============================================================================
 
+/**
+ * Prepara los campos de un producto para guardarlo. Las variantes (tallas/colores
+ * de ropa) no tienen columna propia: se serializan al final de la descripción como
+ * `VARIANTS_JSON: [...]` y el stock pasa a ser la suma de sus cantidades.
+ * Si no hay variantes, los campos se devuelven sin tocar.
+ */
+const prepararProducto = ({ variants, description, ...campos }) => {
+  if (!Array.isArray(variants) || variants.length === 0) {
+    return description === undefined ? campos : { ...campos, description };
+  }
+  return {
+    ...campos,
+    description: `${description || ''}\n\nVARIANTS_JSON: ${JSON.stringify(variants)}`,
+    stock: variants.reduce((suma, v) => suma + (Number(v.qty) || 0), 0),
+  };
+};
+
 // Helper for Variants (Clothing)
 const parseVariants = (product) => {
   if (!product) return product;
@@ -367,10 +384,6 @@ export const storeService = {
         manejarErrorSupabase(error, ERROR_PRODUCTOS_NO_CARGADOS);
       }
 
-      if (error) {
-        manejarErrorSupabase(error, ERROR_PRODUCTOS_NO_CARGADOS);
-      }
-
       // Parse variants for all products (harmless for non-clothing)
       return (listaProductos || []).map(parseVariants);
     } catch (error) {
@@ -407,24 +420,9 @@ export const storeService = {
       throw new Error('Los datos del producto son requeridos');
     }
 
-    // Handle Variants (Clothing)
-    const { variants, description, ...fields } = datosProducto;
-    let finalDescription = description || '';
-    let totalStock = fields.stock;
-
-    if (variants && Array.isArray(variants) && variants.length > 0) {
-      const variantsJson = JSON.stringify(variants);
-      finalDescription = `${description || ''}\n\nVARIANTS_JSON: ${variantsJson}`;
-      totalStock = variants.reduce((sum, v) => sum + (Number(v.qty) || 0), 0);
-    }
+    const payload = prepararProducto(datosProducto);
 
     try {
-      const payload = {
-        ...fields,
-        description: finalDescription,
-        stock: totalStock
-      };
-
       const { data: productoCreado, error } = await supabase
         .from('products')
         .insert(payload)
@@ -454,7 +452,7 @@ export const storeService = {
     try {
       const { data: productoActualizado, error } = await supabase
         .from('products')
-        .update(actualizaciones)
+        .update(prepararProducto(actualizaciones))
         .eq('id', idProducto)
         .select()
         .single();
@@ -463,7 +461,7 @@ export const storeService = {
         manejarErrorSupabase(error, 'Error actualizando producto');
       }
 
-      return productoActualizado;
+      return parseVariants(productoActualizado);
     } catch (error) {
       manejarErrorSupabase(error, 'Error actualizando producto');
     }
@@ -720,38 +718,6 @@ export const storeService = {
       .eq('id', tableId);
     if (error) throw error;
   },
-
-  // Optimized POS Transaction (Moved from restaurantService)
-  async createPOSTransaction({ orderPayload, items }) {
-    // 1. Create Order
-    const { data: orderData, error: orderError } = await supabase
-      .from('orders')
-      .insert(orderPayload)
-      .select()
-      .single();
-
-    if (orderError) throw orderError;
-
-    // 2. Create Order Items
-    const orderItems = items.map(item => ({
-      order_id: orderData.id,
-      product_id: item.id,
-      quantity: item.qty,
-      price: item.price
-    }));
-
-    const { error: itemsError } = await supabase
-      .from('order_items')
-      .insert(orderItems);
-
-    if (itemsError) {
-      console.error("Error creating items", itemsError);
-      // Optional: Delete order if items fail?
-      throw itemsError;
-    }
-
-    return orderData;
-  }
 };
 
 // =============================================================================
