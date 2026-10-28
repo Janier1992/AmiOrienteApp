@@ -9,6 +9,7 @@ import { supabase } from '@/lib/customSupabaseClient';
 import { SAMPLE_TOURISM_SPOTS } from '@/data/sample-data';
 import { isDemoMode } from '@/lib/demoMode';
 import { motion, AnimatePresence } from 'framer-motion';
+import marinillaPhoto from '@/assets/marinilla.jpg';
 import TourismSpotModal from '@/components/tourism/TourismSpotModal';
 
 const categoryIcons = {
@@ -84,14 +85,17 @@ const TourismPage = () => {
   const [selectedCategory, setSelectedCategory] = useState('Todos');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedSpot, setSelectedSpot] = useState(null);
+  const [loadError, setLoadError] = useState(false);
+  const [reloadKey, setReloadKey] = useState(0);
 
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
+      setLoadError(false);
       
       try {
           // Fetch categories
-          const { data: categoriesData } = await supabase
+          const { data: categoriesData, error: categoriesError } = await supabase
             .from('tourism_categories')
             .select('*');
 
@@ -99,6 +103,9 @@ const TourismPage = () => {
           const { data: spotsData, error: spotsError } = await supabase
             .from('tourism_spots')
             .select('*, tourism_categories(name)');
+
+          // Una falla de consulta no es lo mismo que «aún no hay lugares»: se avisa y se permite reintentar.
+          if (spotsError || categoriesError) setLoadError(true);
 
           let fetchedCategories = categoriesData || [];
           let fetchedSpots = [];
@@ -123,6 +130,7 @@ const TourismPage = () => {
 
       } catch (e) {
           console.error("Critical error in TourismPage:", e);
+          setLoadError(true);
           if (isDemoMode) {
             setSpots(SAMPLE_TOURISM_SPOTS);
             const cats = [...new Set(SAMPLE_TOURISM_SPOTS.map(s => s.category_name))];
@@ -134,7 +142,7 @@ const TourismPage = () => {
     };
     
     fetchData();
-  }, []);
+  }, [reloadKey]);
 
   const filteredSpots = useMemo(() => {
     return spots.filter(spot => {
@@ -158,7 +166,7 @@ const TourismPage = () => {
         <header className="relative bg-slate-900 text-white py-24 px-4 overflow-hidden">
           <div className="absolute inset-0 z-0">
              <img 
-                src="https://horizons-cdn.hostinger.com/9a2f1d5f-26c5-4fa8-b3e7-17e2b7bc86a9/7903e645a9d3db709ac238561aef0e07.jpg" 
+                src={marinillaPhoto} 
                 alt="Marinilla Background" 
                 className="w-full h-full object-cover opacity-40 blur-sm scale-105"
              />
@@ -247,19 +255,24 @@ const TourismPage = () => {
                  >
                     <MapIcon className="h-20 w-20 text-slate-200 mx-auto mb-4" />
                     <h2 className="text-2xl font-bold text-slate-700 mb-2">
-                      {spots.length === 0 ? 'Pronto habrá lugares para descubrir' : 'No encontramos resultados'}
+                      {loadError ? 'No pudimos cargar los lugares' : spots.length === 0 ? 'Pronto habrá lugares para descubrir' : 'No encontramos resultados'}
                     </h2>
                     <p className="text-slate-500 max-w-md mx-auto">
-                        {spots.length === 0
+                        {loadError
+                          ? 'Revisa tu conexión e inténtalo de nuevo.'
+                          : spots.length === 0
                           ? 'Estamos sumando sitios turísticos y hoteles de Marinilla. Vuelve muy pronto.'
                           : 'Intenta con otra categoría o busca algo diferente en Marinilla.'}
                     </p>
                     <Button 
                         variant="link" 
-                        onClick={() => {setSelectedCategory('Todos'); setSearchTerm('')}}
+                        onClick={() => {
+                          if (loadError) { setReloadKey(k => k + 1); return; }
+                          setSelectedCategory('Todos'); setSearchTerm('');
+                        }}
                         className="mt-4 text-primary"
                     >
-                        Ver todo
+                        {loadError ? 'Reintentar' : 'Ver todo'}
                     </Button>
                  </motion.div>
                )}
