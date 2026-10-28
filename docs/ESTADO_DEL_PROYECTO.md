@@ -50,6 +50,14 @@ Auditoría en `docs/AUDITORIA_SUPABASE_2026-10-07.md`. Las correcciones están e
 - Dependencias de producción: 0 alertas altas (`npm audit --omit=dev`). Quedan 5 moderadas; la de `react-router` (redirección abierta con barra invertida) solo se corrige pasando a la versión 7 (migración mayor, pendiente). Mientras tanto, `src/lib/authRoutes.js` solo acepta rutas internas en `?redirect=` y rechaza `//` y `/\\`.
 - Servicios con pruebas: pedidos, entrega, caja, equipo, planes y declaraciones del domiciliario. **Sin pruebas todavía:** clientes, negocios, administración, autenticación y los servicios por nicho.
 
+## Diagnóstico: la app no carga datos
+Si en la consola del navegador aparecen muchos `net::ERR_FAILED` hacia `*.supabase.co`, el navegador no logra ni conectarse (no es un error de permisos ni de código). Revisar, en este orden:
+1. Supabase → el proyecto no debe estar **pausado** (el plan gratuito pausa los proyectos inactivos; se reactiva con «Restore project» y se evita con un plan de pago).
+2. Abrir `https://<proyecto>.supabase.co/rest/v1/` en el navegador: debe responder un JSON (aunque sea «No API key found»); si no abre, el problema es del proyecto o de la red.
+3. En el hosting, que `VITE_SUPABASE_URL` y `VITE_SUPABASE_ANON_KEY` sean los del proyecto vigente (se leen al compilar: tras cambiarlas hay que volver a desplegar).
+4. Descartar bloqueadores de anuncios o filtros de red en el dispositivo.
+Las pantallas de negocios, productos y turismo muestran «No pudimos cargar…» con un botón **Reintentar** cuando pasa esto (antes decían «aún no hay negocios»).
+
 ## Pendiente para comercializar
 Ordenado por prioridad. Los cuatro primeros dependen de decisiones o trámites del propietario, no de código.
 1. **Persona jurídica**: razón social, NIT, dirección, teléfono y correo (variables `VITE_LEGAL_*` en el hosting; hoy los Términos y la Política muestran «pendiente»).

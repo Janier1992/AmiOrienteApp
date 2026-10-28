@@ -393,6 +393,7 @@ export const customerService = {
    * @param {string} [params.category='Todos'] - Categoría a filtrar
    * @param {string} [params.city] - Ciudad (Opcional, futuro soporte regional)
    * @returns {Promise<{data: Array, count: number}>} Lista y total
+   * @throws {Error} Si la consulta falla (sin conexión, proyecto no disponible, permisos)
    */
   async getStores({ page = 1, limit = 20, search = '', category = 'Todos', city = null }) {
     try {
@@ -440,7 +441,9 @@ export const customerService = {
       return { data: data || [], count: count || 0 };
     } catch (error) {
       console.error('[customerService] Error buscando tiendas:', error);
-      return { data: [], count: 0 };
+      // Se propaga: «no se pudo consultar» no es lo mismo que «no hay negocios», y la
+      // pantalla debe poder distinguirlos para ofrecer «Reintentar».
+      throw error;
     }
   }
 };
