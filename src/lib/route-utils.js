@@ -31,9 +31,8 @@ export function prefetchRoutes(chunkNames, priority = 'low') {
       const importFunc = componentCache.get(name);
       if (importFunc) {
         // Execute the import to load the chunk into browser cache
-        importFunc()
-          .then(() => console.debug(`[Prefetch] Loaded: ${name}`))
-          .catch(err => console.debug(`[Prefetch] Failed: ${name}`, err));
+        // El precargado es una optimización: si falla, la ruta se carga cuando se visite.
+        importFunc().catch(() => {});
       }
     });
   };

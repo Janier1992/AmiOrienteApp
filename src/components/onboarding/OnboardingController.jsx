@@ -116,7 +116,6 @@ export function OnboardingController() {
         // Lógica para lanzar guías automáticamente según la ruta
         const checkAndTrigger = (guideId, triggersWelcome = false) => {
             if (!completedGuides.includes(guideId) && !skippedGuides.includes(guideId)) {
-                console.log(`[Onboarding] Triggering ${guideId} for role ${role}`);
                 // Pequeño delay para asegurar carga de UI
                 setTimeout(() => {
                     if (triggersWelcome) {
