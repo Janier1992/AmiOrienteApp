@@ -9,6 +9,7 @@ import { toast } from '@/components/ui/use-toast';
 import { Package, User, Clock, MapPin, Trash2, Pencil } from 'lucide-react';
 import { useStoreDashboard } from '@/stores/useStoreDashboard';
 import LoadingSpinner from '@/components/shared/LoadingSpinner';
+import { pluralizar } from '@/lib/plural';
 import CancelOrderDialog from '@/components/shared/CancelOrderDialog';
 import { STORE_CANCELABLE_STATUSES } from '@/lib/orderRules';
 
@@ -83,19 +84,19 @@ const OrdersTab = ({ storeId, terminology = {} }) => {
     return <Badge variant="outline" className={`${styles[status] || 'bg-gray-100'} px-2 py-1`}>{status}</Badge>;
   };
 
-  if (isLoadingOrders && orders.length === 0) return <LoadingSpinner text={`Cargando ${T.order.toLowerCase()}s...`} />;
+  if (isLoadingOrders && orders.length === 0) return <LoadingSpinner text={`Cargando ${pluralizar(T.order).toLowerCase()}...`} />;
 
   return (
     <Card className="animate-in fade-in duration-300">
       <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle>Gestión de {T.order}s</CardTitle>
+        <CardTitle>Gestión de {pluralizar(T.order)}</CardTitle>
         {isLoadingOrders && <Badge variant="secondary" className="animate-pulse">Actualizando...</Badge>}
       </CardHeader>
       <CardContent>
         {orders.length === 0 ? (
           <div className="text-center py-12">
             <Package className="h-12 w-12 text-gray-500 mx-auto mb-4" />
-            <p>No tienes {T.order.toLowerCase()}s activos.</p>
+            <p>Todavía no tienes {pluralizar(T.order).toLowerCase()}.</p>
           </div>
         ) : (
           <div className="space-y-4">
@@ -246,10 +247,12 @@ const OrdersTab = ({ storeId, terminology = {} }) => {
                           <Pencil className="h-4 w-4" />
                         </Button>
 
-                        {/* Delete Action */}
-                        <Button size="sm" variant="destructive" className="h-7 w-7 p-0" aria-label="Eliminar pedido" onClick={(e) => { e.stopPropagation(); handleDelete(order.id); }}>
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                        {/* Eliminar: solo pedidos ya cancelados (su inventario ya volvió). Un pedido vivo o entregado se cancela o se conserva como respaldo de ventas. */}
+                        {order.status === 'Cancelado' && (
+                          <Button size="sm" variant="destructive" className="h-7 w-7 p-0" aria-label="Eliminar pedido" onClick={(e) => { e.stopPropagation(); handleDelete(order.id); }}>
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        )}
                       </div>
                     </div>
                   </div>

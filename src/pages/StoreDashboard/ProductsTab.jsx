@@ -10,6 +10,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Plus, Search, Trash2, Package, FileImage as ImageIcon, Loader2, Pencil } from 'lucide-react';
 import { useStoreDashboard } from '@/stores/useStoreDashboard';
 import { toast } from '@/components/ui/use-toast';
+import { pluralizar } from '@/lib/plural';
 import LoadingSpinner from '@/components/shared/LoadingSpinner';
 import { supabase } from '@/lib/customSupabaseClient';
 
@@ -143,7 +144,7 @@ const ProductsTab = ({ storeId, terminology = {} }) => {
   };
 
   // Only show full spinner if we have absolutely no data
-  if (isLoadingProducts && products.length === 0) return <LoadingSpinner text={`Cargando ${T.product}s...`} />;
+  if (isLoadingProducts && products.length === 0) return <LoadingSpinner text={`Cargando ${pluralizar(T.product).toLowerCase()}...`} />;
 
   return (
     <Card className="h-full border-none shadow-none sm:border sm:shadow-sm animate-in fade-in duration-300">

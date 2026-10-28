@@ -29,6 +29,7 @@ import {
     CreditCard as PaymentsIcon
 } from 'lucide-react';
 import LoadingSpinner from '@/components/shared/LoadingSpinner';
+import { pluralizar } from '@/lib/plural';
 import OrderAlertsBar from '@/components/shared/OrderAlertsBar';
 import { useNewOrderAlerts } from '@/hooks/use-new-order-alerts';
 
@@ -247,8 +248,8 @@ const UniversalStoreDashboard = () => {
 
             // Apply terminology overrides (e.g., "Platos" instead of "Productos")
             let label = tabDef.label;
-            if (featureKey === 'products' && terminology?.product) label = `${terminology.product}s`;
-            if (featureKey === 'orders' && terminology?.order) label = `${terminology.order}s`;
+            if (featureKey === 'products' && terminology?.product) label = pluralizar(terminology.product);
+            if (featureKey === 'orders' && terminology?.order) label = pluralizar(terminology.order);
             if (featureKey === 'inventory' && terminology?.inventory) label = terminology.inventory;
 
             // Instantiate Component with Props
