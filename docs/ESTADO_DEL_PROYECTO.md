@@ -49,7 +49,7 @@ Auditoría en `docs/AUDITORIA_SUPABASE_2026-10-07.md`. Las correcciones están e
 - En cada pull request corre el CI (`.github/workflows/ci.yml`) con tres revisiones: **verificar** (lint, `npm test`, compilación y alerta de seguridad bloqueante para vulnerabilidades altas en producción), **base-de-datos** (`tools/db-test/run.sh` contra un PostgreSQL desechable) y **secretos** (búsqueda de claves subidas por error). El despliegue repite lint, pruebas y compilación.
 - Dependencias de producción: 0 alertas altas (`npm audit --omit=dev`). Quedan 5 moderadas; la de `react-router` (redirección abierta con barra invertida) solo se corrige pasando a la versión 7 (migración mayor, pendiente). Mientras tanto, `src/lib/authRoutes.js` solo acepta rutas internas en `?redirect=` y rechaza `//` y `/\\`.
 - Servicios con pruebas: pedidos, entrega, caja, equipo, planes, declaraciones del domiciliario, clientes (parcial), negocios (`storeService`, con un Supabase simulado en `src/services/__tests__/helpers/`) y tienda de ropa. **Sin pruebas todavía:** administración, soporte y los servicios por nicho (agro, farmacia). La autenticación vive en `src/contexts/SupabaseAuthContext.jsx` (sin pruebas propias).
-- Corregido en esta etapa: la gestión de productos de la tienda de ropa y de mesas del restaurante lanzaba «Deprecated» (servicios sustitutos vacíos); ahora usan `storeService`. Las pestañas Envíos, Impuestos y Carga masiva existen pero no están enlazadas en las rutas, aunque el checkout lee las zonas de envío.
+- Corregido en esta etapa: la gestión de productos de la tienda de ropa y de mesas del restaurante lanzaba «Deprecated» (servicios sustitutos vacíos); ahora usan `storeService`. Las pestañas Envíos e Impuestos ya están enlazadas en el panel del negocio (solo dueño); la de Carga masiva sigue sin enlazar.
 - Convenciones y flujo de trabajo: `CONTRIBUTING.md` y plantilla de pull request. Encabezados de seguridad en `vercel.json` (la política de contenido está en modo «solo reporte» hasta revisar la consola en producción).
 
 ## Diagnóstico: la app no carga datos
@@ -59,6 +59,8 @@ Si en la consola del navegador aparecen muchos `net::ERR_FAILED` hacia `*.supaba
 3. En el hosting, que `VITE_SUPABASE_URL` y `VITE_SUPABASE_ANON_KEY` sean los del proyecto vigente (se leen al compilar: tras cambiarlas hay que volver a desplegar).
 4. Descartar bloqueadores de anuncios o filtros de red en el dispositivo.
 Las pantallas de negocios, productos y turismo muestran «No pudimos cargar…» con un botón **Reintentar** cuando pasa esto (antes decían «aún no hay negocios»).
+
+- **Ubicación del domiciliario:** solo se envía mientras está conectado Y tiene una entrega en curso (`src/hooks/use-driver-location-sharing.js`). Pendiente en la base de datos: la última posición queda guardada en `delivery_locations` al terminar; borrarla requiere revisar sus políticas en el proyecto real.
 
 ## Pendiente para comercializar
 Ordenado por prioridad. Los cuatro primeros dependen de decisiones o trámites del propietario, no de código.
@@ -72,5 +74,5 @@ Ordenado por prioridad. Los cuatro primeros dependen de decisiones o trámites d
 8. RNBD ante la SIC y consulta a la DIAN (facturación y retenciones).
 9. Pruebas de los servicios restantes, consolidar `database_updates/` en una migración base y migrar `react-router` a la versión 7.
 10. Consentimientos de las cuentas creadas antes de las autorizaciones (pedirlos al volver a entrar).
-11. Cupón consumido antes de crear el pedido (`redeem_discount`): si el pedido falla, el cupón ya se gastó.
+11. Un cupón ya no se pierde si el pedido falla (se canjea dentro de `create_order`, en la misma transacción); queda por decidir si se devuelve al cancelar un pedido.
 12. Permisos del equipo más finos por tabla e invitaciones a correos sin cuenta.
