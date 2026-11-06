@@ -22,6 +22,7 @@ import {
     ClipboardCheck,
     Users,
     Percent,
+    Receipt,
     LineChart,
     Bot,
     Gem,
@@ -57,6 +58,8 @@ const SubscriptionTab = lazy(() => import('../SubscriptionTab'));
 const TeamTab = lazy(() => import('../TeamTab'));
 const PaymentsTab = lazy(() => import('../PaymentsTab'));
 const AutomationTab = lazy(() => import('../AutomationTab'));
+const ShippingTab = lazy(() => import('../ShippingTab'));
+const TaxesTab = lazy(() => import('../TaxesTab').then((m) => ({ default: m.TaxesTab })));
 
 /**
  * Tab Registry
@@ -161,7 +164,7 @@ const FEATURE_TABS = {
 };
 
 /** Secciones que solo ve el dueño del negocio (no el equipo). */
-const OWNER_ONLY_TABS = ['pagos', 'suscripcion', 'configuracion'];
+const OWNER_ONLY_TABS = ['pagos', 'envios', 'impuestos', 'suscripcion', 'configuracion'];
 
 /**
  * Common Tabs that all stores get
@@ -196,6 +199,18 @@ const COMMON_TABS = [
         label: 'Pagos',
         icon: PaymentsIcon,
         component: PaymentsTab,
+    },
+    {
+        path: 'envios',
+        label: 'Envíos',
+        icon: Truck,
+        component: ShippingTab,
+    },
+    {
+        path: 'impuestos',
+        label: 'Impuestos',
+        icon: Receipt,
+        component: TaxesTab,
     },
     {
         path: 'equipo',
