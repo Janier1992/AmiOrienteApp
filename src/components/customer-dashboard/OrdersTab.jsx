@@ -8,9 +8,16 @@ import DriverCard from '@/components/customer-dashboard/DriverCard';
 import OrderTrackingMap from './OrderTrackingMap';
 import { Button } from '@/components/ui/button';
 import CancelOrderDialog from '@/components/shared/CancelOrderDialog';
+import OrderChat from '@/components/shared/OrderChat';
 import { toast } from '@/components/ui/use-toast';
 import { orderService } from '@/services/orderService';
 import { CUSTOMER_CANCELABLE_STATUSES, isActiveOrder } from '@/lib/orderRules';
+import { CHAT_RETENTION_DAYS } from '@/lib/orderChat';
+
+const MS_POR_DIA = 24 * 60 * 60 * 1000;
+// Solo se ofrece el chat archivado mientras el servidor aún lo conserva.
+const chatArchivadoVigente = (pedido) =>
+  pedido.status === 'Entregado' && pedido.deliveries && Date.now() - new Date(pedido.created_at).getTime() < CHAT_RETENTION_DAYS * MS_POR_DIA;
 
 export const OrdersTab = ({ orders, onOrdersChanged }) => {
   const [selectedOrder, setSelectedOrder] = useState(null);
@@ -90,9 +97,18 @@ export const OrdersTab = ({ orders, onOrdersChanged }) => {
                 <p className="mt-3 text-sm text-muted-foreground">Motivo: {order.cancellation_reason}</p>
             )}
 
+            {chatArchivadoVigente(order) && (
+                <div className="mt-3 flex justify-end" onClick={(e) => e.stopPropagation()}>
+                    <OrderChat orderId={order.id} status={order.status} role="cliente" />
+                </div>
+            )}
+
             {isActive && order.status === 'En curso' && order.deliveries && (
                 <div className="mt-6 border-t pt-4 space-y-4">
                      <DriverCard orderId={order.id} />
+                     <div onClick={(e) => e.stopPropagation()}>
+                        <OrderChat orderId={order.id} status={order.status} role="cliente" />
+                     </div>
                      <p className="text-xs font-bold text-muted-foreground uppercase mb-3 flex items-center gap-2">
                         <Truck className="h-3 w-3" /> Rastreo en Tiempo Real
                      </p>
