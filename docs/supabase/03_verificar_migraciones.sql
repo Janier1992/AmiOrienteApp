@@ -32,6 +32,12 @@ FROM (
         EXISTS (SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid = p.pronamespace
                  WHERE n.nspname = 'public' AND p.proname = 'cancel_order')
         AND EXISTS (SELECT 1 FROM pg_publication_tables
-                     WHERE pubname = 'supabase_realtime' AND schemaname = 'public' AND tablename = 'orders'))
+                     WHERE pubname = 'supabase_realtime' AND schemaname = 'public' AND tablename = 'orders')),
+    (9, '20261015_order_chat (mensajes cliente-domiciliario)',
+        to_regclass('public.order_messages') IS NOT NULL
+        AND EXISTS (SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid = p.pronamespace
+                     WHERE n.nspname = 'public' AND p.proname = 'send_order_message')
+        AND EXISTS (SELECT 1 FROM pg_publication_tables
+                     WHERE pubname = 'supabase_realtime' AND schemaname = 'public' AND tablename = 'order_messages'))
 ) AS t(orden, migracion, aplicada)
 ORDER BY orden;

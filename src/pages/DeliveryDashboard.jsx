@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef, Suspense, lazy } from 'react';
+import React, { useState, useEffect, useCallback, Suspense, lazy } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -15,6 +15,7 @@ import HistoryOrdersTab from '@/components/delivery-dashboard/HistoryOrdersTab';
 import OrderDetailsModal from '@/components/delivery-dashboard/OrderDetailsModal';
 import DriverDeclarationDialog from '@/components/delivery-dashboard/DriverDeclarationDialog';
 import DriverPhotoDialog from '@/components/delivery-dashboard/DriverPhotoDialog';
+import { useDriverLocationSharing } from '@/hooks/use-driver-location-sharing';
 import { driverDeclarationService } from '@/services/driverDeclarationService';
 
 // Carga diferida: arrastra la librería de gráficos (recharts, ~350 kB) que solo se usa en 'Ganancias'
@@ -132,7 +133,6 @@ const DeliveryDashboard = () => {
   const [compliance, setCompliance] = useState(null);
   const [isDeclarationOpen, setIsDeclarationOpen] = useState(false);
   const [isPhotoOpen, setIsPhotoOpen] = useState(false);
-  const locationIntervalRef = useRef(null);
 
   const fetchData = useCallback(async (currentUserId) => {
     if (!currentUserId) return;
@@ -206,29 +206,12 @@ const DeliveryDashboard = () => {
     };
   }, [user, fetchData]);
 
-  const sendLocation = useCallback(async () => {
-    if (!user) return;
-    navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        const { latitude, longitude } = position.coords;
-        await deliveryService.actualizarUbicacion(user.id, latitude, longitude);
-      },
-      (error) => console.error("Error getting location:", error),
-      { enableHighAccuracy: true }
-    );
-  }, [user]);
-
-  useEffect(() => {
-    if (isConnected) {
-      sendLocation();
-      locationIntervalRef.current = setInterval(sendLocation, 30000);
-    } else {
-      if (locationIntervalRef.current) clearInterval(locationIntervalRef.current);
-    }
-    return () => {
-      if (locationIntervalRef.current) clearInterval(locationIntervalRef.current);
-    };
-  }, [isConnected, sendLocation]);
+  // La ubicación solo se comparte mientras hay una entrega en curso (ver el hook).
+  useDriverLocationSharing({
+    userId: user?.id,
+    conectado: isConnected,
+    tieneEntregaEnCurso: (currentDelivery?.length ?? 0) > 0,
+  });
 
   useEffect(() => {
     if (!user) return undefined;
