@@ -221,6 +221,17 @@ CREATE POLICY "Store owners can update products in their store" ON public.produc
   USING (auth.uid() = (SELECT stores.owner_id FROM stores WHERE stores.id = products.store_id));
 ALTER TABLE public.products ENABLE ROW LEVEL SECURITY;
 
+-- Ubicación en vivo del domiciliario: tabla y políticas tal como están en Supabase (consulta de pg_policies, 2026-11).
+CREATE TABLE public.delivery_locations (
+  delivery_person_id uuid PRIMARY KEY REFERENCES public.profiles(id) ON DELETE CASCADE,
+  lat numeric, lng numeric, updated_at timestamptz DEFAULT now()
+);
+ALTER TABLE public.delivery_locations ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Allow customers to view their delivery person's location" ON public.delivery_locations FOR SELECT USING (
+  EXISTS (SELECT 1 FROM orders o JOIN deliveries d ON o.id = d.order_id
+           WHERE o.customer_id = auth.uid() AND d.delivery_person_id = delivery_locations.delivery_person_id AND o.status = 'En curso'));
+CREATE POLICY "Allow delivery personnel to manage their location" ON public.delivery_locations FOR ALL USING (auth.uid() = delivery_person_id);
+
 CREATE PUBLICATION supabase_realtime;
 
 -- Permisos por defecto de Supabase: anon y authenticated con todo; RLS es la barrera
