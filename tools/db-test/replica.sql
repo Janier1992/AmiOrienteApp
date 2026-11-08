@@ -180,6 +180,9 @@ CREATE POLICY "Allow delivery personnel to see available orders" ON public.order
 CREATE POLICY "Allow delivery personnel to create deliveries" ON public.deliveries FOR INSERT
   WITH CHECK (((SELECT profiles.role FROM profiles WHERE profiles.id = auth.uid()) = 'domiciliario'));
 CREATE POLICY "Assigned delivery personnel can see their own deliveries" ON public.deliveries FOR SELECT USING (auth.uid() = delivery_person_id);
+-- Presente en Supabase (consulta de pg_policies, 2026-11); la foto de la auditoría de octubre no la traía.
+CREATE POLICY "Customers can view deliveries for their orders" ON public.deliveries FOR SELECT
+  USING (auth.uid() = (SELECT orders.customer_id FROM orders WHERE orders.id = deliveries.order_id));
 
 
 -- ---- comisiones (estado actual: 22 % fijo dentro del trigger) y política antigua de equipo ----

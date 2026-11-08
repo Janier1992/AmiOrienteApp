@@ -263,6 +263,19 @@ export const deliveryService = {
   },
 
   /**
+   * Nombre de pila y teléfono del cliente para el domiciliario asignado.
+   *
+   * Lo entrega el servidor solo mientras el pedido está «En curso» y solo a quien lo lleva;
+   * en cualquier otro caso devuelve null (no se abre la tabla de perfiles a los domiciliarios).
+   */
+  async obtenerContactoDelCliente(idPedido) {
+    validarId(idPedido, 'ID del pedido');
+    const { data, error } = await supabase.rpc('get_order_customer_contact', { p_order_id: idPedido });
+    if (error) manejarError(error, 'No se pudo cargar el contacto del cliente');
+    return Array.isArray(data) ? data[0] || null : data || null;
+  },
+
+  /**
    * Actualiza el estado de una entrega.
    * 
    * Estados válidos: 'Asignado', 'Recogido', 'En camino', 'Entregado'

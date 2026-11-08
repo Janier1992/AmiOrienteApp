@@ -66,3 +66,22 @@ describe('deliveryService.actualizarEstadoEntrega', () => {
         await expect(deliveryService.actualizarEstadoEntrega('order-1', 'Recogido')).rejects.toThrow();
     });
 });
+
+describe('deliveryService.obtenerContactoDelCliente', () => {
+    it('pide el contacto a la función del servidor y devuelve la primera fila', async () => {
+        mockRpc.mockResolvedValue({ data: [{ first_name: 'Ana', phone: '3001234567' }], error: null });
+        expect(await deliveryService.obtenerContactoDelCliente('order-1')).toEqual({ first_name: 'Ana', phone: '3001234567' });
+        expect(mockRpc).toHaveBeenCalledWith('get_order_customer_contact', { p_order_id: 'order-1' });
+    });
+
+    it('devuelve null si el servidor no lo entrega (no es su pedido o ya no va en curso)', async () => {
+        mockRpc.mockResolvedValue({ data: [], error: null });
+        expect(await deliveryService.obtenerContactoDelCliente('order-1')).toBeNull();
+    });
+
+    it('exige el pedido y propaga los errores', async () => {
+        await expect(deliveryService.obtenerContactoDelCliente('')).rejects.toThrow(/requerido/);
+        mockRpc.mockResolvedValue({ data: null, error: { message: 'Debes iniciar sesión.' } });
+        await expect(deliveryService.obtenerContactoDelCliente('order-1')).rejects.toThrow('Debes iniciar sesión.');
+    });
+});

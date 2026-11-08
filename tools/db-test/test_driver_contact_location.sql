@@ -36,7 +36,8 @@ INSERT INTO public.delivery_locations(delivery_person_id, lat, lng) VALUES (:'dr
 
 SELECT test.assert('UBIC anon ya no tiene permisos sobre la tabla',
   NOT has_table_privilege('anon','public.delivery_locations','SELECT') AND NOT has_table_privilege('anon','public.delivery_locations','INSERT'));
--- (Que el cliente VEA la posición depende de poder leer `deliveries`: pendiente de confirmar en el proyecto real.)
+SELECT test.assert('UBIC el cliente ve la posición de su domiciliario con el pedido En curso (y solo la suya)',
+  test.rows_as('authenticated', :'cu', 'SELECT 1 FROM public.delivery_locations')=1);
 SELECT test.assert('UBIC otro cliente no ve ninguna posición', test.rows_as('authenticated', :'cu2', 'SELECT 1 FROM public.delivery_locations')=0);
 SELECT test.assert('UBIC cada domiciliario solo ve la suya',
   test.rows_as('authenticated', :'dr2', 'SELECT 1 FROM public.delivery_locations')=1
@@ -58,7 +59,7 @@ SELECT test.assert('UBIC al entregar un pedido, con otro en curso la posición s
 UPDATE public.orders SET status = 'Cancelado' WHERE id = :'ob';
 SELECT test.assert('UBIC al cerrar su último pedido en curso, la posición se borra',
   NOT EXISTS (SELECT 1 FROM public.delivery_locations WHERE delivery_person_id=:'dr'));
-SELECT test.assert('UBIC y el cliente no ve ninguna posición',
+SELECT test.assert('UBIC y el cliente ya no ve ninguna posición',
   test.rows_as('authenticated', :'cu', 'SELECT 1 FROM public.delivery_locations')=0);
 SELECT test.assert('LLAMAR cerrado el pedido, el domiciliario ya no recibe el teléfono',
   test.rows_as('authenticated', :'dr', format('SELECT 1 FROM public.get_order_customer_contact(%L)', :'oa'))=0);

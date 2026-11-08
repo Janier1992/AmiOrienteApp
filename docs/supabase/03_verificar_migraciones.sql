@@ -43,6 +43,10 @@ FROM (
         EXISTS (SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid = p.pronamespace
                  WHERE n.nspname = 'public' AND p.proname = 'admin_list_order_chat_reports')
         AND EXISTS (SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid = p.pronamespace
-                     WHERE n.nspname = 'public' AND p.proname = 'resolve_order_chat_report'))
+                     WHERE n.nspname = 'public' AND p.proname = 'resolve_order_chat_report')),
+    (11, '20261017_driver_contact_and_location (Llamar y privacidad de la ubicación)',
+        EXISTS (SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid = p.pronamespace
+                 WHERE n.nspname = 'public' AND p.proname = 'get_order_customer_contact')
+        AND EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'trg_clear_driver_location'))
 ) AS t(orden, migracion, aplicada)
 ORDER BY orden;
