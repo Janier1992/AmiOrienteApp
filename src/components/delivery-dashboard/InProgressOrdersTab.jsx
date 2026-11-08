@@ -1,9 +1,33 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Package, MapPin, Navigation, Phone, Check } from 'lucide-react';
 import DeliveryMap from './DeliveryMap';
 import OrderChat from '@/components/shared/OrderChat';
+import { deliveryService } from '@/services/deliveryService';
+
+/**
+ * «Llamar» al cliente. El teléfono se pide al servidor, que solo lo entrega al domiciliario
+ * asignado mientras el pedido va en curso; sin teléfono el botón queda deshabilitado.
+ */
+const LlamarCliente = ({ orderId }) => {
+  const [telefono, setTelefono] = useState(null);
+
+  useEffect(() => {
+    let activo = true;
+    deliveryService
+      .obtenerContactoDelCliente(orderId)
+      .then((contacto) => activo && setTelefono(contacto?.phone || null))
+      .catch(() => activo && setTelefono(null));
+    return () => { activo = false; };
+  }, [orderId]);
+
+  return (
+    <a href={telefono ? `tel:${telefono}` : undefined} aria-disabled={!telefono}>
+      <Button variant="outline" size="sm" disabled={!telefono}><Phone className="h-4 w-4 mr-2" />Llamar</Button>
+    </a>
+  );
+};
 
 const InProgressOrdersTab = ({ orders, onCompleteOrder }) => {
   if (orders.length === 0) {
@@ -36,9 +60,7 @@ const InProgressOrdersTab = ({ orders, onCompleteOrder }) => {
               <Button variant="outline" size="sm" disabled={!order.deliveries?.pickup_address || !order.deliveries?.delivery_address}><Navigation className="h-4 w-4 mr-2" />Navegar</Button>
             </a>
             <OrderChat orderId={order.id} status={order.status} role="domiciliario" />
-            <a href={`tel:${order.profiles?.phone}`}>
-              <Button variant="outline" size="sm" disabled={!order.profiles?.phone}><Phone className="h-4 w-4 mr-2" />Llamar</Button>
-            </a>
+            <LlamarCliente orderId={order.id} />
             <Button size="sm" className="bg-green-700 text-white hover:bg-green-800" onClick={() => onCompleteOrder(order.id)}><Check className="h-4 w-4 mr-2" />Completar</Button>
           </div>
         </Card>

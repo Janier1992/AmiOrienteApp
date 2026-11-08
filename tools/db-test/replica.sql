@@ -180,6 +180,9 @@ CREATE POLICY "Allow delivery personnel to see available orders" ON public.order
 CREATE POLICY "Allow delivery personnel to create deliveries" ON public.deliveries FOR INSERT
   WITH CHECK (((SELECT profiles.role FROM profiles WHERE profiles.id = auth.uid()) = 'domiciliario'));
 CREATE POLICY "Assigned delivery personnel can see their own deliveries" ON public.deliveries FOR SELECT USING (auth.uid() = delivery_person_id);
+-- Presente en Supabase (consulta de pg_policies, 2026-11); la foto de la auditoría de octubre no la traía.
+CREATE POLICY "Customers can view deliveries for their orders" ON public.deliveries FOR SELECT
+  USING (auth.uid() = (SELECT orders.customer_id FROM orders WHERE orders.id = deliveries.order_id));
 
 
 -- ---- comisiones (estado actual: 22 % fijo dentro del trigger) y política antigua de equipo ----
@@ -220,6 +223,17 @@ CREATE POLICY "Store owners can create products for their store" ON public.produ
 CREATE POLICY "Store owners can update products in their store" ON public.products FOR UPDATE
   USING (auth.uid() = (SELECT stores.owner_id FROM stores WHERE stores.id = products.store_id));
 ALTER TABLE public.products ENABLE ROW LEVEL SECURITY;
+
+-- Ubicación en vivo del domiciliario: tabla y políticas tal como están en Supabase (consulta de pg_policies, 2026-11).
+CREATE TABLE public.delivery_locations (
+  delivery_person_id uuid PRIMARY KEY REFERENCES public.profiles(id) ON DELETE CASCADE,
+  lat numeric, lng numeric, updated_at timestamptz DEFAULT now()
+);
+ALTER TABLE public.delivery_locations ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Allow customers to view their delivery person's location" ON public.delivery_locations FOR SELECT USING (
+  EXISTS (SELECT 1 FROM orders o JOIN deliveries d ON o.id = d.order_id
+           WHERE o.customer_id = auth.uid() AND d.delivery_person_id = delivery_locations.delivery_person_id AND o.status = 'En curso'));
+CREATE POLICY "Allow delivery personnel to manage their location" ON public.delivery_locations FOR ALL USING (auth.uid() = delivery_person_id);
 
 CREATE PUBLICATION supabase_realtime;
 

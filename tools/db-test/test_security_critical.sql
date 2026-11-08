@@ -188,6 +188,7 @@ DELETE FROM public.deliveries;
   \ir test_cancel_order.sql
   \ir test_order_chat.sql
   \ir test_chat_reports_admin.sql
+  \ir test_driver_contact_location.sql
 \endif
 
 -- ================================= resultado =================================
