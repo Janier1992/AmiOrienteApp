@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>AmiOriente · Manual de usuario · Novedades de noviembre 2026</title>
+<style>
+  @page { size: A4; margin: 0; }
+  :root { --verde:#166534; --verde-claro:#dcfce7; --texto:#1f2937; --gris:#6b7280; --borde:#e5e7eb; }
+  * { box-sizing: border-box; }
+  body { margin:0; font-family: Arial, Helvetica, sans-serif; color: var(--texto); font-size: 10.5pt; line-height: 1.5; }
+  .pagina { width:210mm; height:297mm; padding: 22mm 15mm 18mm; position:relative; page-break-after: always; overflow:hidden; }
+  .pagina:last-child { page-break-after: auto; }
+  .cabecera { position:absolute; top:8mm; left:15mm; right:15mm; display:flex; justify-content:space-between; font-size:6.5pt; letter-spacing:.08em; text-transform:uppercase; color:var(--gris); }
+  .pie { position:absolute; bottom:8mm; right:15mm; font-size:7pt; color:var(--gris); }
+  h1 { font-size:17pt; margin:0 0 4mm; }
+  h2 { font-size:14pt; margin:6mm 0 2.5mm; display:flex; align-items:center; gap:8px; }
+  h3 { font-size:11.5pt; margin:3.5mm 0 1.2mm; color: var(--verde); }
+  p { margin:0 0 2.5mm; }
+  .nuevo { font-size:7pt; font-weight:bold; letter-spacing:.06em; background:#dbeafe; color:#1d4ed8; padding:2px 8px; border-radius:99px; }
+  ul.checks { list-style:none; padding:0; margin:0 0 3mm; }
+  ul.checks li { padding-left:18px; position:relative; margin-bottom:1.6mm; }
+  ul.checks li::before { content:"✓"; position:absolute; left:0; color:var(--verde); font-weight:bold; }
+  ol.pasos { list-style:none; padding:0; margin:0 0 3mm; counter-reset: p; }
+  ol.pasos li { counter-increment: p; padding-left:30px; position:relative; margin-bottom:1.4mm; min-height:20px; }
+  ol.pasos li::before { content: counter(p); position:absolute; left:0; top:0; width:20px; height:20px; border-radius:50%; background:var(--verde); color:#fff; font-weight:bold; font-size:9pt; text-align:center; line-height:20px; }
+  .aviso { background:#fef3c7; border-left:4px solid #d97706; padding:3mm 4mm; margin:3mm 0; border-radius:2px; }
+  .aviso b.t { display:block; margin-bottom:1mm; }
+  .nota { background:#f0fdf4; border-left:4px solid var(--verde); padding:3mm 4mm; margin:4mm 0; border-radius:2px; }
+  table { width:100%; border-collapse:collapse; margin:2mm 0 4mm; font-size:9.5pt; }
+  th, td { border:1px solid var(--borde); padding:2mm 3mm; text-align:left; vertical-align:top; }
+  th { background:#f9fafb; }
+  .portada { height:100%; border-radius:6mm; background:linear-gradient(#f7eee1,#efe1cf); display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:0 14mm; }
+  .logo { width:19mm; height:19mm; background:var(--verde); color:#fff; border-radius:4mm; font-weight:bold; font-size:30pt; line-height:19mm; margin-bottom:8mm; }
+  .portada h1 { font-size:34pt; margin:0 0 5mm; }
+  .portada .sub { color:#4b5563; font-size:12pt; margin-bottom:7mm; }
+  .chips { display:flex; flex-wrap:wrap; justify-content:center; gap:2.5mm; margin-bottom:9mm; }
+  .chips span { background:#fff; border:1px solid var(--borde); border-radius:99px; padding:1.2mm 4mm; font-size:8.5pt; }
+  .novedades { background:#fff; border:1px solid var(--borde); border-radius:3mm; padding:4mm 6mm; font-size:9pt; margin-bottom:6mm; }
+  .version { color:#4b5563; font-size:9.5pt; }
+  .indice li { margin-bottom:1.5mm; }
+</style>
+</head>
+<body>
+
+<!-- PORTADA v2 -->
+<section class="pagina" style="padding:22mm 15mm 18mm">
+  <div class="cabecera"><span>AmiOriente: Manual de usuario</span><span>Versión noviembre 2026 · v2</span></div>
+  <div class="portada">
+    <div class="logo">A</div>
+    <h1>AmiOriente</h1>
+    <div class="sub">Manual de usuario: el mercado digital del Oriente Antioqueño.<br>Compra, vende y entrega, todo en un solo lugar, para negocios, clientes y domiciliarios.</div>
+    <div class="chips">
+      <span>Restaurantes</span><span>Farmacias</span><span>Mercados</span><span>Tiendas de ropa</span><span>Agro y cultivos</span><span>Hoteles y turismo</span><span>Papelerías</span><span>Panaderías</span><span>Variedades</span><span>Veterinarias</span><span>Comercio general</span>
+    </div>
+    <div class="novedades"><b>Novedades de esta versión (noviembre 2026):</b> mensajes entre el cliente y su domiciliario durante el pedido, ubicación del domiciliario solo mientras lleva una entrega, secciones Envíos e Impuestos en el panel del negocio y guía del administrador. Están en las últimas páginas (desde la 25).</div>
+    <div class="version">Versión del documento: noviembre 2026 · v2</div>
+  </div>
+  <div class="pie">1</div>
+</section>
+
+<!-- 25: MENSAJES -->
+<section class="pagina">
+  <div class="cabecera"><span>AmiOriente: Manual de usuario</span><span>Versión noviembre 2026 · v2</span></div>
+  <h1>Novedades de noviembre 2026</h1>
+  <p>Esta sección completa el manual de octubre (páginas 2 a 24, que siguen vigentes). Incluye: mensajes entre cliente y domiciliario (esta página), ubicación solo durante la entrega y Envíos e Impuestos (página 26), y guía del administrador y preguntas frecuentes nuevas (página 27).</p>
+
+  <h2>Mensajes con tu domiciliario / con el cliente <span class="nuevo">NUEVO</span></h2>
+  <p>Mientras un pedido va en camino, el cliente y su domiciliario pueden escribirse dentro de AmiOriente, sin compartir su número de teléfono. Sirve para decir «ya llegué», «estoy en la portería 2» o «no encuentro la dirección».</p>
+
+  <h3>Si eres cliente</h3>
+  <ol class="pasos">
+    <li>Entra a <b>Mis pedidos</b> y busca el pedido «En curso». Debajo de los datos de tu domiciliario verás el botón <b>Mensajes</b>.</li>
+    <li>Escribe tu mensaje y pulsa <b>Enviar</b>, o toca una respuesta rápida: «Ya bajo», «Estoy en la portería», «Déjalo con el portero», «Gracias».</li>
+    <li>Si te escriben mientras tienes la conversación cerrada, el botón muestra un número rojo con los mensajes sin leer y la app te avisa.</li>
+  </ol>
+
+  <h3>Si eres domiciliario</h3>
+  <ol class="pasos">
+    <li>En la pestaña <b>En curso</b>, junto a «Navegar» y «Llamar», pulsa <b>Mensajes</b>.</li>
+    <li>Usa las respuestas rápidas de un toque, pensadas para cuando tienes las manos ocupadas: «Ya llegué», «Estoy afuera», «No encuentro la dirección», «Voy en camino».</li>
+    <li>Cuando completes la entrega, la conversación se cierra.</li>
+  </ol>
+
+  <h3>Reglas del chat</h3>
+  <table>
+    <tr><th style="width:34%">Regla</th><th>Qué significa</th></tr>
+    <tr><td>Quién participa</td><td>Solo el cliente del pedido y el domiciliario que lo aceptó. El negocio no ve la conversación.</td></tr>
+    <tr><td>Cuándo se escribe</td><td>Solo mientras el pedido está «En curso». Al entregarse o cancelarse queda de solo lectura.</td></tr>
+    <tr><td>Largo y ritmo</td><td>Hasta 500 caracteres por mensaje y 5 mensajes cada 10 segundos.</td></tr>
+    <tr><td>Cuánto se guarda</td><td>La conversación se puede leer hasta 30 días después de cerrado el pedido y luego se elimina automáticamente.</td></tr>
+    <tr><td>Reportar</td><td>Si hay un problema, pulsa <b>Reportar esta conversación</b> y cuenta qué pasó. Solo entonces el equipo de AmiOriente puede leerla para atender tu reporte, y no se borra hasta resolverlo.</td></tr>
+  </table>
+
+  <div class="aviso"><b class="t">Importante</b>No compartas contraseñas, códigos de verificación ni datos bancarios por el chat. AmiOriente nunca te los pedirá.</div>
+  <div class="pie">25</div>
+</section>
+
+<!-- 26: UBICACION + ENVIOS E IMPUESTOS -->
+<section class="pagina">
+  <div class="cabecera"><span>AmiOriente: Manual de usuario</span><span>Versión noviembre 2026 · v2</span></div>
+
+  <h2 style="margin-top:0">Tu ubicación, solo durante la entrega <span class="nuevo">NUEVO</span></h2>
+  <p><b>Para domiciliarios.</b> Estar «Conectado» ya no comparte tu ubicación. La app la envía únicamente mientras tienes una entrega <b>en curso</b>, para que el cliente te siga en el mapa. Al completar la entrega, o al desconectarte, el envío se detiene y se libera el GPS de tu celular.</p>
+  <ul class="checks">
+    <li>Sin pedido asignado, nadie recibe tu posición.</li>
+    <li>Mientras llevas un pedido, la posición se actualiza cada 30 segundos.</li>
+  </ul>
+  <div class="nota"><b>Tenlo en cuenta:</b> AmiOriente funciona desde el navegador. Si dejas la app en segundo plano o apagas la pantalla, el celular puede pausar el envío de la ubicación. Mantén la app abierta y la pantalla encendida durante la entrega.</div>
+
+  <h2>Envíos e Impuestos en el panel del negocio <span class="nuevo">NUEVO</span></h2>
+  <p><b>Para negocios.</b> Dos secciones nuevas en el menú del panel, visibles solo para el dueño (el equipo no las ve). Lo que configures aquí es lo que ven tus clientes al pagar.</p>
+
+  <h3>Envíos</h3>
+  <ol class="pasos">
+    <li>Escribe el nombre de una zona (por ejemplo «Local» o «Zona rural») y pulsa <b>Agregar Zona</b>.</li>
+    <li>Dentro de la zona, escribe el nombre de una tarifa (por ejemplo «Estándar»), su precio y pulsa <b>Añadir Tarifa</b>.</li>
+    <li>El cliente elige la tarifa al finalizar su compra. El sistema valida que la tarifa pertenezca a tu negocio.</li>
+  </ol>
+  <p>Si no configuras ninguna tarifa, se cobra el domicilio base de la plataforma.</p>
+
+  <h3>Impuestos</h3>
+  <ol class="pasos">
+    <li>Escribe el nombre del impuesto (por ejemplo «IVA»), su porcentaje y pulsa <b>Agregar Impuesto</b>.</li>
+    <li>El porcentaje se calcula sobre el subtotal de los productos y se suma al total que paga el cliente. Si agregas varios impuestos, se suman.</li>
+    <li>Para quitarlo, pulsa el icono de papelera junto al impuesto.</li>
+  </ol>
+  <div class="aviso"><b class="t">Importante</b>AmiOriente no te asesora sobre qué impuestos debes cobrar. Consulta a tu contador antes de configurarlos: una tasa mal puesta se cobra tal cual a tus clientes.</div>
+  <div class="pie">26</div>
+</section>
+
+<!-- 27: ADMINISTRADOR + FAQ -->
+<section class="pagina">
+  <div class="cabecera"><span>AmiOriente: Manual de usuario</span><span>Versión noviembre 2026 · v2</span></div>
+
+  <h2 style="margin-top:0">Guía del administrador de la plataforma <span class="nuevo">NUEVO</span></h2>
+  <p>El perfil de administrador es para el equipo de AmiOriente. Entra con su cuenta y abre el <b>Panel de Administración</b> (dirección <b>/#/admin</b>). Las cuentas de administrador no se crean desde el registro público: las asigna la plataforma.</p>
+  <table>
+    <tr><th style="width:30%">Sección</th><th>Para qué sirve</th></tr>
+    <tr><td>Resumen</td><td>Tres cifras: negocios totales, activos y suspendidos.</td></tr>
+    <tr><td>Negocios registrados</td><td>Lista de negocios con su plan. Permite <b>cambiar el plan</b>, <b>Suspender</b> o reactivar un negocio y elegir los <b>Módulos</b> que ve cada negocio en su panel.</td></tr>
+    <tr><td>Declaraciones de domiciliarios</td><td>Revisar y abrir la declaración firmada de cada domiciliario, con su foto, y <b>imprimirla</b> como soporte.</td></tr>
+    <tr><td>Soporte</td><td>Tickets que envían los negocios. Se escribe una respuesta y se marca el ticket como en proceso o resuelto.</td></tr>
+  </table>
+  <h3>Reportes de conversaciones</h3>
+  <p>Cuando un cliente o un domiciliario reporta un chat, se guarda el motivo y solo entonces el administrador puede leer esa conversación, únicamente para atender el reporte. Léela con reserva y no la compartas. Una pantalla para gestionar estos reportes llegará en una próxima versión; mientras tanto se consultan en la base de datos.</p>
+  <div class="aviso"><b class="t">Importante</b>Un administrador ve información de otros usuarios. Usa una contraseña única, no compartas la cuenta y cierra la sesión al terminar.</div>
+
+  <h2>Preguntas frecuentes nuevas</h2>
+  <h3>¿El negocio puede leer mis mensajes con el domiciliario?</h3>
+  <p>No. La conversación es solo entre el cliente y el domiciliario del pedido. Solo el equipo de AmiOriente puede leerla si alguno de los dos la reporta.</p>
+  <h3>¿Puedo escribirle al domiciliario después de recibir el pedido?</h3>
+  <p>No. Al entregarse el pedido, el chat queda solo para leer y se elimina a los 30 días.</p>
+  <h3>¿AmiOriente me sigue siempre que estoy conectado como domiciliario?</h3>
+  <p>No. Tu ubicación se comparte solo mientras llevas una entrega en curso.</p>
+  <h3>¿Por qué no veo las secciones Envíos e Impuestos?</h3>
+  <p>Son solo para el dueño del negocio. Si eres parte del equipo, pídele al dueño que las configure.</p>
+  <div class="pie">27</div>
+</section>
+
+</body>
+</html>
