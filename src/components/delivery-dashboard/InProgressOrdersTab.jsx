@@ -3,6 +3,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Package, MapPin, Navigation, Phone, Check } from 'lucide-react';
 import DeliveryMap from './DeliveryMap';
+import OrderChat from '@/components/shared/OrderChat';
 
 const InProgressOrdersTab = ({ orders, onCompleteOrder }) => {
   if (orders.length === 0) {
@@ -34,6 +35,7 @@ const InProgressOrdersTab = ({ orders, onCompleteOrder }) => {
             <a href={`https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(order.deliveries?.pickup_address || '')}&destination=${encodeURIComponent(order.deliveries?.delivery_address || '')}`} target="_blank" rel="noopener noreferrer">
               <Button variant="outline" size="sm" disabled={!order.deliveries?.pickup_address || !order.deliveries?.delivery_address}><Navigation className="h-4 w-4 mr-2" />Navegar</Button>
             </a>
+            <OrderChat orderId={order.id} status={order.status} role="domiciliario" />
             <a href={`tel:${order.profiles?.phone}`}>
               <Button variant="outline" size="sm" disabled={!order.profiles?.phone}><Phone className="h-4 w-4 mr-2" />Llamar</Button>
             </a>
