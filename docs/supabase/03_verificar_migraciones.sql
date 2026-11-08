@@ -38,6 +38,11 @@ FROM (
         AND EXISTS (SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid = p.pronamespace
                      WHERE n.nspname = 'public' AND p.proname = 'send_order_message')
         AND EXISTS (SELECT 1 FROM pg_publication_tables
-                     WHERE pubname = 'supabase_realtime' AND schemaname = 'public' AND tablename = 'order_messages'))
+                     WHERE pubname = 'supabase_realtime' AND schemaname = 'public' AND tablename = 'order_messages')),
+    (10, '20261016_chat_reports_admin (reportes del chat para el administrador)',
+        EXISTS (SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid = p.pronamespace
+                 WHERE n.nspname = 'public' AND p.proname = 'admin_list_order_chat_reports')
+        AND EXISTS (SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid = p.pronamespace
+                     WHERE n.nspname = 'public' AND p.proname = 'resolve_order_chat_report'))
 ) AS t(orden, migracion, aplicada)
 ORDER BY orden;

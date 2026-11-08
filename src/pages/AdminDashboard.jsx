@@ -22,6 +22,7 @@ import { useAuth } from '@/contexts/SupabaseAuthContext';
 import LoadingSpinner from '@/components/shared/LoadingSpinner';
 import { SupportTicketsPanel } from '@/components/admin/SupportTicketsPanel';
 import DriverDeclarationsPanel from '@/components/admin/DriverDeclarationsPanel';
+import ChatReportsPanel from '@/components/admin/ChatReportsPanel';
 import { getStoreTypeConfig } from '@/config/storeTypes';
 import { FEATURE_MODULE_LABELS, COMMON_MODULE_LABELS } from '@/config/dashboardModules';
 import { planService } from '@/services/planService';
@@ -271,6 +272,8 @@ const AdminDashboard = () => {
                 </Card>
 
                 <SupportTicketsPanel />
+
+                <ChatReportsPanel />
 
                 <DriverDeclarationsPanel />
             </div>
