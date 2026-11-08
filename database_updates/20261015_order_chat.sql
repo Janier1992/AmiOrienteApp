@@ -121,9 +121,11 @@ BEGIN
 
     IF v_order.customer_id = v_uid THEN
         v_role := 'cliente';
-    ELSIF v_driver IS NOT NULL AND v_driver = v_uid THEN
+    END IF;
+    IF v_role IS NULL AND v_driver IS NOT NULL AND v_driver = v_uid THEN
         v_role := 'domiciliario';
-    ELSE
+    END IF;
+    IF v_role IS NULL THEN
         RAISE EXCEPTION 'No participas en este pedido.' USING ERRCODE = '42501';
     END IF;
 
@@ -226,12 +228,12 @@ END $$;
 -- Borrado diario automático, si la extensión pg_cron está disponible (Supabase: Database → Extensions).
 DO $$
 BEGIN
-    IF EXISTS (SELECT 1 FROM pg_extension WHERE extname = 'pg_cron') THEN
-        PERFORM cron.unschedule(jobid) FROM cron.job WHERE jobname = 'purge-order-messages';
-        PERFORM cron.schedule('purge-order-messages', '30 7 * * *', 'SELECT public.purge_old_order_messages()');
-    ELSE
+    IF NOT EXISTS (SELECT 1 FROM pg_extension WHERE extname = 'pg_cron') THEN
         RAISE NOTICE 'pg_cron no está activa: habilítala y vuelve a ejecutar este script para programar el borrado a los 30 días.';
+        RETURN;
     END IF;
+    PERFORM cron.unschedule(jobid) FROM cron.job WHERE jobname = 'purge-order-messages';
+    PERFORM cron.schedule('purge-order-messages', '30 7 * * *', 'SELECT public.purge_old_order_messages()');
 END $$;
 
 COMMIT;
