@@ -1,7 +1,9 @@
 -- =============================================================================
 -- AmiOriente · Chat interno cliente ↔ domiciliario por pedido (2026-10-15)
 -- Ejecutar en Supabase → SQL Editor DESPUÉS de las migraciones anteriores.
--- Idempotente y transaccional. Haz backup antes.
+-- Idempotente (se puede ejecutar más de una vez). Sin BEGIN/COMMIT: el editor de
+-- Supabase no los admite y ya ejecuta el script completo como una sola operación.
+-- Haz backup antes.
 -- =============================================================================
 -- Reglas:
 --  · Cada pedido tiene su propio chat entre el cliente y el domiciliario que lo aceptó.
@@ -15,8 +17,6 @@
 --    REPORTÓ la conversación (report_order_chat) y únicamente para atender ese reporte.
 --  · El domiciliario deja de necesitar el teléfono del cliente (y viceversa).
 -- =============================================================================
-
-BEGIN;
 
 DO $$
 BEGIN
@@ -235,8 +235,6 @@ BEGIN
     PERFORM cron.unschedule(jobid) FROM cron.job WHERE jobname = 'purge-order-messages';
     PERFORM cron.schedule('purge-order-messages', '30 7 * * *', 'SELECT public.purge_old_order_messages()');
 END $$;
-
-COMMIT;
 
 -- Verificaciones (de una en una):
 -- SELECT has_function_privilege('anon','public.send_order_message(uuid,text)','EXECUTE');       -- false
