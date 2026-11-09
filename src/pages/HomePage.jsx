@@ -10,6 +10,7 @@ import {
 import { useAuth } from '@/contexts/SupabaseAuthContext';
 import { customerService } from '@/services/customerService';
 import { SERVICE_CATEGORIES_LIST } from '@/data/sample-data';
+import { nombreDelLugar } from '@/lib/reverseGeocode';
 
 // Mismo set de categorías que filtra StoresPage (stores.category real),
 // con un ícono por categoría para el grid del Home.
@@ -136,9 +137,9 @@ const HomePage = () => {
     loadNearby();
   }, []);
 
-  // Geolocalización real del navegador + geocodificación inversa (Nominatim/
-  // OpenStreetMap, gratuita, sin API key) para mostrar la ubicación real de
-  // quien abre la app. Si no hay permiso o falla, se queda en el municipio
+  // Geolocalización real del navegador + geocodificación inversa (servicio configurado
+  // en src/config/map.js, por defecto Nominatim, con caché por zona) para mostrar la
+  // ubicación real de quien abre la app. Si no hay permiso o falla, se queda en el municipio
   // base de la plataforma — nunca se inventa un lugar.
   useEffect(() => {
     if (!navigator.geolocation) return;
@@ -148,16 +149,8 @@ const HomePage = () => {
       async (position) => {
         try {
           const { latitude, longitude } = position.coords;
-          const res = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=12&addressdetails=1`,
-            { headers: { 'Accept-Language': 'es' } }
-          );
-          const data = await res.json();
-          const addr = data?.address || {};
-          const place = addr.city || addr.town || addr.village || addr.municipality || addr.county;
-          if (place) {
-            setLocationLabel(addr.state ? `${place}, ${addr.state}` : place);
-          }
+          const nombre = await nombreDelLugar(latitude, longitude);
+          if (nombre) setLocationLabel(nombre);
         } catch (error) {
           console.warn('No se pudo determinar la ubicación legible:', error);
         } finally {
