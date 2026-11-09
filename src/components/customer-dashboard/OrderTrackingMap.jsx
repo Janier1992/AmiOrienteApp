@@ -1,23 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, Polyline } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
-import L from 'leaflet';
-import { supabase } from '@/lib/customSupabaseClient';
-
-// Fix for default marker icon
-delete L.Icon.Default.prototype._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
-  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
-  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png'
-});
-
-const deliveryPersonIcon = new L.Icon({
-    iconUrl: 'https://cdn-icons-png.flaticon.com/512/3448/3448620.png',
-    iconSize: [35, 35],
-    iconAnchor: [17, 35],
-    popupAnchor: [0, -35]
-});
+import { iconoDomiciliario } from '@/lib/mapIcons';
+import { MAP_CONFIG } from '@/config/map';
 
 const OrderTrackingMap = ({ delivery }) => {
   const [deliveryPersonLocation, setDeliveryPersonLocation] = useState(null);
@@ -80,8 +65,8 @@ const OrderTrackingMap = ({ delivery }) => {
     <div className="h-64 w-full rounded-lg overflow-hidden border">
       <MapContainer center={centerPosition} zoom={14} scrollWheelZoom={false} style={{ height: '100%', width: '100%' }}>
         <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          attribution={MAP_CONFIG.attribution}
+          url={MAP_CONFIG.tileUrl}
         />
         {pickupPosition && (
           <Marker position={pickupPosition}>
@@ -94,7 +79,7 @@ const OrderTrackingMap = ({ delivery }) => {
           </Marker>
         )}
         {personPosition && (
-          <Marker position={personPosition} icon={deliveryPersonIcon}>
+          <Marker position={personPosition} icon={iconoDomiciliario}>
             <Popup>Domiciliario</Popup>
           </Marker>
         )}

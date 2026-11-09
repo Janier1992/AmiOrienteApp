@@ -52,6 +52,12 @@ Auditoría en `docs/AUDITORIA_SUPABASE_2026-10-07.md`. Las correcciones están e
 - Reportes: en el Panel de Administración (`/#/admin`), sección «Reportes de conversaciones» (`ChatReportsPanel`, migración `20261016_chat_reports_admin.sql`): lista los reportes abiertos con quién reportó, negocio, cliente y domiciliario; «Ver conversación» la abre y «Marcar resuelto» la cierra con una nota. El administrador solo lee un chat mientras su reporte esté abierto.
 - Botón «Llamar» del domiciliario: verificado en el Supabase real que no podía leer el teléfono del cliente (no hay política de `profiles` para domiciliarios) y salía deshabilitado. Ahora lo pide a `get_order_customer_contact`, que solo lo entrega al domiciliario asignado con el pedido «En curso» y con el nombre de pila.
 
+## Mapas y licencias de terceros (noviembre 2026)
+- Los íconos de los mapas ahora son propios (SVG) o vienen en el paquete de Leaflet (`src/lib/mapIcons.js`). Se eliminó el ícono de Flaticon (su plan gratuito exige atribución) y la carga de imágenes desde cdnjs y GitHub.
+- Teselas y geocodificador se configuran en `src/config/map.js` con `VITE_MAP_TILE_URL`, `VITE_MAP_TILE_ATTRIBUTION` y `VITE_GEOCODER_URL` (ver `.env.example`). Por defecto siguen siendo los servidores públicos de OpenStreetMap, que sirven para el piloto pero tienen política de uso: **antes de abrir al público con volumen hay que contratar un proveedor de teselas o montar uno propio** y añadir su dominio a `img-src` y `connect-src` de `vercel.json`.
+- La geocodificación inversa de la portada guarda el resultado por zona durante un día (`src/lib/reverseGeocode.js`) para no repetir consultas al servicio público.
+- Pendiente: imágenes de ejemplo de Unsplash (`src/data/sample-data.js` y varias páginas) y revisión de licencias del resto de dependencias.
+
 ## Calidad automática
 - En cada pull request corre el CI (`.github/workflows/ci.yml`) con tres revisiones: **verificar** (lint, `npm test`, compilación y alerta de seguridad bloqueante para vulnerabilidades altas en producción), **base-de-datos** (`tools/db-test/run.sh` contra un PostgreSQL desechable) y **secretos** (búsqueda de claves subidas por error). El despliegue repite lint, pruebas y compilación.
 - Dependencias de producción: 0 alertas altas (`npm audit --omit=dev`). Quedan 5 moderadas; la de `react-router` (redirección abierta con barra invertida) solo se corrige pasando a la versión 7 (migración mayor, pendiente). Mientras tanto, `src/lib/authRoutes.js` solo acepta rutas internas en `?redirect=` y rechaza `//` y `/\\`.
