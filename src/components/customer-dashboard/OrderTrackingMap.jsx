@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, Polyline } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
+import { supabase } from '@/lib/customSupabaseClient';
 import { iconoDomiciliario } from '@/lib/mapIcons';
 import { MAP_CONFIG } from '@/config/map';
 
