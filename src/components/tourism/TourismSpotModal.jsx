@@ -7,6 +7,7 @@ import HotelBookingForm from './HotelBookingForm';
 import { buildWhatsAppUrl } from '@/lib/contact';
 import '@/lib/mapIcons';
 import { MAP_CONFIG } from '@/config/map';
+import AjustarTamanoMapa from '@/components/shared/AjustarTamanoMapa';
 
 const TourismSpotModal = ({ spot, isOpen, onClose }) => {
   const [actionMode, setActionMode] = useState(null); // 'booking' | null
@@ -137,6 +138,7 @@ const TourismSpotModal = ({ spot, isOpen, onClose }) => {
                     attribution={MAP_CONFIG.attribution}
                     url={MAP_CONFIG.tileUrl}
                   />
+                  <AjustarTamanoMapa />
                   <Marker position={position}>
                     <Popup>{spot.name}</Popup>
                   </Marker>
