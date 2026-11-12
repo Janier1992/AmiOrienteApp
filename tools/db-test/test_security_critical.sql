@@ -30,6 +30,21 @@ BEGIN
      CASE WHEN err IS NULL THEN 'sin error' ELSE left(err, 90) END);
 END $f$;
 
+-- ¿Un rol no ve nada? Verdadero si la consulta falla (sin permiso de tabla, como en la réplica local) o devuelve 0 filas
+-- (permiso de tabla pero la seguridad por filas lo filtra, como en Supabase). Así la prueba vale en ambos entornos.
+CREATE OR REPLACE FUNCTION test.sees_nothing(role_name text, uid uuid, q text) RETURNS boolean LANGUAGE plpgsql AS $f$
+DECLARE n bigint;
+BEGIN
+  PERFORM set_config('request.jwt.claim.sub', coalesce(uid::text, ''), true);
+  EXECUTE format('SET LOCAL ROLE %I', role_name);
+  EXECUTE format('SELECT count(*) FROM (%s) t', q) INTO n;
+  RESET ROLE;
+  RETURN n = 0;
+EXCEPTION WHEN OTHERS THEN
+  RESET ROLE;
+  RETURN true;
+END $f$;
+
 CREATE OR REPLACE FUNCTION test.assert(label text, cond boolean) RETURNS void LANGUAGE sql AS
 $f$ INSERT INTO test.results(label, ok, detail) VALUES (label, coalesce(cond, false), CASE WHEN coalesce(cond,false) THEN 'ok' ELSE 'NO se cumple' END) $f$;
 

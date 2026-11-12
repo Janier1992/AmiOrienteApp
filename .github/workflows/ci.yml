@@ -62,6 +62,16 @@ jobs:
       - name: Pruebas de base de datos
         run: bash tools/db-test/run.sh
 
+  base-de-datos-supabase:
+    # Las mismas pruebas, pero contra la imagen oficial de PostgreSQL de Supabase (la que usa el Supabase
+    # autoalojado): detecta diferencias de esquema auth, permisos por defecto, Realtime y pg_cron.
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Pruebas contra la imagen oficial de Supabase
+        run: bash tools/db-test/run-supabase.sh
+
   secretos:
     # Busca claves o credenciales subidas por error al repositorio.
     runs-on: ubuntu-latest

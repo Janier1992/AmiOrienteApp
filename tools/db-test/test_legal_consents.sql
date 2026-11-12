@@ -28,4 +28,4 @@ SELECT test.run('LEGAL nadie puede modificar autorizaciones', 'authenticated', '
   $q$ UPDATE public.legal_consents SET version='falsa' WHERE user_id='00000000-0000-0000-0000-00000000ab05' $q$, true);
 SELECT test.run('LEGAL nadie puede borrar autorizaciones', 'authenticated', '00000000-0000-0000-0000-00000000ab05',
   $q$ DELETE FROM public.legal_consents WHERE user_id='00000000-0000-0000-0000-00000000ab05' $q$, true);
-SELECT test.run('LEGAL anon no ve nada', 'anon', NULL, 'SELECT * FROM public.legal_consents', true);
+SELECT test.assert('LEGAL anon no ve nada', test.sees_nothing('anon', NULL, 'SELECT * FROM public.legal_consents'));
