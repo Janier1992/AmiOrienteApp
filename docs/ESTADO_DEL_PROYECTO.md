@@ -52,6 +52,11 @@ Auditoría en `docs/AUDITORIA_SUPABASE_2026-10-07.md`. Las correcciones están e
 - Reportes: en el Panel de Administración (`/#/admin`), sección «Reportes de conversaciones» (`ChatReportsPanel`, migración `20261016_chat_reports_admin.sql`): lista los reportes abiertos con quién reportó, negocio, cliente y domiciliario; «Ver conversación» la abre y «Marcar resuelto» la cierra con una nota. El administrador solo lee un chat mientras su reporte esté abierto.
 - Botón «Llamar» del domiciliario: verificado en el Supabase real que no podía leer el teléfono del cliente (no hay política de `profiles` para domiciliarios) y salía deshabilitado. Ahora lo pide a `get_order_customer_contact`, que solo lo entrega al domiciliario asignado con el pedido «En curso» y con el nombre de pila.
 
+## Paquete de entrega (noviembre 2026)
+- `docs/entrega/` reúne la guía de instalación y despliegue, el inventario de cuentas y variables, el plan de respaldos y el inventario de licencias (índice y estado en `docs/entrega/00_LEEME.md`).
+- Pendientes antes de entregar a un cliente: guardar el **esquema base** de la base de datos (hoy no está en el repositorio, solo las migraciones), hacer una **restauración probada** y revisar con un abogado la licencia Hippocratic de `react-leaflet`.
+- `node tools/licencias.js` vuelve a medir las licencias de las dependencias de producción.
+
 ## Calidad automática
 - En cada pull request corre el CI (`.github/workflows/ci.yml`) con tres revisiones: **verificar** (lint, `npm test`, compilación y alerta de seguridad bloqueante para vulnerabilidades altas en producción), **base-de-datos** (`tools/db-test/run.sh` contra un PostgreSQL desechable) y **secretos** (búsqueda de claves subidas por error). El despliegue repite lint, pruebas y compilación.
 - Dependencias de producción: 0 alertas altas (`npm audit --omit=dev`). Quedan 5 moderadas; la de `react-router` (redirección abierta con barra invertida) solo se corrige pasando a la versión 7 (migración mayor, pendiente). Mientras tanto, `src/lib/authRoutes.js` solo acepta rutas internas en `?redirect=` y rechaza `//` y `/\\`.
