@@ -10,6 +10,7 @@
     "lint": "eslint src --ext js,jsx",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:e2e": "node tools/e2e/humo.cjs",
     "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
