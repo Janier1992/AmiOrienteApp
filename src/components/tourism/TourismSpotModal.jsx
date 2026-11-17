@@ -5,6 +5,8 @@ import { X, Phone, Globe, Star, BedDouble, UtensilsCrossed, MapPin, Navigation, 
 import { Button } from '@/components/ui/button';
 import HotelBookingForm from './HotelBookingForm';
 import { buildWhatsAppUrl } from '@/lib/contact';
+import '@/lib/mapIcons';
+import { MAP_CONFIG } from '@/config/map';
 
 const TourismSpotModal = ({ spot, isOpen, onClose }) => {
   const [actionMode, setActionMode] = useState(null); // 'booking' | null
@@ -132,8 +134,8 @@ const TourismSpotModal = ({ spot, isOpen, onClose }) => {
               <div className="h-48 w-full rounded-lg overflow-hidden border bg-slate-100 relative z-0">
                 <MapContainer center={position} zoom={15} scrollWheelZoom={false} style={{ height: '100%', width: '100%' }}>
                   <TileLayer
-                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                    attribution={MAP_CONFIG.attribution}
+                    url={MAP_CONFIG.tileUrl}
                   />
                   <Marker position={position}>
                     <Popup>{spot.name}</Popup>
